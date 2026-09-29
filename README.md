@@ -5,6 +5,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | Project | What it is |
 | --- | --- |
 | [`alt-f4`](projects/alt-f4) | *Sam vs Dario*, a satirical AI-industry rap battle styled as a 16-bit fighting game |
+| [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
 ## Layout
@@ -13,23 +14,28 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 pixelart/                 shared library and CLIs
   pixel.py                primitives: string sprites, pixel fonts, ordered dither, camera compose
   timing.py               render-time clocks: tracked beat grid, "which lyric/word is being sung"
+  lyrics.py               lyric sheets: [Section - Speaker: note] headers, model tags, sung words
   project.py              the project.py contract, and the loader the CLIs use
-  render.py               python -m pixelart.render PROJECT     parallel render -> x264 -> mp4 with audio
-  preview.py              python -m pixelart.preview PROJECT …  still frames + captioned contact sheet
-  sweep.py                python -m pixelart.sweep PROJECT      render every frame, report exceptions
-  sheet.py                python -m pixelart.sheet OUT a.png …  contact sheet of any PNGs
-  audio/                  one-off song analysis: stems, beats, tempo, transcribe, align, envelope
+  new.py                  python -m pixelart.new NAME                 new project from _template
+  render.py               python -m pixelart.render PROJECT          parallel render -> x264 -> mp4 with audio
+  preview.py              python -m pixelart.preview PROJECT …       still frames + captioned contact sheet
+  sweep.py                python -m pixelart.sweep PROJECT           render every frame, report exceptions
+  sheet.py                python -m pixelart.sheet OUT a.png …       contact sheet of any PNGs
+  song/                   lyrics -> song with local models: generate takes, check them, pick one
+  audio/                  song analysis: analyze runs stems, beats, envelope, transcribe, align
+  gpu.py                  CUDA library path for faster-whisper, VRAM size
   fonts/                  Press Start 2P, Silkscreen (SIL OFL)
 projects/
-  _template/              copy this to start a new video
+  _template/              copy this to start a new video (a working lyric video out of the box)
   alt-f4/
 ```
 
 Inside a project:
 
 - `project.py` holds the settings the shared tools read (`FPS`, `END`, `AUDIO`, `render_frame`, and so on). See `pixelart/project.py` for the full contract.
-- `data/` is committed. It holds the song analysis: beat grid, transcripts, timed lyrics and loudness envelope. The files are small, and they are either slow to regenerate (they need the ML stack and a GPU) or tuned by hand.
-- `audio/` and `build/` are ignored by git. `audio/` holds the song. `build/` holds stems, render segments and previews.
+- `lyrics.txt` is the lyric sheet and `style.txt` the one-line style prompt, when the song is generated here.
+- `data/` is committed. It holds the song analysis: song provenance, beat grid, transcripts, timed lyrics and loudness envelope. The files are small, and they are either slow to regenerate (they need the ML stack and a GPU) or tuned by hand.
+- `audio/` and `build/` are ignored by git. `audio/` holds the song. `build/` holds song takes, stems, render segments and previews.
 
 ## Setup
 
@@ -40,37 +46,35 @@ uv sync                  # rendering: numpy + Pillow
 uv sync --extra audio    # song analysis too: torch (CPU), Demucs, beat_this, faster-whisper + CUDA libs
 ```
 
-## Starting a new video
-
-1. `cp -r projects/_template projects/my-video`, then render it once to check the setup: `uv run python -m pixelart.preview projects/my-video hello 0 0.25 0.5`
-2. Put the song at `projects/my-video/audio/song.wav`, then set `AUDIO` and `END` in `project.py`.
-3. Analyse the song (see the next section) and swap the template's fixed 120 BPM clock for `data/beat_this.json`.
-4. Draw. Iterate with `preview` and `sweep`, then `render`.
-
-Project modules import each other by bare name (`import timeline`), and the loader puts the project directory on `sys.path`. To run a project script directly, use `uv run python projects/my-video/some_script.py`.
-
-## Analysing a song
-
-Run each step once per song. Write the outputs to `data/`. Everything except `tempo` and `envelope` needs `uv sync --extra audio`.
+Generating songs needs an NVIDIA GPU (tested on 16 GB) and the models, each in its own checkout and venv under `PIXELART_MODELS`, which defaults to `../local-music` next to this repo:
 
 ```sh
-P=projects/my-video
-uv run python -m pixelart.audio.tempo  $P/audio/song.wav                       # quick BPM look, numpy only
-uv run python -m pixelart.audio.stems  $P/audio/song.wav $P/build/stems        # vocals / no_vocals (Demucs, CPU)
-uv run python -m pixelart.audio.beats  $P/audio/song.wav $P/data/beat_this.json
-uv run python -m pixelart.audio.envelope $P/build/stems/htdemucs/song/vocals.wav $P/data/vocal_env.npy \
-    --fps 24 --duration 200
-
-# Word timings from both the vocal stem and the full mix (they fail in different places).
-# ctranslate2 needs the pip CUDA libs on the loader path:
-SP=.venv/lib/python3.12/site-packages/nvidia
-export LD_LIBRARY_PATH=$SP/cublas/lib:$SP/cudnn/lib
-uv run python -m pixelart.audio.transcribe $P/build/stems/htdemucs/song/vocals.wav $P/data/vocals.whisper.json \
-    --prompt "Proper Nouns, Jargon, From The Lyrics"
-uv run python -m pixelart.audio.transcribe $P/audio/song.wav $P/data/song.whisper.json --prompt "…"
+mkdir -p ../local-music && cd ../local-music
+git clone https://github.com/multimodal-art-projection/YuE.git
+(cd YuE && uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python .)   # weights download on first use
+git clone https://github.com/ace-step/ACE-Step-1.5.git
+(cd ACE-Step-1.5 && uv sync && uv run acestep-download && uv run acestep-download --model acestep-v15-xl-turbo)
 ```
 
-Then snap the transcribed timings onto the real lyrics with `pixelart.audio.align`. Every song needs a small driver script, because you have to say where each section sits in the recording and hand-time anything Whisper can't hear, such as chants and ad-libs. `projects/alt-f4/align.py` is a worked example to copy.
+The downloads total about 50 GB. Don't run a large model download and `uv sync` at the same time: the sync's wheel downloads starve and stall. `pixelart/song/models.py` has the per-model settings, including what a 16 GB card needs.
+
+## Pipeline: lyrics -> song -> video
+
+```sh
+uv run python -m pixelart.new my-video                      # projects/my-video from _template
+# write projects/my-video/lyrics.txt (lyric sheet) and style.txt (genre, voices, tempo)
+uv run python -m pixelart.song.generate projects/my-video   # takes from YuE2 + ACE-Step XL, then a lyric check
+# listen to build/takes/listen/*.m4a, read build/takes/report.md, pick one:
+uv run python -m pixelart.song.pick projects/my-video acestep-xl-s2 --title "My Video"
+uv run python -m pixelart.audio.analyze projects/my-video   # stems, beats, envelope, transcripts, timed lyrics
+uv run python -m pixelart.render projects/my-video          # baseline lyric video -> projects/my-video/video.mp4
+```
+
+Then make it your own: replace `video.py`, iterating with `preview` and `sweep` (see below).
+
+**Songs.** `lyrics.txt` uses `[Section]`, `[Section - Speaker]` or `[Section - Speaker: note]` headers. The models only get plain section tags, so put voices and delivery in `style.txt` as well. Each take is scored by how much of the lyric sheet Whisper hears in it. Some seeds come out garbled, so generate a few (`--seeds 1 2 3`) and listen before picking. A finished song from elsewhere (Suno, say) skips generation: `pick PROJECT path/to/song.wav`.
+
+**Analysis.** `analyze` skips steps whose output exists (`--force` redoes them). Whisper is primed with the proper nouns in `lyrics.txt`, or with the project's `prompt.txt` if it has one. The lyrics are aligned in one pass over the whole song. The report marks lines that are mostly interpolated with `!`; these are usually chants or ad-libs Whisper can't hear. When that isn't good enough, write a per-song `align.py` with a time window per section and hand timings (`projects/alt-f4/align.py` is a worked example), and `analyze` leaves alignment to it. The single steps are also CLIs: `python -m pixelart.audio.{stems,beats,envelope,transcribe,align,tempo}`.
 
 Demucs applies a random time shift, so regenerated stems (and the loudness envelope built from them) differ a little from run to run. Commit `data/` and treat it as the source of truth once a video depends on it.
 

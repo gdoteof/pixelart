@@ -4,13 +4,22 @@ Whisper mishears names and sometimes invents filler ("yo, yo, yo"), so we run
 a fuzzy global alignment between the lyric tokens and the recognised tokens,
 keep the timings of matched words and interpolate the rest from their neighbours.
 
-A song supplies the lyric sheet, a time window per section (where it sits in
-the recording) and any tokeniser tweaks or hand fixes; see
-projects/alt-f4/align.py. Output lines have the shape pixelart.timing expects:
+For a song that follows its lyric sheet (anything generated from it), `auto`
+aligns the whole sheet against the whole recording in one pass:
+
+    python -m pixelart.audio.align PROJECT    # lyrics.txt + data/*.whisper.json -> data/lyrics_timed.json
+
+When that isn't good enough (chants Whisper can't hear, sections sung out of
+order, a Suno render that repeats the hook), write a per-song driver with a
+time window per section and hand fixes; see projects/alt-f4/align.py.
+Output lines have the shape pixelart.timing expects:
 {"section", "speaker", "text", "t0", "t1", "words": [{"w", "t0", "t1"}, ...]}.
 """
+import argparse
+import json
 import re
 from difflib import SequenceMatcher
+from pathlib import Path
 
 MAX_WORD, TYPICAL_WORD = 0.9, 0.35
 
@@ -138,10 +147,36 @@ def interpolate(times, t_from, t_to):
     return times
 
 
-def build(transcripts, lines, t_from, t_to, tokens_of=tokens_of):
+def drop_strays(times, flat, slack=2.0, per_word=0.6):
+    """Unmatch words whose time is far from the rest of their line.
+
+    A line is sung in one go, so a word matched seconds away from its line's
+    median (e.g. to a stray "your" Whisper heard inside a chant) is a false match.
+    """
+    by_line = {}
+    for fi, (li, _) in enumerate(flat):
+        by_line.setdefault(li, []).append(fi)
+    dropped = 0
+    for fis in by_line.values():
+        hit = [fi for fi in fis if times[fi] is not None]
+        if len(hit) < 3:
+            continue
+        mid = sorted(times[fi][0] for fi in hit)[len(hit) // 2]
+        limit = slack + per_word * len(fis)
+        for fi in hit:
+            if abs(times[fi][0] - mid) > limit:
+                times[fi] = None
+                dropped += 1
+    return dropped
+
+
+def build(transcripts, lines, t_from, t_to, tokens_of=tokens_of, detail=False, strays=False):
     """Align lyric lines against several transcripts; per word keep the first sane match.
 
-    Returns (timed lines, matched word count, total word count).
+    With `strays`, matches far from the rest of their line are discarded (see
+    drop_strays). Returns (timed lines, matched word count, total word count),
+    plus with `detail` a per-line list of how many words were matched rather
+    than interpolated.
     """
     flat = [(li, word) for li, line in enumerate(lines) for word in line["words"]]
     words = [w for _, w in flat]
@@ -151,6 +186,8 @@ def build(transcripts, lines, t_from, t_to, tokens_of=tokens_of):
         pick = next((p[fi] for p in per if p[fi] is not None), None)
         matched += pick is not None
         times.append(pick)
+    if strays:
+        matched -= drop_strays(times, flat)
     # Keep time monotonic: a match that lands before its predecessor is discarded.
     last = t_from
     for fi, t in enumerate(times):
@@ -160,6 +197,7 @@ def build(transcripts, lines, t_from, t_to, tokens_of=tokens_of):
                 matched -= 1
             else:
                 last = t[1]
+    hits = [t is not None for t in times]
     times = interpolate(times, t_from, t_to)
     out = []
     for li, line in enumerate(lines):
@@ -167,6 +205,9 @@ def build(transcripts, lines, t_from, t_to, tokens_of=tokens_of):
         out.append({**{k: line[k] for k in ("section", "speaker", "text")},
                     "t0": round(ws[0][1][0], 3), "t1": round(ws[-1][1][1], 3),
                     "words": [{"w": w, "t0": round(t[0], 3), "t1": round(t[1], 3)} for w, t in ws]})
+    if detail:
+        per_line = [sum(hits[fi] for fi, (l2, _) in enumerate(flat) if l2 == li) for li in range(len(lines))]
+        return out, matched, len(flat), per_line
     return out, matched, len(flat)
 
 
@@ -180,3 +221,53 @@ def even_words(text, t0, t1, norm=norm):
         acc += wt
         out.append({"w": w, "t0": round(a, 3), "t1": round(t0 + (t1 - t0) * acc / total, 3)})
     return out
+
+
+def sheet_lines(text):
+    """Sung lines of a lyric sheet (pixelart.lyrics format), ready for `build`."""
+    from pixelart import lyrics
+    return [{"section": sec["section"], "speaker": sec["speaker"], "text": line, "words": split_words(line)}
+            for sec in lyrics.sections(text) for line in sec["lines"]]
+
+
+def auto(sheet, transcripts, duration):
+    """Time a whole lyric sheet against whole-song transcripts in one pass.
+
+    Returns (timed lines, report), where report lists each line's matched word
+    count so weak spots can be checked by ear and fixed by hand.
+    """
+    lines = sheet_lines(sheet)
+    timed, matched, total, per_line = build(transcripts, lines, 0.0, duration, detail=True, strays=True)
+    report = {"matched": matched, "total": total,
+              "lines": [{"t0": ln["t0"], "section": ln["section"], "text": ln["text"],
+                         "matched": m, "words": len(ln["words"])} for ln, m in zip(timed, per_line)]}
+    return timed, report
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Auto-align PROJECT/lyrics.txt onto its Whisper transcripts.")
+    ap.add_argument("project")
+    ap.add_argument("--duration", type=float, help="song length in seconds (default: data/song.json)")
+    args = ap.parse_args()
+    root = Path(args.project)
+    data = root / "data"
+    duration = args.duration or json.loads((data / "song.json").read_text())["duration"]
+    transcripts = [json.loads((data / n).read_text()) for n in ("vocals.whisper.json", "song.whisper.json")
+                   if (data / n).exists()]
+    timed, report = auto((root / "lyrics.txt").read_text(), transcripts, duration)
+    (data / "lyrics_timed.json").write_text(json.dumps(timed, indent=1))
+    print_report(report)
+    print(f"-> {data / 'lyrics_timed.json'}")
+
+
+def print_report(report, weak=0.5):
+    """Print the timed lines, marking those with under `weak` of their words matched."""
+    print(f"matched {report['matched']}/{report['total']} sung words "
+          f"({100 * report['matched'] / max(1, report['total']):.0f}%); lines marked ! are mostly interpolated")
+    for ln in report["lines"]:
+        flag = "!" if ln["matched"] < weak * ln["words"] else " "
+        print(f"{flag} {ln['t0']:7.2f}  {ln['matched']:2d}/{ln['words']:<2d} {ln['section'] or '':10.10s} {ln['text']}")
+
+
+if __name__ == "__main__":
+    main()

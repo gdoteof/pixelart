@@ -4,13 +4,21 @@
 
 Transcribe both the vocal stem and the full mix: they fail in different
 places, and pixelart.audio.align takes the first sane match from either.
-ctranslate2 needs the pip CUDA libraries on the loader path, set before Python starts:
-
-    SP=.venv/lib/python3.12/site-packages/nvidia
-    LD_LIBRARY_PATH=$SP/cublas/lib:$SP/cudnn/lib uv run python -m pixelart.audio.transcribe ...
+ctranslate2 needs the pip CUDA libraries on the loader path before Python
+starts; the CLIs here re-exec themselves with it set (pixelart.gpu). Library
+callers must set it themselves, e.g. by calling pixelart.gpu.ensure_cuda_libs()
+first thing in their own main().
 """
 import argparse
 import json
+from functools import lru_cache
+
+
+@lru_cache(maxsize=2)
+def whisper(model="large-v3", device="cuda"):
+    """A loaded faster-whisper model, shared by every transcription in this process."""
+    from faster_whisper import WhisperModel
+    return WhisperModel(model, device=device, compute_type="float16")
 
 
 def transcribe(src, prompt=None, model="large-v3", device="cuda", log=print):
@@ -19,8 +27,7 @@ def transcribe(src, prompt=None, model="large-v3", device="cuda", log=print):
     `prompt` primes Whisper with names and jargon from the lyrics, which keeps it
     from inventing spellings for them.
     """
-    from faster_whisper import WhisperModel
-    segments, _ = WhisperModel(model, device=device, compute_type="float16").transcribe(
+    segments, _ = whisper(model, device).transcribe(
         str(src),
         language="en",
         word_timestamps=True,
@@ -40,6 +47,8 @@ def transcribe(src, prompt=None, model="large-v3", device="cuda", log=print):
 
 
 def main():
+    from pixelart.gpu import ensure_cuda_libs
+    ensure_cuda_libs()
     ap = argparse.ArgumentParser()
     ap.add_argument("src")
     ap.add_argument("out")

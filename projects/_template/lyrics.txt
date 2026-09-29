@@ -1,0 +1,7 @@
+[Verse 1 - Narrator: warm, unhurried male voice]
+Replace these lines with the song's lyrics
+One line per sung phrase, under a section header
+
+[Chorus]
+Headers look like [Verse 1 - Speaker: performance note]
+Stage directions like [crowd cheers] are not sung
