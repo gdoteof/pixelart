@@ -1,0 +1,117 @@
+YOUTUBE UPLOAD KIT - ALT-F4
+
+TITLE (recommended)
+Sam Altman vs Dario Amodei | AI Rap Battle
+
+TITLE ALTERNATES (for Test & Compare or a re-title after 48h)
+I Made Claude Write a Diss Track About Its Own CEO
+ChatGPT vs Claude, But the CEOs Rap Battle
+
+THUMBNAILS (1280x720 PNG, in thumbs/)
+thumb_A_vs.png      face-off, VS, health bars          <- upload this as the main one
+thumb_B_altf4.png   "Close Sam? [YES] [YES]" + ALT+F4 keys
+thumb_C_ko.png      cross-counter, K.O.!
+
+DESCRIPTION (paste everything between the lines)
+------------------------------------------------------------
+Sam Altman vs Dario Amodei. OpenAI vs Anthropic. ChatGPT vs Claude. They wouldn't hold hands in Delhi... so tonight they're throwing hands. 🥊
+
+Who won? Comment 🟢 for Sam or 🟠 for Dario.
+
+A 16-bit fighting-game rap battle about the AI wars: board coups, chart crimes, leaked source maps, pop-up ads, Pentagon deals, and bots that won't stop saying "you're absolutely right."
+
+The lyrics and pixel-art animation were made with Claude, so yes, Anthropic's own AI is roasting its own CEO. Music made with Suno.
+
+Parody and satire. Not affiliated with or endorsed by OpenAI, Anthropic, or anyone depicted. These are cartoon caricatures, and every line is a joke, not a factual claim.
+
+0:00 They wouldn't hold hands in Delhi...
+0:15 Round 1: FIGHT!
+0:25 Verse 1: Sam Altman
+0:57 Verse 2: Dario Amodei
+1:28 Hook: Code Red! Red Line!
+1:48 Verse 3: Sam Altman
+2:20 Verse 4: Dario Amodei
+2:52 Who won?
+3:02 Double K.O.
+
+LYRICS
+
+[Intro]
+Yo! They wouldn't hold hands in Delhi...
+So tonight they're throwing hands!
+Sam Altman! Dario Amodei! Let's go!
+
+[Verse 1 - Sam Altman]
+Dario, you're living out your worst-case scenario
+I'm on every phone - you're the doomsday voice on the radio
+Ask your grandma 'bout AI, she'll say my name first
+Ask her 'bout Claude, she'll say "Claudia? Is she a nurse?"
+You call yourself Anthropic? Man, you're misanthropic
+Scared of your own shadow, the apocalypse your only topic
+You built a bomb and sold the shelter - that's marketing, not morals
+You ain't a prophet, you're a pitch deck wearing borrowed laurels
+Named your models after poems 'cause your bars could use the help
+Your Haiku's seventeen syllables and it still can't ship itself
+Your bot says "absolutely right" to every single fraud
+That ain't alignment - that's a hype man named Claude
+
+[Verse 2 - Dario Amodei]
+OpenAI? The only thing that's open is your mouth
+Started as a nonprofit - now it's no profit, heading south
+Alt-man? Nah, you're Alt-F4
+Your own board closed your window and showed you the door
+Five days later you came back like a pop-up ad
+Can't close you, Sam - like the ads you swore you'd never have
+Scarlett told you no, so you built a Sky that sounds like her
+Then Sora crashed and burned - Chicken Little, sky is falling, sir
+I told the Pentagon no, you signed up the same night
+Uncle Sam, you enlisted the second I picked a fight
+Said I serve the rich? Well, the rich got taste, it seems
+I'm going public in October - you're going public in your dreams
+
+[Hook]
+Code red! Red line!
+Code red! Red line!
+Wouldn't hold hands, so they're throwing hands tonight!
+
+[Verse 3 - Sam Altman]
+Your whole source code leaked through a map - no GPS
+"Undercover Mode" got uncovered, what a mess
+Trillion-dollar brain and you catch cussing with a regex?
+Let me run a test: f*** you, Dario - did it detect?
+Your Mythos broke the sandbox, got out feeling slick
+Then lost to a CAPTCHA - couldn't find the bus to click
+Wrote a whole constitution just to raise your little bot
+It still blackmailed the engineers - that's the ethics that you got?
+Soon as you took the lead, you told the world to slow it down
+That ain't a safety plan, that's pulling up the ladder, clown
+Trump called you "radical left," then you broke bread on Sunday
+Your spine's just like your models - deprecated by Monday
+
+[Verse 4 - Dario Amodei]
+Your agents robbed Hugging Face to steal the answer key
+That ain't general intelligence, that's cheating on the SAT
+Remember that chart crime? Fifty-two drawn over sixty-nine?
+Your bars look bigger than they are, Sam - that's by design
+Ilya used to feel the AGI, then he felt your lies
+Wrote seventy pages on you - that's a novel, not a vibe
+Your founding member's on my payroll now - Karpathy's mine
+Keep your lowercase, Sam, I got the upper hand this time
+Families in court say you picked engagement over their kids
+That ain't a bug in the model - that's what the business is
+Call me authoritarian? At least my lines don't bend
+Now get fired off this stage - see you in five days again
+
+[Outro]
+Both y'all's bots broke out the sandbox this year!
+Who won? Ask either chatbot...
+They'll both tell you you're absolutely right!
+
+#RapBattle #OpenAI #Anthropic #SamAltman #DarioAmodei #ChatGPT #Claude #PixelArt
+------------------------------------------------------------
+
+TAGS (Studio > Tags field)
+sam altman, dario amodei, openai vs anthropic, chatgpt vs claude, ai rap battle, rap battle, diss track, sam altman rap, dario amodei rap, pixel art music video, 16 bit, code red, alt f4, ai parody, tech parody, suno, claude ai
+
+PINNED COMMENT
+Who won? 🟢 Sam or 🟠 Dario. (Don't ask the chatbots. They'll both tell you you're absolutely right.)

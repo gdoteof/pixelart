@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Per-project scratch: stems, render segments, previews
+build/
+
+# Media stays out of git: songs are large and not ours to redistribute
+*.wav
+*.mp3
+*.flac
+*.mp4
+*.mov
