@@ -1,0 +1,144 @@
+YOUTUBE UPLOAD KIT - ATTENBOROUGH VS. FREEMAN
+
+TITLE (recommended)
+David Attenborough vs Morgan Freeman | Narrator Rap Battle
+
+TITLE ALTERNATES (for Test & Compare or a re-title after 48h)
+The Two Greatest Narrators Alive Have a Rap Battle
+Planet Beef: Attenborough vs Freeman
+
+THUMBNAILS (1280x720 PNG, in thumbs/)
+thumb_A_fight.png    fighting-game VS screen, life bars, the planet as the prize   <- upload this as the main one
+thumb_B_split.png    his documentary vs his film, torn down the middle
+thumb_C_planet.png   PLANET BEEF: the planet in God's hand, Sir David on top
+
+ALTERED CONTENT
+Tick "Altered or synthetic content" in Studio: the voices are AI-generated imitations of real people.
+
+DESCRIPTION (paste everything between the lines)
+------------------------------------------------------------
+Sir David Attenborough vs Morgan Freeman. The two greatest narrators alive, one slow boom-bap beat, and only one planet. 🌍
+
+Whoever's rapping holds the camera. Sir David's verses are his nature documentary, and Morgan is the specimen: Morganus freemanii, the lesser-spotted baritone. Morgan's verses are his films, and Sir David is cast as the lead in The BBC Redemption and Driving Mr. David. Stay after the credits.
+
+Who won? Comment 🌿 for Sir David or 🎬 for Morgan.
+
+The lyrics and pixel-art animation were made with Claude. The music and both voices were generated with ACE-Step 1.5, an open-source music model, run locally. They are AI voices, not Sir David Attenborough or Morgan Freeman.
+
+Parody and satire. Not affiliated with or endorsed by Sir David Attenborough, Morgan Freeman, the BBC, or anyone depicted. These are cartoon caricatures, and every line is a joke, not a factual claim.
+
+0:00 Planet Beef
+0:23 Verse 1: Sir David Attenborough
+1:23 Verse 2: Morgan Freeman in The BBC Redemption
+2:40 Verse 3: Sir David Attenborough, Episode Two: Extinction
+3:51 Verse 4: Morgan Freeman in Driving Mr. David
+4:59 The End
+5:12 Post-credits scene
+
+LYRICS
+
+[Intro - David Attenborough]
+Here, in the harsh light of the vocal booth, two old silverbacks circle.
+One narrated all of life on Earth.
+Only one leaves with the planet.
+Observe: Morganus freemanii. The lesser-spotted baritone.
+
+[Verse 1 - David Attenborough]
+Watch the male puff his chest in a slow mating display,
+Same pitch, same pace, same wise old man every day.
+He's a zoo animal, pacin' in the same small cage,
+Same mentor, same monologue, same velvet, same page.
+I was out in the Serengeti, lion breathin' down my neck,
+You were on The Electric Company spellin' "cat" for a cheque.
+Easy Reader? Easy, reader. I'll read you front to back:
+Chapter one: a deep voice. Chapter two: that's it. That's the act.
+You played God for Jim Carrey and you cashed it, fair enough,
+But I got Darwin in my corner, and the fossils call your bluff.
+It's natural selection every time I clear my throat,
+And you've never been selected, mate. You read what someone wrote.
+A lyrebird can mimic chainsaws, camera shutters, car alarms.
+I heard one do your voice once. Honestly? It had more charm.
+You did one flick with penguins, now you're struttin' on my floe?
+Them emperors waddle seventy miles and still outpace your flow.
+Got a voice like a church organ, big and warm and low,
+But this booth's a morgue now, Morgan. Toe tag. Time to go.
+
+[Verse 2 - Morgan Freeman]
+Seventy years inside the BBC. These walls are funny.
+First you hate 'em. Then you get used to 'em.
+Enough time passes, you get so you depend on 'em.
+That's institutionalized.
+I'm eighty-nine years old, and I'm the young buck in this booth.
+Your baby pictures? Cave paintings. That ain't a diss, that's the truth.
+Get busy livin' or get busy dyin'? You been busy for a century.
+You ain't the narrator no more, David. You're the fossil in the documentary.
+Why you always whisperin'? Scared a gorilla gon' snitch?
+God don't whisper, David. I said "Let there be light" and hit the switch.
+I made the creatures that you film. Day five, day six, that's me.
+You strolled in on day seven with a camera and a cup of tea.
+Your brother Dickie ran Jurassic Park and spared no expense,
+But the oldest fossil on that island's you, and you ain't even fenced.
+Dickie won an Oscar, and so did I: Million Dollar Baby.
+You got a shelf full of BAFTAs? That's adorable. That's British for "maybe."
+They let the nation name a ship for you, put it to a public vote.
+The people said "Boaty McBoatface." That's the review. That's the quote.
+I was President in Deep Impact when the comet hit the ground.
+You'd have crouched beside the T-rex whisperin', "Isn't that profound."
+They call me Freeman 'cause I free you of your title, of your crown.
+London Has Fallen. I was there. Now watch Attenborough go down.
+
+[Verse 3 - David Attenborough]
+Quotin' Shawshank? Cute. You played Red. Well, I know the Red List,
+And you just went from Least Concern to Extinct in one diss.
+You sold the world that Lucy myth, "ten percent of the brain."
+It's false, but every verse you spit's a strong case for the claim.
+Wanna talk Jurassic? They named a beast for me: Attenborosaurus.
+They put your voice in a sat-nav for some bloke in a Ford Taurus.
+"Recalculating." That's the legacy? That's the pedigree?
+I got a nation off of plastic. You reroute a Ford to Tennessee.
+There's a pitcher plant that bears my name and swallows rats whole,
+And like the rat, Morgan, you're already slidin' down the bowl.
+You played God twice, Bruce then Evan, both for Universal.
+I got knighted twice by the actual Crown, and that weren't a rehearsal.
+Blue, Frozen, Green and Earth: four planets on my shelf.
+You made one, Morgan, then you had to take a nap yourself.
+Seven Worlds, One Planet: seven wonders, all of 'em mine.
+You made Seven. What's in the box, Morgan? It's your spine.
+You were Hoke in Driving Miss Daisy, hands at ten and two.
+Next stop: pushin' up daisies. Don't fret, mate. I'll narrate you.
+And so, the ageing male, outcompeted, slinks back into the long grass.
+It isn't cruelty. It is simply nature.
+
+[Verse 4 - Morgan Freeman]
+Pushin' up daisies? Hoke drove twenty-five years, never scratched the car.
+Hop in the back, David. I'll drive you home. It ain't far.
+The Private Life of Plants? Man, give the ferns some privacy.
+You been creepin' in the bushes with a lens since the Eisenhower presidency.
+I played Mandela: master of my fate, the captain of my soul.
+You were face-down in the dirt, whisperin' sweet nothings to a mole.
+Along Came a Spider: I caught the killer, closed the case.
+You watched a spider eat her husband, zoomed in, and called it "grace."
+I'm Lucius Fox. I built the Batmobile, the suit, the cave.
+You sat nine days in a hide to watch a sloth misbehave.
+Decades tellin' everybody the planet's on its final breath,
+Meanwhile you outlived the Concorde, the Queen, and the concept of death.
+Respect. But this mic ain't a monarchy, and your reign is through.
+I made The Bucket List. You're a hundred. So let's review:
+"Swim with a blue whale": check. "Meet a mountain gorilla": check.
+"Beat Morgan Freeman"? Nah. That box stays unchecked.
+Some birds ain't meant to be caged. Their feathers just too bright.
+But you're a dodo, David: big, slow, and you can't take flight.
+
+[Outro - Morgan Freeman]
+And that was the day David Attenborough learned
+that nature is beautiful. Nature is cruel.
+I would know. I made it.
+
+#RapBattle #DavidAttenborough #MorganFreeman #PlanetEarth #Shawshank #PixelArt
+------------------------------------------------------------
+
+TAGS (Studio > Tags field)
+david attenborough, morgan freeman, attenborough vs freeman, rap battle, narrator rap battle, diss track, planet earth, shawshank redemption, driving miss daisy, boaty mcboatface, nature documentary parody, pixel art music video, 16 bit, ai music, ace-step, claude ai
+
+PINNED COMMENT
+Who won? 🌿 Sir David or 🎬 Morgan. Choose carefully: one of them made the planet, and the other one is filming you.

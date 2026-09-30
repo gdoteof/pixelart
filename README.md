@@ -6,6 +6,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | --- | --- |
 | [`alt-f4`](projects/alt-f4) | *Sam vs Dario*, a satirical AI-industry rap battle styled as a 16-bit fighting game |
 | [`two-georges`](projects/two-georges) | *Two Georges*, King George III vs George Washington, a rap battle across the Atlantic |
+| [`narrators`](projects/narrators) | *Attenborough vs. Freeman*, a narrators' rap battle where whoever raps holds the camera: nature documentary vs. film |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
@@ -35,6 +36,7 @@ projects/
   _template/              copy this to start a new video (a working lyric video out of the box)
   alt-f4/
   two-georges/
+  narrators/
 ```
 
 Inside a project:

@@ -1,0 +1,32 @@
+{
+  "title": "Attenborough vs. Freeman",
+  "source": "acestep-xl-s1+gb-s4",
+  "duration": 343.0,
+  "picked": "2026-09-30T04:38:36+00:00",
+  "model": "acestep-xl",
+  "seed": 4,
+  "style": "English, slow hard-hitting boom bap battle rap, dusty half-time drums, heavy kick, crisp snare, vinyl crackle, dark detuned piano loop, deep upright bass, gospel church organ swells, cinematic strings, minor key, elderly posh British male rapper, upper-class English accent, Received Pronunciation, breathy hushed nature-documentary narrator voice, wry precise delivery, clear diction, 78 BPM",
+  "base": "acestep-xl-s1",
+  "base_style": "English, slow hard-hitting boom bap battle rap, dusty half-time drums, heavy kick, crisp snare, vinyl crackle, dark detuned piano loop, deep upright bass, gospel church organ swells, cinematic strings, minor key, deep resonant American male baritone rapper, smooth warm voice, slow calm authoritative storyteller delivery, clear diction, 78 BPM",
+  "repainted": [
+    {
+      "section": "Intro",
+      "speaker": "David Attenborough",
+      "start": 1.82,
+      "end": 19.52
+    },
+    {
+      "section": "Verse 1",
+      "speaker": "David Attenborough",
+      "start": 19.76,
+      "end": 83.28
+    },
+    {
+      "section": "Verse 3",
+      "speaker": "David Attenborough",
+      "start": 160.48,
+      "end": 231.62
+    }
+  ],
+  "lyrics_sha256": "f0a416458605d3d1"
+}
