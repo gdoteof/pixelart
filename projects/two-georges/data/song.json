@@ -1,0 +1,30 @@
+{
+  "title": "Two Georges",
+  "source": "acestep-xl-s2+gb-s1+fix-s4",
+  "duration": 280.0,
+  "picked": "2026-09-29T22:45:48+00:00",
+  "model": "acestep-xl",
+  "seed": 4,
+  "style": "English, drill rap meets colonial fife and drum, sliding 808 bass, skippy drill hi-hats, military snare rolls, piercing fife melody, harpsichord stabs, dark minor key, haughty posh British male rapper, upper-class English accent, Received Pronunciation, sneering aristocratic delivery, clear diction, 142 BPM",
+  "base": "acestep-xl-s2+gb-s1",
+  "base_style": "English, drill rap meets colonial fife and drum, sliding 808 bass, skippy drill hi-hats, military snare rolls, piercing fife melody, harpsichord stabs, dark minor key, haughty posh British male rapper, upper-class English accent, Received Pronunciation, sneering aristocratic delivery, clear diction, 142 BPM",
+  "repainted": [
+    {
+      "section": "Verse 1",
+      "speaker": "King George III",
+      "start": 12.86,
+      "end": 67.5
+    },
+    {
+      "section": "Verse 3",
+      "speaker": "King George III",
+      "start": 116.9,
+      "end": 168.06
+    },
+    {
+      "start": 160.9,
+      "end": 169.8
+    }
+  ],
+  "lyrics_sha256": "f53778345d8e34c2"
+}

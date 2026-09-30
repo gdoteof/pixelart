@@ -5,6 +5,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | Project | What it is |
 | --- | --- |
 | [`alt-f4`](projects/alt-f4) | *Sam vs Dario*, a satirical AI-industry rap battle styled as a 16-bit fighting game |
+| [`two-georges`](projects/two-georges) | *Two Georges*, King George III vs George Washington, a rap battle across the Atlantic |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
@@ -33,6 +34,7 @@ pixelart/                 shared library and CLIs
 projects/
   _template/              copy this to start a new video (a working lyric video out of the box)
   alt-f4/
+  two-georges/
 ```
 
 Inside a project:
@@ -99,11 +101,12 @@ uv run python -m pixelart.render  projects/alt-f4                      # ~45 s f
 
 ## What to reuse from earlier videos
 
-`pixelart/` only holds code that is independent of any one video's look. The camera (`camera.py`), the gag runner (`gags.py`), the animation helpers (`anim.py`), sprite canvases (`sprites.py`) and the comic text effects (`fx.py`) are shared already. A lot of alt-f4 is reusable in spirit but tied to its characters and style, so it stays in that project. Copy it and adapt it:
+`pixelart/` only holds code that is independent of any one video's look. The camera (`camera.py`), the gag runner (`gags.py`), the animation helpers (`anim.py`), sprite canvases (`sprites.py`) and the comic text effects (`fx.py`) are shared already. A lot of alt-f4 and two-georges is reusable in spirit but tied to its characters and style, so it stays in those projects. Copy it and adapt it:
 
 - `characters.py`: procedural chibi heads and bodies with pixel-art rules (4-connected outlines, crescent shading, rim light, mirrored facing)
 - `props.py`: UI widgets such as speech and thought bubbles, stamps, Win95 windows, gradient "big text", keycaps and confetti
 - `gagkit.py` and `video.py`: how a video wires up per-line gags (`pixelart.gags`), shots for the camera, hit reactions and karaoke
+- two-georges' `characters.py` and `scene.py`: posable characters as cached sprites with anchors (hand, mouth, head), and a set drawn once and mirrored, animated per frame
 - `thumbnail.py`: YouTube thumbnails in the video's style, with a sheet previewing them at YouTube's display sizes
 
 If the same code gets copied into a second project, move it into `pixelart/` instead.
