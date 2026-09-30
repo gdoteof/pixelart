@@ -223,6 +223,55 @@ def even_words(text, t0, t1, norm=norm):
     return out
 
 
+def snap_onsets(timed, env, fps, quiet=0.08, loud=0.3, gap=0.2, slack=0.4, lead=0.02):
+    """Move word starts that Whisper put in a pause forward to where the singing resumes.
+
+    Whisper tends to start a word as soon as the previous one ends, so the first
+    word after a pause "starts" in the silence. `env` is the per-video-frame
+    vocal loudness (pixelart.audio.envelope). A word whose start is followed by
+    at least `gap` seconds of quiet moves to the first loud frame after it
+    (looking up to `slack` seconds past its end), and later words are pushed
+    along if it now overlaps them. Edits `timed` in place; returns the number
+    of words moved.
+    """
+    flat = [w for line in timed for w in line["words"]]
+    n, run = len(env), max(1, int(round(gap * fps)))
+    moved = 0
+    for i, w in enumerate(flat):
+        f0 = int(round(w["t0"] * fps))
+        f_end = min(n, int((w["t1"] + slack) * fps))
+        if i + 1 < len(flat):
+            f_end = min(f_end, int((flat[i + 1]["t1"] - 0.05) * fps))
+        f = f0
+        while f < f_end and env[f] >= quiet:          # the tail of the previous word
+            f += 1
+        if f - f0 > 0.1 * fps:                        # quiet only after a real stretch of this word
+            continue
+        q = f
+        while q < f_end and env[q] < quiet:
+            q += 1
+        if q - f < run:
+            continue
+        while q < f_end and env[q] < loud:
+            q += 1
+        if q >= f_end:
+            continue
+        t = round(q / fps - lead, 3)
+        if t <= w["t0"] + 1 / fps:
+            continue
+        w["t0"] = t
+        w["t1"] = round(max(w["t1"], t + 0.12), 3)
+        moved += 1
+        for later in flat[i + 1:]:                    # keep the words in order
+            if later["t0"] >= flat[flat.index(later) - 1]["t0"] + 0.08:
+                break
+            later["t0"] = round(flat[flat.index(later) - 1]["t0"] + 0.08, 3)
+            later["t1"] = round(max(later["t1"], later["t0"] + 0.1), 3)
+    for line in timed:
+        line["t0"], line["t1"] = line["words"][0]["t0"], line["words"][-1]["t1"]
+    return moved
+
+
 def sheet_lines(text):
     """Sung lines of a lyric sheet (pixelart.lyrics format), ready for `build`."""
     from pixelart import lyrics
@@ -230,15 +279,18 @@ def sheet_lines(text):
             for sec in lyrics.sections(text) for line in sec["lines"]]
 
 
-def auto(sheet, transcripts, duration):
+def auto(sheet, transcripts, duration, env=None, fps=None):
     """Time a whole lyric sheet against whole-song transcripts in one pass.
 
+    With the vocal loudness envelope (`env`, sampled at `fps`), word starts that
+    Whisper put in pauses are moved to where the singing resumes (snap_onsets).
     Returns (timed lines, report), where report lists each line's matched word
     count so weak spots can be checked by ear and fixed by hand.
     """
     lines = sheet_lines(sheet)
     timed, matched, total, per_line = build(transcripts, lines, 0.0, duration, detail=True, strays=True)
-    report = {"matched": matched, "total": total,
+    snapped = snap_onsets(timed, env, fps) if env is not None else 0
+    report = {"matched": matched, "total": total, "snapped": snapped,
               "lines": [{"t0": ln["t0"], "section": ln["section"], "text": ln["text"],
                          "matched": m, "words": len(ln["words"])} for ln, m in zip(timed, per_line)]}
     return timed, report
@@ -254,7 +306,12 @@ def main():
     duration = args.duration or json.loads((data / "song.json").read_text())["duration"]
     transcripts = [json.loads((data / n).read_text()) for n in ("vocals.whisper.json", "song.whisper.json")
                    if (data / n).exists()]
-    timed, report = auto((root / "lyrics.txt").read_text(), transcripts, duration)
+    env = fps = None
+    if (data / "vocal_env.npy").exists():
+        import numpy as np
+        from pixelart.project import load
+        env, fps = np.load(data / "vocal_env.npy"), load(root).fps
+    timed, report = auto((root / "lyrics.txt").read_text(), transcripts, duration, env, fps)
     (data / "lyrics_timed.json").write_text(json.dumps(timed, indent=1))
     print_report(report)
     print(f"-> {data / 'lyrics_timed.json'}")
@@ -264,6 +321,8 @@ def print_report(report, weak=0.5):
     """Print the timed lines, marking those with under `weak` of their words matched."""
     print(f"matched {report['matched']}/{report['total']} sung words "
           f"({100 * report['matched'] / max(1, report['total']):.0f}%); lines marked ! are mostly interpolated")
+    if report.get("snapped"):
+        print(f"{report['snapped']} word starts moved out of pauses onto the vocal onsets")
     for ln in report["lines"]:
         flag = "!" if ln["matched"] < weak * ln["words"] else " "
         print(f"{flag} {ln['t0']:7.2f}  {ln['matched']:2d}/{ln['words']:<2d} {ln['section'] or '':10.10s} {ln['text']}")

@@ -1,6 +1,6 @@
 """Render every frame without encoding, to catch exceptions and find slow frames.
 
-    python -m pixelart.sweep PROJECT [--workers N]
+    python -m pixelart.sweep PROJECT [--workers N] [--start S] [--end S]
 
 Exits non-zero if any frame raised; prints one traceback per distinct error.
 """
@@ -36,10 +36,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("project")
     ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 4))
+    ap.add_argument("--start", type=float, default=0.0, help="first second to render")
+    ap.add_argument("--end", type=float, help="last second to render (default: the end)")
     args = ap.parse_args()
     p = load(args.project)
-    n = p.frames
-    jobs = [(str(p.root), list(range(i, n, 64))) for i in range(64)]
+    f0 = int(round(args.start * p.fps))
+    f1 = p.frames if args.end is None else min(p.frames, int(round(args.end * p.fps)) + 1)
+    jobs = [(str(p.root), list(range(f0 + i, f1, 64))) for i in range(64)]
     a = time.time()
     with Pool(args.workers) as pool:
         res = pool.map(work, jobs)

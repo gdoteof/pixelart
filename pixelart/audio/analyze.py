@@ -114,7 +114,9 @@ def main():
             print("no lyrics.txt, skipping")
         else:
             transcripts = [json.loads(f.read_text()) for f in whisper_out.values()]
-            timed, report = align.auto(lyrics_file.read_text(), transcripts, duration)
+            env_file = data / "vocal_env.npy"
+            env = np.load(env_file) if env_file.exists() else None
+            timed, report = align.auto(lyrics_file.read_text(), transcripts, duration, env, p.fps)
             (data / "lyrics_timed.json").write_text(json.dumps(timed, indent=1))
             align.print_report(report)
 

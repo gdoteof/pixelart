@@ -1,10 +1,9 @@
 """Shared toolkit for the per-line gags: registration, timing helpers and extra props.
 
-A gag is a generator `fn(c, L)` (c: video.Ctx, L: video.LineRef). Code before
-the first `yield` runs at setup time; each `yield "<phase>"` hands control back
-until that drawing phase comes round (see video.py).
+A gag is a generator `fn(c, L)` (c: video.Ctx, L: pixelart.gags.LineRef). Code
+before the first `yield` runs at setup time; each `yield "<phase>"` hands control
+back until that drawing phase comes round (see video.py and pixelart.gags).
 """
-import inspect
 import math
 import re
 from functools import lru_cache
@@ -14,6 +13,7 @@ from PIL import Image, ImageDraw, ImageFilter
 
 import timeline as TL
 import video as V
+from pixelart.anim import arc_pt, clamp, lerp, pop_dy, ramp, rnd, wobble  # noqa: F401
 from characters import HH, HW, SKIN, SKIN_SH, draw_character, render_head
 from characters import _grow as grow_mask
 from engine import (CLAUDE_ORANGE, GOLD, H, NEON_CYAN, NEON_PINK, OPENAI_GREEN, W, dither,
@@ -31,22 +31,14 @@ from props import (BELL, BLUE, BLUE_DK, BUG, DIZZY, GRAY, GRAY_DK, HAND_UP, HEAR
 from scene import CURSOR, FEET_Y, K, PRESS, SILK, WALL_BOTTOM, bevel, burst, glow, silk
 
 FPS = TL.FPS
-rnd, clamp, lerp, ramp, scaled, pop_dy = V.rnd, V.clamp, V.lerp, V.ramp, V.scaled, V.pop_dy
+scaled = V.scaled
 text_img = V.text_img
 OTHER = V.OTHER
 TEAM_C = V.TEAM                      # who -> team colour
 SAFE_TOP, SAFE_BOTTOM = 34, 146      # UI rows clear of the HUD and the karaoke band
 
-GAGS = {}
-
-
-def gag(sec, idx, pre=0.15, post=0.0):
-    """Register a per-line gag generator for lyric line `idx` of section `sec`."""
-    def reg(fn):
-        assert inspect.isgeneratorfunction(fn), f"{fn.__name__} must be a generator"
-        GAGS[(sec, idx)] = (fn, pre, post)
-        return fn
-    return reg
+GAGS = V.GAGS
+gag = GAGS.gag           # @gag(sec, idx, pre=0.15, post=0.0) registers a gag for one lyric line
 
 
 # --- timing -----------------------------------------------------------------
@@ -71,12 +63,6 @@ def blink(c, hz=4.0):
     return int(c.t * hz * 2) % 2 == 0
 
 
-def wobble(age, amp=2.0, freq=30.0, decay=0.4):
-    if age < 0:
-        return 0
-    return int(round(math.sin(age * freq) * amp * max(0.0, 1 - age / decay)))
-
-
 def pop_scale(age, dur=0.16):
     return 0.0 if age < 0 else max(0.0, back_out(age / dur))
 
@@ -87,11 +73,6 @@ def impact(c, age, shake=8.0, flash=0.0, dur=0.3):
         c.add_shake(shake * (1 - age / dur))
     if flash and 0 <= age < 2 / FPS:
         c.add_flash(flash)
-
-
-def arc_pt(p, a, b, lift):
-    """Point along a parabolic hop from a to b that rises `lift` pixels at the middle."""
-    return lerp(a[0], b[0], p), lerp(a[1], b[1], p) - lift * 4 * p * (1 - p)
 
 
 # --- drawing helpers --------------------------------------------------------

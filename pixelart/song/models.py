@@ -61,7 +61,8 @@ def yue2(lyrics_file, style, seeds, work, log, **_):
                 yield seed, audio, {"score": str(audio.with_name("score.abc"))}
 
 
-def _acestep(dit, lyrics_file, style, seeds, work, log, bpm=None, duration=None):
+def _acestep(dit, lyrics_file, style, seeds, work, log, bpm=None, duration=None, src_audio=None, repaint=()):
+    """Generate takes, or with src_audio and repaint [(start, end), ...] regenerate those windows of it."""
     py = ACESTEP / ".venv" / "bin" / "python"
     _need(py, "ACE-Step 1.5")
     _need(ACESTEP / "checkpoints" / dit, f"ACE-Step weights {dit}")
@@ -76,6 +77,10 @@ def _acestep(dit, lyrics_file, style, seeds, work, log, bpm=None, duration=None)
         cmd += ["--bpm", str(bpm)]
     if duration:
         cmd += ["--duration", str(duration)]
+    if src_audio:
+        cmd += ["--src-audio", str(src_audio)]
+    for a, b in repaint:
+        cmd += ["--repaint", f"{a:.2f}:{b:.2f}"]
     subprocess.run(cmd, cwd=work, stdout=log, stderr=subprocess.STDOUT)   # ACE-Step writes .cache/ into its cwd
     for seed in seeds:
         audio = next((work / f"seed{seed}").glob("*.flac"), None)

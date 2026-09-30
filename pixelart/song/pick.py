@@ -61,7 +61,8 @@ def main():
         "source": meta.get("take") or src.name,
         "duration": duration,
         "picked": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        **{k: meta[k] for k in ("model", "seed", "style", "lyrics_sha256") if k in meta},
+        **{k: meta[k] for k in ("model", "seed", "style", "base", "base_style", "repainted", "lyrics_sha256")
+           if k in meta},
     }
     if sheet.exists() and "lyrics_sha256" not in record:
         record["lyrics_sha256"] = hashlib.sha256(sheet.read_bytes()).hexdigest()[:16]

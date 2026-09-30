@@ -21,11 +21,15 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
+from pixelart.anim import clamp, lerp, pop_dy, ramp, rnd  # noqa: F401  (re-exported for the gags)
+from pixelart.camera import Cam, compose
+from pixelart.gags import Gags, LineRef  # noqa: F401  (LineRef re-exported for the gags)
+
 import timeline as TL
 from characters import HH, HW, SKIN, SKIN_SH, _grow, draw_character, render_head
 from engine import (CLAUDE_ORANGE, GOLD, H, NEON_CYAN, NEON_PINK, OPENAI_GREEN, SCALE, W, dither,
                     dither_poly, dither_rect, mask, mix, outline_text, text_width)
-from props import (DIZZY, PRESS16, PRESS24, RED, WHITE, Prop, ascii_sprite, back_out, big_text,
+from props import (DIZZY, PRESS16, PRESS24, RED, WHITE, Prop, ascii_sprite, big_text,
                    bubble, caption, confetti, ease_out, label, paste)
 from scene import (CURSOR, DARIO_X, FEET_Y, K, NEON_GLYPHS, PRESS, SAM_X, SILK, SWEAT,
                    WALL_BOTTOM, bevel, burst, draw_lyrics, draw_popup, draw_speaker, draw_stage,
@@ -37,24 +41,7 @@ RAPPER = {"v1": "sam", "v3": "sam", "v2": "dario", "v4": "dario"}
 OTHER = {"sam": "dario", "dario": "sam"}
 ALL_NEON = frozenset(range(6))
 PHASES = ("back", "front", "crowd", "ui", "top")
-
-
-def rnd(*key):
-    """Deterministic pseudo-random number in [0, 1), identical in every worker process."""
-    return zlib.crc32(repr(key).encode()) / 2 ** 32
-
-
-def clamp(v, a, b):
-    return a if v < a else b if v > b else v
-
-
-def lerp(a, b, p):
-    return a + (b - a) * p
-
-
-def ramp(t, a, b):
-    """0 before a, 1 after b, linear in between."""
-    return clamp((t - a) / (b - a), 0.0, 1.0)
+GAGS = Gags(PHASES)      # the gags modules register into this (see gags.py)
 
 
 def scaled(img, n):
@@ -75,36 +62,6 @@ SHOTS = {
     "cL": (104, 94, 12), "cR": (216, 94, 12), "xL": (84, 92, 18), "xR": (236, 92, 18),
     "crowd": (160, 140, 8), "sign": (160, 44, 9), "mid": (160, 98, 9),
 }
-
-
-class Cam:
-    def __init__(self, cx, cy, k):
-        self.k = int(k)
-        vw, vh = W * SCALE / self.k, H * SCALE / self.k
-        self.x0 = min(max(cx - vw / 2, 0), W - vw)
-        self.y0 = min(max(cy - vh / 2, 0), H - vh)
-        self.cx, self.cy = self.x0 + vw / 2, self.y0 + vh / 2
-
-    def ui(self, x, y):
-        f = self.k / SCALE
-        return (x - self.x0) * f, (y - self.y0) * f
-
-    @property
-    def f(self):
-        return self.k / SCALE
-
-
-def compose(world, ui, cam, shake=(0, 0)):
-    ow, oh, k = W * SCALE, H * SCALE, cam.k
-    sx, sy = int(round(cam.x0 * k)) + shake[0], int(round(cam.y0 * k)) + shake[1]
-    wx, wy = sx // k, sy // k
-    wx1, wy1 = (sx + ow) // k + 1, (sy + oh) // k + 1
-    part = world.crop((wx, wy, wx1, wy1)).resize(((wx1 - wx) * k, (wy1 - wy) * k), Image.NEAREST)
-    frame = part.crop((sx - wx * k, sy - wy * k, sx - wx * k + ow, sy - wy * k + oh))
-    if ui is not None:
-        big = ui.resize((ow, oh), Image.NEAREST)
-        frame.paste(big, (0, 0), big)
-    return frame
 
 
 # --- per-frame context ------------------------------------------------------
@@ -174,68 +131,6 @@ class Ctx:
     def add_flash(self, amount, color=WHITE):
         if amount > self.flash:
             self.flash, self.flash_color = amount, color
-
-
-class LineRef:
-    """A lyric line as seen by its gag: word times and ages relative to now."""
-
-    def __init__(self, ln, t):
-        self.ln, self.t = ln, t
-        self.t0, self.t1 = ln["t0"], ln["t1"]
-        self.words = ln["words"]
-
-    def w(self, pat, which="t0"):
-        return TL.word_time(self.ln, pat, which)
-
-    def age(self, pat=None):
-        return self.t - (self.w(pat) if pat else self.t0)
-
-    def on(self, pat):
-        return self.t >= self.w(pat)
-
-
-class GagRunner:
-    def __init__(self, gens):
-        self.wait = []
-        for g in gens:
-            try:
-                self.wait.append([g, next(g)])
-            except StopIteration:
-                pass
-
-    def run(self, phase):
-        idx = PHASES.index(phase)
-        for item in self.wait:
-            g, ph = item
-            while ph is not None and PHASES.index(ph) <= idx:
-                try:
-                    ph = next(g)
-                except StopIteration:
-                    ph = None
-            item[1] = ph
-
-
-def _line_windows():
-    from gags import GAGS
-    out = []
-    by = {(ln["sec"], ln["idx"]): ln for ln in TL.LINES}
-    for key, (fn, pre, post) in GAGS.items():
-        ln = by[key]
-        same = [l for l in TL.LINES if l["sec"] == ln["sec"] and l["idx"] == ln["idx"] + 1]
-        end = same[0]["t0"] - 0.12 if same else TL.section_bounds(ln["sec"])[1]
-        out.append((ln["t0"] - pre, end + post, fn, ln))
-    return out
-
-
-_WINDOWS = None
-
-
-def active_gags(c):
-    global _WINDOWS
-    if _WINDOWS is None:
-        _WINDOWS = _line_windows()
-    gens = [fn(c, LineRef(ln, c.t)) for a, b, fn, ln in _WINDOWS if a <= c.t < b]
-    return gens + [g(c) for g in c.extra]
 
 
 # --- venue ------------------------------------------------------------------
@@ -535,12 +430,6 @@ def draw_hud(c):
                     yy = 30 + dy + int(11 * grow) + max(0, -(pop_dy(age) or 0))
                     outline_text(ui, (x, yy), f"{n} HITS", PRESS, GOLD if c.f % 6 < 4 else WHITE,
                                  anchor=anchor)
-
-
-def pop_dy(age, dur=0.15):
-    if age < 0:
-        return None
-    return int(round((1 - back_out(age / dur)) * -8))
 
 
 # --- karaoke ----------------------------------------------------------------
@@ -851,7 +740,8 @@ def stage_frame(c):
         hit_shake_flash(c)
     if sec == "end":
         c.extra.append(end_popup)
-    runner = GagRunner(active_gags(c))
+    import gags  # noqa: F401  (registers the per-line gags into GAGS)
+    runner = GAGS.runner(c, c.t, TL.LINES, lambda sec: TL.section_bounds(sec)[1], [g(c) for g in c.extra])
     if not c.lock_shot and sec in RAPPER:
         h = TL.last_hit(c.t, window=0.7)
         if h and h["big"] and h["attacker"] != "both":

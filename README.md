@@ -13,6 +13,11 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 ```
 pixelart/                 shared library and CLIs
   pixel.py                primitives: string sprites, pixel fonts, ordered dither, camera compose
+  camera.py               integer-zoom camera over the native world: shots, pans, world -> UI mapping
+  anim.py                 deterministic randomness, ramps and easing curves
+  sprites.py              sprite canvases with palette names, ink outlines, pasting, scaling, tints and rim light
+  fx.py                   comic effects: arcade title text, labels, speech bubbles, stamps, arrows, bursts
+  gags.py                 per-lyric-line gags: generators that draw in the render phases they ask for
   timing.py               render-time clocks: tracked beat grid, "which lyric/word is being sung"
   lyrics.py               lyric sheets: [Section - Speaker: note] headers, model tags, sung words
   project.py              the project.py contract, and the loader the CLIs use
@@ -21,7 +26,7 @@ pixelart/                 shared library and CLIs
   preview.py              python -m pixelart.preview PROJECT …       still frames + captioned contact sheet
   sweep.py                python -m pixelart.sweep PROJECT           render every frame, report exceptions
   sheet.py                python -m pixelart.sheet OUT a.png …       contact sheet of any PNGs
-  song/                   lyrics -> song with local models: generate takes, check them, pick one
+  song/                   lyrics -> song with local models: generate takes, check and repaint them, pick one
   audio/                  song analysis: analyze runs stems, beats, envelope, transcribe, align
   gpu.py                  CUDA library path for faster-whisper, VRAM size
   fonts/                  Press Start 2P, Silkscreen (SIL OFL)
@@ -74,7 +79,9 @@ Then make it your own: replace `video.py`, iterating with `preview` and `sweep` 
 
 **Songs.** `lyrics.txt` uses `[Section]`, `[Section - Speaker]` or `[Section - Speaker: note]` headers. The models only get plain section tags, so put voices and delivery in `style.txt` as well. Each take is scored by how much of the lyric sheet Whisper hears in it. Some seeds come out garbled, so generate a few (`--seeds 1 2 3`) and listen before picking. A finished song from elsewhere (Suno, say) skips generation: `pick PROJECT path/to/song.wav`.
 
-**Analysis.** `analyze` skips steps whose output exists (`--force` redoes them). Whisper is primed with the proper nouns in `lyrics.txt`, or with the project's `prompt.txt` if it has one. The lyrics are aligned in one pass over the whole song. The report marks lines that are mostly interpolated with `!`; these are usually chants or ad-libs Whisper can't hear. When that isn't good enough, write a per-song `align.py` with a time window per section and hand timings (`projects/alt-f4/align.py` is a worked example), and `analyze` leaves alignment to it. The single steps are also CLIs: `python -m pixelart.audio.{stems,beats,envelope,transcribe,align,tempo}`.
+The models give a whole song one voice, so a duet or a battle comes out in one voice and one accent. `pixelart.song.repaint` regenerates some sections of a take in a different style and keeps the rest: generate the song in the first character's voice, then repaint the other character's sections (`--speaker "King George III" --style "... posh British accent ..."`). ACE-Step repaints each window with the rest of the take as context, so the beat carries across. `--window A:B` repaints a span in seconds instead, e.g. to redo lines a take dropped. Whisper can't hear accents, so judge repaints by ear.
+
+**Analysis.** `analyze` skips steps whose output exists (`--force` redoes them). Whisper is primed with the proper nouns in `lyrics.txt`, or with the project's `prompt.txt` if it has one. The lyrics are aligned in one pass over the whole song. Whisper tends to start the first word after a pause while the singer is still silent, so word starts that land in a pause move to where the vocal stem gets loud again. The report marks lines that are mostly interpolated with `!`; these are usually chants or ad-libs Whisper can't hear. When that isn't good enough, write a per-song `align.py` with a time window per section and hand timings (`projects/alt-f4/align.py` is a worked example), and `analyze` leaves alignment to it. The single steps are also CLIs: `python -m pixelart.audio.{stems,beats,envelope,transcribe,align,tempo}`.
 
 Demucs applies a random time shift, so regenerated stems (and the loudness envelope built from them) differ a little from run to run. Commit `data/` and treat it as the source of truth once a video depends on it.
 
@@ -92,11 +99,11 @@ uv run python -m pixelart.render  projects/alt-f4                      # ~45 s f
 
 ## What to reuse from earlier videos
 
-`pixelart/` only holds code that is independent of any one video's look. A lot of alt-f4 is reusable in spirit but tied to its characters and style, so it stays in that project. Copy it and adapt it:
+`pixelart/` only holds code that is independent of any one video's look. The camera (`camera.py`), the gag runner (`gags.py`), the animation helpers (`anim.py`), sprite canvases (`sprites.py`) and the comic text effects (`fx.py`) are shared already. A lot of alt-f4 is reusable in spirit but tied to its characters and style, so it stays in that project. Copy it and adapt it:
 
 - `characters.py`: procedural chibi heads and bodies with pixel-art rules (4-connected outlines, crescent shading, rim light, mirrored facing)
 - `props.py`: UI widgets such as speech and thought bubbles, stamps, Win95 windows, gradient "big text", keycaps and confetti
-- `gagkit.py` and `video.py`: per-lyric-line gags written as generators that `yield` the drawing phase they want next (back / front / crowd / ui / top), plus a camera with integer zoom
+- `gagkit.py` and `video.py`: how a video wires up per-line gags (`pixelart.gags`), shots for the camera, hit reactions and karaoke
 - `thumbnail.py`: YouTube thumbnails in the video's style, with a sheet previewing them at YouTube's display sizes
 
 If the same code gets copied into a second project, move it into `pixelart/` instead.

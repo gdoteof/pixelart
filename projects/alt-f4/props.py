@@ -5,6 +5,7 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image, ImageDraw
 
+from pixelart.anim import back_out, ease_out  # noqa: F401  (re-exported for the gags)
 from characters import SKIN, SKIN_SH, Sprite, _features, _grow, _mask, _shift
 from engine import (CLAUDE_ORANGE, GOLD, OPENAI_GREEN, PAL, dither, font, mix, outline_text,
                     sprite, text_width)
@@ -52,16 +53,6 @@ def paste(dst, src, x, y, anchor="lt"):
         y -= h
     dst.paste(src, (int(x), int(y)), src)
     return int(x), int(y)
-
-
-def ease_out(p):
-    p = min(max(p, 0.0), 1.0)
-    return 1 - (1 - p) ** 3
-
-
-def back_out(p, s=1.8):
-    p = min(max(p, 0.0), 1.0) - 1
-    return 1 + (s + 1) * p ** 3 + s * p ** 2
 
 
 def pop(age, dur=0.18):
