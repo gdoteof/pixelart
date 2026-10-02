@@ -22,6 +22,11 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   where Section starts with Intro/Verse/Pre-Chorus/Chorus/Hook/Bridge/Outro/...; other bracketed lines like
   `[crowd roars]` are stage directions, not sung. Speakers and sections feed the video (speaker tags,
   section cards); `pixelart/lyrics.py` has the rules.
+- Write for laughs and rhymes, not a history lesson. Every bar should land a joke or a strong rhyme,
+  and a fact belongs only when it sets up a punchline. Alt-F4 is the reference. Two Georges and
+  Narrators leaned too hard on deep, accurate commentary.
+- Keep the song to 4 minutes or less: about 650 sung words for rap (Alt-F4 is 561 words, 3:20).
+  `generate` refuses a longer lyric sheet, so cut verses rather than passing `--long`.
 - `style.txt`: one line of genre, instruments, vocal character, delivery and tempo ("... 91 BPM").
   The models only see plain section tags, so per-verse voice notes are lost. Put the voices in the style
   too, and expect one vocalist unless the user accepts that.
@@ -77,6 +82,15 @@ star that hops on beats and glows with the vocals. Show it to the user early.
 
 Design the look with the user. Then replace `video.py`, reusing what fits from `projects/alt-f4`:
 characters, props, per-line gag generators, the camera and thumbnails.
+
+Keep the camera calm, so it's always clear what the viewer is looking at. Alt-F4 reads best of the
+three videos: it cuts often, but between a few fixed framings, and it stays in a wide shot with both
+rappers and the gag in view for over 90% of the song. Two Georges and Narrators were zoomed in for
+about half their running time and glided back and forth between the rapper and the gag. Narrators also
+drifted constantly (handheld sway, gate weave). Both came out jumpy and hard to follow. So:
+- The wide shot is home. Zoom in only on the rapper who's rapping, and only briefly.
+- Play gags inside the wide frame, or in an inset. Don't fly the camera over to them.
+- Cut rather than glide. Shake only on hits, never as constant drift.
 
 The loop:
 - `uv run python -m pixelart.preview projects/NAME tag 12 30:40:2`, then read the contact sheet image

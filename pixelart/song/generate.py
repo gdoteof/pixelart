@@ -9,7 +9,8 @@ style.txt is one line of genre, instruments, vocal character and tempo; a
 "NN BPM" in it is passed to ACE-Step as the tempo. ACE-Step also needs a
 length (left to itself it can pick 18 s for a full verse and chorus), so
 without --duration it gets an estimate from the word count; YuE2 sizes the
-song itself.
+song itself. Songs are capped at four minutes: a lyric sheet whose estimate
+runs longer is refused before any GPU time is spent (--long overrides).
 
 Each take lands in PROJECT/build/takes/:
     <model>-s<seed>.flac        the model's audio, untouched
@@ -42,6 +43,9 @@ def listen_copy(src, dst):
                     "-movflags", "+faststart", "-metadata", f"title={dst.stem}", str(dst)], check=True)
 
 
+MAX_SECONDS = 240
+
+
 def estimate_duration(n_words, style):
     """Seconds for a song with this many sung words: rap is denser than singing, plus intro and outro."""
     per_second = 2.8 if re.search(r"\brap|hip.?hop|trap\b", style, re.I) else 2.0
@@ -55,6 +59,7 @@ def main():
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 2])
     ap.add_argument("--duration", type=float, help="ACE-Step only: target seconds (default: from word count)")
     ap.add_argument("--force", action="store_true", help="regenerate takes that already exist")
+    ap.add_argument("--long", action="store_true", help=f"allow a song longer than {MAX_SECONDS // 60} minutes")
     ap.add_argument("--no-check", action="store_true", help="skip the Whisper lyric check afterwards")
     args = ap.parse_args()
 
@@ -74,7 +79,12 @@ def main():
     model_lyrics.write_text(lyrics.model_lyrics(sheet))
     sheet_sha = hashlib.sha256(sheet.encode()).hexdigest()[:16]
     n_words = len(lyrics.sung_words(sheet))
-    duration = args.duration or estimate_duration(n_words, style)
+    estimate = estimate_duration(n_words, style)
+    if estimate > MAX_SECONDS and not args.long:
+        cut = n_words - int(n_words * (MAX_SECONDS - 8) / (estimate - 8))
+        raise SystemExit(f"{n_words} sung words come to about {estimate // 60}:{estimate % 60:02d}, over the "
+                         f"{MAX_SECONDS // 60}-minute limit: cut about {cut} words (or pass --long)")
+    duration = args.duration or estimate
     print(f"style: {style}\nlyrics: {n_words} sung words -> {model_lyrics}\n"
           f"ACE-Step length: {duration:.0f}s{'' if args.duration else ' (estimated; override with --duration)'}",
           flush=True)
