@@ -90,5 +90,8 @@ If you copy code from alt-f4 into a second project, move it into `pixelart/` ins
 
 - Update the project README with which take was picked and why, and the timing quirks. Add the content
   limits too if the user agreed to publish them.
-- Make thumbnails if the video is going on YouTube.
+- Make thumbnails and the upload kit (`thumbs/youtube_upload.txt`) if the video is going on YouTube.
+  `python -m pixelart.youtube PROJECT --dry-run` checks the kit, and without `--dry-run` it uploads
+  privately after a yes at its prompt: pass `--yes` only when the user has asked for this upload. The
+  user makes it public in YouTube Studio, so don't change its privacy.
 - Ask before committing or pushing: the repo is public.

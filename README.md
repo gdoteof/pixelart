@@ -1,6 +1,6 @@
 # pixelart
 
-Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by frame, and encoded with ffmpeg. Each video lives in its own directory under `projects/`. The tooling they share lives in the `pixelart/` package.
+Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by frame, and encoded with ffmpeg. Each video lives in its own directory under `projects/`. The tooling they share lives in the `pixelart/` package. Finished videos go to the [Pixel Art Rap Battles](https://www.youtube.com/@pixelartrapbattles) channel through the [YouTube uploader](#uploading) ([privacy policy](PRIVACY.md), [terms](TERMS.md)).
 
 | Project | What it is |
 | --- | --- |
@@ -28,6 +28,7 @@ pixelart/                 shared library and CLIs
   preview.py              python -m pixelart.preview PROJECT …       still frames + captioned contact sheet
   sweep.py                python -m pixelart.sweep PROJECT           render every frame, report exceptions
   sheet.py                python -m pixelart.sheet OUT a.png …       contact sheet of any PNGs
+  youtube.py              python -m pixelart.youtube PROJECT         upload to YouTube from thumbs/youtube_upload.txt
   song/                   lyrics -> song with local models: generate takes, check and repaint them, pick one
   audio/                  song analysis: analyze runs stems, beats, envelope, transcribe, align
   gpu.py                  CUDA library path for faster-whisper, VRAM size
@@ -53,6 +54,7 @@ You need [uv](https://docs.astral.sh/uv/) and `ffmpeg` on `PATH`. To point at a 
 ```sh
 uv sync                  # rendering: numpy + Pillow
 uv sync --extra audio    # song analysis too: torch (CPU), Demucs, beat_this, faster-whisper + CUDA libs
+uv sync --extra audio --extra youtube   # uploading too: the YouTube Data API client
 ```
 
 Generating songs needs an NVIDIA GPU (tested on 16 GB) and the models, each in its own checkout and venv under `PIXELART_MODELS`, which defaults to `../local-music` next to this repo:
@@ -100,6 +102,24 @@ uv run python -m pixelart.render  projects/alt-f4                      # ~45 s f
 ```
 
 `render` keeps finished segments in `build/segments` so an interrupted render can resume. After changing code, pass `--fresh`.
+
+## Uploading
+
+<a href="https://www.youtube.com/@pixelartrapbattles"><img src="https://www.gstatic.com/youtube/img/branding/youtubelogo/svg/youtubelogo.svg" alt="YouTube" height="24"></a>
+
+The uploader uses YouTube API Services. By using it you agree to the [YouTube Terms of Service](https://www.youtube.com/t/terms). Its [privacy policy](PRIVACY.md) and [terms](TERMS.md) say what it accesses and stores, and the [Google Privacy Policy](http://www.google.com/policies/privacy) covers Google's side.
+
+```sh
+uv run python -m pixelart.youtube projects/two-georges --dry-run              # check the kit against YouTube's limits
+uv run python -m pixelart.youtube projects/two-georges                        # upload private once you say yes, set the thumbnail
+uv run python -m pixelart.youtube projects/two-georges --set-privacy public
+uv run python -m pixelart.youtube projects/two-georges --set-thumbnail        # retry the thumbnail
+uv run python -m pixelart.youtube --sign-out                                  # revoke access, delete the saved token
+```
+
+The title, description, tags and main thumbnail come from the project's upload kit, `thumbs/youtube_upload.txt`. An `ALTERED CONTENT` section in the kit sets YouTube's altered-content flag. Before anything is sent, the uploader names the channel and asks for a yes (`--yes` answers in advance). The video id is kept in `build/youtube.json`, so running the command again won't upload a duplicate.
+
+Uploading needs a Google Cloud project with the YouTube Data API v3 enabled and an OAuth client of type Desktop. Save the client's JSON as `~/.config/pixelart/youtube_client_secret.json`. The first run opens a browser for consent and saves the token next to it (`PIXELART_CONFIG` moves both). If the consent screen is in Testing, the token expires after 7 days and the browser step comes back. YouTube restricts uploads from a Cloud project that hasn't passed its [API audit](https://support.google.com/youtube/contact/yt_api_form) to private, so upload privately and change the visibility by hand in YouTube Studio. Custom thumbnails need a phone-verified channel ([youtube.com/verify](https://www.youtube.com/verify)); until then the upload goes through without one.
 
 ## What to reuse from earlier videos
 
