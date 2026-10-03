@@ -30,7 +30,7 @@ pixelart/                 shared library and CLIs
   sweep.py                python -m pixelart.sweep PROJECT           render every frame, report exceptions
   sheet.py                python -m pixelart.sheet OUT a.png …       contact sheet of any PNGs
   youtube.py              python -m pixelart.youtube PROJECT         upload to YouTube from thumbs/youtube_upload.txt
-  song/                   lyrics -> song with local models: generate takes, check and repaint them, pick one
+  song/                   lyrics -> song with local models: score lyric bars, generate takes, check and repaint them, pick one
   audio/                  song analysis: analyze runs stems, beats, envelope, transcribe, align
   gpu.py                  CUDA library path for faster-whisper, VRAM size
   fonts/                  Press Start 2P, Silkscreen (SIL OFL)
@@ -76,6 +76,7 @@ The downloads total about 50 GB. Don't run a large model download and `uv sync` 
 ```sh
 uv run python -m pixelart.new my-video                      # projects/my-video from _template
 # write projects/my-video/lyrics.txt (lyric sheet) and style.txt (genre, voices, tempo)
+uv run python -m pixelart.song.bars projects/my-video/lyrics.txt --bars   # how every bar rhymes and scans, with flags
 uv run python -m pixelart.song.generate projects/my-video   # takes from YuE2 + ACE-Step XL, then a lyric check
 # listen to build/takes/listen/*.m4a, read build/takes/report.md, pick one:
 uv run python -m pixelart.song.pick projects/my-video acestep-xl-s2 --title "My Video"
@@ -85,7 +86,7 @@ uv run python -m pixelart.render projects/my-video          # baseline lyric vid
 
 Then make it your own: replace `video.py`, iterating with `preview` and `sweep` (see below).
 
-**Songs.** `lyrics.txt` uses `[Section]`, `[Section - Speaker]` or `[Section - Speaker: note]` headers. The models only get plain section tags, so put voices and delivery in `style.txt` as well. Each take is scored by how much of the lyric sheet Whisper hears in it. Some seeds come out garbled, so generate a few (`--seeds 1 2 3`) and listen before picking. Songs are capped at four minutes: `generate` estimates the length from the sung word count (about 650 words of rap fit) and refuses a longer lyric sheet unless you pass `--long`. A finished song from elsewhere (Suno, say) skips generation: `pick PROJECT path/to/song.wav`.
+**Songs.** `lyrics.txt` uses `[Section]`, `[Section - Speaker]` or `[Section - Speaker: note]` headers. The models only get plain section tags, so put voices and delivery in `style.txt` as well. Before generating, measure the sheet with `pixelart.song.bars`: syllables per bar, how many bars end on rhymes of two syllables or more, and flags for long bars, tags after the punch, numbers and names. The [lyric-craft guide](.claude/skills/music-video/lyric-craft.md) sets the targets, from 25 reference songs, and has the joke techniques and a scoring rubric. The `lyric-critic` agent ([`.claude/agents/lyric-critic.md`](.claude/agents/lyric-critic.md)) applies the rubric joke by joke. Each take is scored by how much of the lyric sheet Whisper hears in it. Some seeds come out garbled, so generate a few (`--seeds 1 2 3`) and listen before picking. Songs are capped at four minutes: `generate` estimates the length from the sung word count (about 650 words of rap fit) and refuses a longer lyric sheet unless you pass `--long`. A finished song from elsewhere (Suno, say) skips generation: `pick PROJECT path/to/song.wav`.
 
 The models give a whole song one voice, so a duet or a battle comes out in one voice and one accent. `pixelart.song.repaint` regenerates some sections of a take in a different style and keeps the rest: generate the song in the first character's voice, then repaint the other character's sections (`--speaker "King George III" --style "... posh British accent ..."`). ACE-Step repaints each window with the rest of the take as context, so the beat carries across. `--window A:B` repaints a span in seconds instead, e.g. to redo lines a take dropped. Whisper can't hear accents, so judge repaints by ear.
 

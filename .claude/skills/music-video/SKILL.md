@@ -22,14 +22,20 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   where Section starts with Intro/Verse/Pre-Chorus/Chorus/Hook/Bridge/Outro/...; other bracketed lines like
   `[crowd roars]` are stage directions, not sung. Speakers and sections feed the video (speaker tags,
   section cards); `pixelart/lyrics.py` has the rules.
-- Write for laughs and rhymes, not a history lesson. Every bar should land a joke or a strong rhyme,
-  and a fact belongs only when it sets up a punchline. Alt-F4 is the reference. Two Georges and
-  Narrators leaned too hard on deep, accurate commentary.
+- Write for laughs and rhymes, not a history lesson. Read [lyric-craft.md](lyric-craft.md) before
+  drafting. It distils 25 reference songs (ERB, Hamilton, diss tracks, wordplay showcases, comedy rap)
+  into rules for a bar, joke techniques, a scoring rubric and a workflow. Don't model a sheet on our
+  earlier videos: all four fall short of the references, and the guide's failure table quotes them.
+- Follow the guide's workflow: one charge per rapper, three times the jokes you need, then score and
+  pick. Measure the draft with `uv run python -m pixelart.song.bars projects/NAME/lyrics.txt --bars`
+  and fix its flags. Then have the `lyric-critic` agent score it cold, revise, and show the user the
+  sheet with the critic's scores.
 - Keep the song to 4 minutes or less: about 650 sung words for rap (Alt-F4 is 561 words, 3:20).
   `generate` refuses a longer lyric sheet, so cut verses rather than passing `--long`.
 - `style.txt`: one line of genre, instruments, vocal character, delivery and tempo ("... 91 BPM").
   The models only see plain section tags, so per-verse voice notes are lost. Put the voices in the style
-  too, and expect one vocalist unless the user accepts that.
+  too, and expect one vocalist unless the user accepts that. Ask for a sincere, confident delivery, not
+  a comedic one: the music plays the straight man.
 - When the song features real people, agree on content limits with the user first. Check memory for
   limits set on earlier projects. The repo is public, so ask whether the limits go in the project
   README or stay private in memory (alt-f4 keeps them private).
