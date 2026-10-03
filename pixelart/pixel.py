@@ -135,3 +135,37 @@ def compose(world, ui, cx=None, cy=None, k=None, shake=(0, 0), out=OUT_SIZE):
         big = ui.resize((ow, oh), Image.NEAREST)
         frame.paste(big, (0, 0), big)
     return frame
+
+
+def vgrad(img, box, top, bottom, steps=None, phase=0, soft=0.3):
+    """A vertical gradient from `top` to `bottom` inside box, the pixel-art way: flat bands, with a
+    dithered seam over the last `soft` fraction of each band (or a smooth ramp when `steps` is None)."""
+    x0, y0, x1, y1 = box
+    h = max(1, y1 - y0)
+    top, bottom = np.array(top, np.float32), np.array(bottom, np.float32)
+    a = np.asarray(img).copy()
+    ys = np.arange(h)[:, None]
+    p = ys / max(1, h - 1)
+    if steps:
+        q = p * steps
+        lo = np.floor(q)
+        frac = q - lo
+        thr = bayer(h, x1 - x0, phase)
+        p = (lo + (frac > (1 - soft) + soft * thr)) / steps
+    p = np.broadcast_to(p, (h, x1 - x0))[..., None]
+    a[y0:y1, x0:x1, :3] = (top * (1 - p) + bottom * p).round().astype(np.uint8)
+    img.paste(Image.fromarray(a))
+
+
+def blend(img, m, color, alpha=0.3):
+    """Mix `color` into an image by mask `m` (an (h, w) array in [0, 1], or a scalar) times alpha.
+    A flat tint rather than a dither: for light, glass and haze that the camera zooms in on."""
+    a = np.asarray(img, dtype=np.float32).copy()
+    w = np.clip(np.asarray(m, np.float32) * alpha, 0, 1)
+    w = w[..., None] if w.ndim == 2 else w
+    a[..., :3] = a[..., :3] * (1 - w) + np.array(color, np.float32)[:3] * w
+    img.paste(Image.fromarray(a.round().astype(np.uint8)))
+
+
+def blend_poly(img, pts, color, alpha=0.3):
+    blend(img, mask(lambda d: d.polygon(pts, fill=255), img.size), color, alpha)

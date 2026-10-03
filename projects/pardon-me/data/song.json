@@ -1,0 +1,30 @@
+{
+  "title": "Pardon Me",
+  "source": "acestep-xl-s4+bibi-s3+v4-s15",
+  "duration": 232.0,
+  "picked": "2026-10-02T21:28:08+00:00",
+  "model": "acestep-xl",
+  "seed": 15,
+  "style": "English, funky old-school hip hop, slap bass, wah-wah guitar, clavinet, punchy brass stabs, crisp boom bap drums, record scratches, deep gravelly older male rapper, thick Israeli accent, Hebrew-accented English, low stern baritone, slow measured formal statesman delivery, sardonic, clear diction, 96 BPM",
+  "base": "acestep-xl-s4+bibi-s3",
+  "base_style": "English, funky old-school hip hop, slap bass, wah-wah guitar, clavinet, punchy brass stabs, crisp boom bap drums, record scratches, deep gravelly older male rapper, thick Israeli accent, Hebrew-accented English, low stern baritone, slow measured formal statesman delivery, sardonic, clear diction, 96 BPM",
+  "repainted": [
+    {
+      "section": "Verse 2",
+      "speaker": "Benjamin Netanyahu",
+      "start": 65.56,
+      "end": 115.96
+    },
+    {
+      "section": "Verse 4",
+      "speaker": "Benjamin Netanyahu",
+      "start": 178.1,
+      "end": 217.7
+    },
+    {
+      "start": 178.1,
+      "end": 217.7
+    }
+  ],
+  "lyrics_sha256": "ab8749c3cb426486"
+}
