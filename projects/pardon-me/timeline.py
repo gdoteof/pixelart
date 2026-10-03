@@ -9,7 +9,7 @@ import json
 import numpy as np
 
 from engine import ROOT
-from pixelart import timing
+from pixelart import songtime, timing
 
 FPS = 24
 DATA = ROOT / "data"
@@ -17,28 +17,8 @@ DURATION = json.loads((DATA / "song.json").read_text())["duration"]
 BPM_GUESS = 94
 
 
-def _grid():
-    """A fixed-period grid fitted to the tracked beats: (beats, bars, period)."""
-    raw = json.loads((DATA / "beat_this.json").read_text())
-    beats, downs = np.asarray(raw["beats"]), np.asarray(raw["downbeats"])
-    guess = 60.0 / BPM_GUESS
-
-    def spread(per):
-        ang = 2 * np.pi * beats / per
-        return np.hypot(np.cos(ang).mean(), np.sin(ang).mean()), np.arctan2(np.sin(ang).mean(), np.cos(ang).mean())
-
-    pers = np.arange(guess * 0.97, guess * 1.03, 0.00002)
-    per = pers[int(np.argmax([spread(p)[0] for p in pers]))]
-    t0 = (spread(per)[1] / (2 * np.pi)) * per % per
-    grid = t0 + per * np.arange(0, int((DURATION - t0) / per) + 3)
-    votes = np.zeros(4)
-    for d in downs:
-        votes[int(round((d - t0) / per)) % 4] += 1
-    ph = int(np.argmax(votes))
-    return grid, grid[ph::4], per
-
-
-BEATS, BARS, PERIOD = _grid()
+_beats = json.loads((DATA / "beat_this.json").read_text())
+BEATS, BARS, PERIOD = songtime.fit_grid(_beats["beats"], _beats["downbeats"], DURATION, BPM_GUESS)
 CLOCK = timing.BeatClock(BEATS, BARS)
 beat_info, since_beat, bar_info = CLOCK.beat_info, CLOCK.since_beat, CLOCK.bar_info
 
@@ -61,18 +41,7 @@ SEC = {"Intro": "intro", "Verse 1": "v1", "Verse 2": "v2", "Hook": "hook", "Vers
 WHO = {"Donald Trump": "trump", "Benjamin Netanyahu": "bibi", "UN Announcer": "announcer", "Delegates": "delegates"}
 
 
-def _load_lines():
-    raw = json.loads((DATA / "lyrics_timed.json").read_text())
-    counters, lines = {}, []
-    for gi, ln in enumerate(raw):
-        sec = SEC[ln["section"]]
-        idx = counters.get(sec, 0)
-        counters[sec] = idx + 1
-        lines.append({**ln, "sec": sec, "idx": idx, "gi": gi, "who": WHO[ln["speaker"]]})
-    return lines
-
-
-LINES = _load_lines()
+LINES = songtime.load_lines(json.loads((DATA / "lyrics_timed.json").read_text()), SEC, WHO)
 
 
 def lines_of(sec):
@@ -91,9 +60,7 @@ word_index = timing.word_index
 word_time = timing.word_time
 
 
-def last_word(ln):
-    """When the last word of a line is sung (its t1 can stretch over the gap that follows)."""
-    return ln["words"][-1]["t0"]
+last_word = songtime.last_word
 
 
 # --- sections ---------------------------------------------------------------------------------
@@ -108,21 +75,7 @@ FLOOR = {"intro": "trump", "v1": "trump", "v2": "bibi", "hook": "bibi", "v3": "t
 VERSES = ("v1", "v2", "v3", "v4")
 
 
-def _sections():
-    """A section starts a beat before its first word; the end card starts after the last word."""
-    firsts = {s: lines_of(s)[0]["t0"] for s in ORDER[:-1] if lines_of(s)}
-    starts = {"intro": 0.0}
-    for s in ORDER[1:-1]:
-        before = [ln for ln in LINES if ORDER.index(ln["sec"]) < ORDER.index(s)]
-        starts[s] = max(firsts[s] - 0.9, last_word(before[-1]) + 0.3)
-    starts["end"] = last_word(LINES[-1]) + 1.6
-    out = []
-    for a, b in zip(ORDER, ORDER[1:] + ("",)):
-        out.append((a, starts[a], starts[b] if b else DURATION + 1))
-    return out
-
-
-SECTIONS = _sections()
+SECTIONS = songtime.section_spans(LINES, ORDER, DURATION)
 
 
 def section_at(t):

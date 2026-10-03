@@ -1,0 +1,32 @@
+{
+  "title": "Trump vs Netanyahu Round 2",
+  "source": "acestep-xl-s4+bibi-s2+obama-s1",
+  "duration": 205.0,
+  "picked": "2026-10-03T04:32:48+00:00",
+  "model": "acestep-xl",
+  "seed": 1,
+  "style": "English, funky old-school hip hop, slap bass, clavinet, triumphant brass fanfares, crisp boom bap drums, record scratches, smooth mellow male rapper, warm resonant baritone, calm measured professorial delivery, deliberate pauses, cool dry wit, clear diction, 92 BPM",
+  "base": "acestep-xl-s4+bibi-s2",
+  "base_style": "English, funky old-school hip hop, slap bass, clavinet, triumphant brass fanfares, crisp boom bap drums, record scratches, deep gravelly older male rapper, thick Israeli accent, Hebrew-accented English, low stern baritone, slow measured formal statesman delivery, sardonic, clear diction, 92 BPM",
+  "repainted": [
+    {
+      "section": "Verse 2",
+      "speaker": "Benjamin Netanyahu",
+      "start": 65.68,
+      "end": 94.06
+    },
+    {
+      "section": "Verse 4",
+      "speaker": "Benjamin Netanyahu",
+      "start": 150.44,
+      "end": 170.88
+    },
+    {
+      "section": "Bridge",
+      "speaker": "Barack Obama",
+      "start": 133.8,
+      "end": 148.76
+    }
+  ],
+  "lyrics_sha256": "fa67215ed63816cd"
+}
