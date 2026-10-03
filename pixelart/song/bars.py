@@ -23,9 +23,11 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
     nums    number words per 100 words: dates and figures usually mean a history lesson
     names   distinct capitalised names per 100 bars: each one is a fact the listener must know
     allit   share of bars with alliteration: two or more content words starting on the same
-            consonant sound, at most one word apart ("marry models", "beg for bunker busters").
-            Shuffled words score as much (11-27%, more for longer bars): no song we measured
-            alliterates beyond chance, so a sheet that aims for it should score well above
+            consonant sound, with at most one other content word between them; unstressed words
+            between them don't count ("marry models", "beg for bunker busters", "he'll toast you,
+            he'll text you"). Shuffled words score nearly as much (10-40%, more for longer bars):
+            the reference groups alliterate a median 0-6 points above chance, so a sheet that aims
+            for it should score well above
     held    share of clauses (two beats or more) with the same shape as the clause before them:
             how often a flow is held instead of dropped (see below). Shuffled clauses score 7-15%;
             the reference groups hold a median 4-8 points above chance, our first five sheets 0-4.
@@ -146,7 +148,7 @@ we'd they'd i've you've we've they've let's that's what's there's who's
 ONSETS = [("ph", "F"), ("ch", "CH"), ("sh", "SH"), ("th", "TH"), ("wh", "W"), ("kn", "N"), ("wr", "R"),
           ("qu", "K"), ("ce", "S"), ("ci", "S"), ("cy", "S"), ("c", "K"), ("q", "K"), ("x", "Z"), ("j", "JH")]
 SOUND_NAMES = {"JH": "j", "DH": "th", "HH": "h"}
-ALLIT_GAP = 1               # words allowed between two alliterating words
+ALLIT_GAP = 1               # content words allowed between two alliterating words
 
 INITIALISM = re.compile(r"[A-Z]{2,3}s?")
 SAID_AS_WORDS = {"PAC", "GIF", "RAM", "ROM", "LOL", "SIM"}
@@ -302,14 +304,16 @@ def beats(word):
 
 def alliteration(ws):
     """[(sound, words), ...]: groups of two or more distinct content words starting on one consonant
-    sound, with at most ALLIT_GAP words between neighbours. Biggest first, one group per sound."""
-    content = [(i, w, onset(w)) for i, w in enumerate(ws) if w not in FUNCTION and len(w) > 1]
+    sound, with at most ALLIT_GAP other content words between neighbours. Unstressed words between
+    them don't count, as the ear hears it ("he'll toast you, he'll text you"). Biggest first, one
+    group per sound."""
+    content = [(w, onset(w)) for w in ws if w not in FUNCTION and len(w) > 1]
     groups = {}
-    for k, (i, w, s) in enumerate(content):
+    for k, (w, s) in enumerate(content):
         if not s or s in groups:
             continue
-        found, last, stems = [w], i, {w.rstrip("s")}
-        for j, w2, s2 in content[k + 1:]:
+        found, last, stems = [w], k, {w.rstrip("s")}
+        for j, (w2, s2) in enumerate(content[k + 1:], k + 1):
             if j - last > ALLIT_GAP + 1:
                 break
             if s2 == s and w2.rstrip("s") not in stems:

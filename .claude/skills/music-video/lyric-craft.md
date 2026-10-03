@@ -50,14 +50,16 @@ Group medians:
 | number words per 100 words | 0.1-1.1 | 2.3 | 1 or fewer |
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
 | flagged bars | 34-44% | 69% | 45% or fewer |
-| bars with alliteration (`allit`) | 13-22% | 28% | 50% or more |
+| bars with alliteration (`allit`) | 18-33% (chance 16-27%)† | 43% (chance 38%) | 50% or more |
 | clauses that hold the shape of the clause before (`held`) | 11-18% (chance 7-11%)† | 14% (chance 12%) | 30% or more |
 | inner rhymes shared by neighbouring bars, against bars 8+ apart (`local`) | 1.4-2.0 | 1.0 | 1.4 or more |
 
 \* The ERB, Hamilton, diss and wordplay medians. Comedy rap runs shorter (7.6 syllables a bar) and
 rhymes less.
-† Chance is a song's score with its clauses shuffled, which also allows for how much it punctuates
-(`held` splits clauses at punctuation). The references hold a median 4-8 points above chance, ours 0-4.
+† Chance is a song's score with its words (`allit`) or clauses (`held`) shuffled at random. Longer bars
+alliterate more by chance, and `held` splits clauses at punctuation, so its chance also allows for how much
+a song punctuates. The reference groups alliterate a median 0-6 points above chance and hold the flow 4-8
+points above it; our first five sheets a median 4 (alliteration) and 0-4 (flow).
 
 - **Rhyme density isn't where we fall short.** Ours (0.88) sits inside the reference range (0.87-0.99).
   How far the rhymes run is the gap. Ours rarely rhyme on three syllables, and never hold a rhyme for
@@ -70,9 +72,10 @@ rhymes less.
   170-290, and Two Georges saved its longest verse for last.
 - **Our sounds don't carry.** The biggest gap with the references isn't how much we rhyme but where:
   their bars share sounds with their neighbours, ours with any bar at all (see Cohesion).
-- **Alliteration is our house style, not a reference habit.** No song we measured, ours or the
-  references, alliterates more than its words shuffled at random would (11-27% of bars). We aim for it
-  anyway because it is what landed: the best-received bars of Round 2 were its most alliterative.
+- **Alliteration is our house style, not a reference habit.** The reference groups alliterate barely more
+  than their words shuffled at random would (a median 0-6 points above chance, which is 16-27% of bars at
+  their bar lengths), and so do ours. A few songs clear chance, but no group by much. We aim for it anyway
+  because it is what landed: the best-received bars of Round 2 were its most alliterative.
 
 ## The bar
 
