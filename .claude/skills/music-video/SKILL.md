@@ -36,9 +36,9 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   The models only see plain section tags, so per-verse voice notes are lost. Put the voices in the style
   too, and expect one vocalist unless the user accepts that. Ask for a sincere, confident delivery, not
   a comedic one: the music plays the straight man.
-- When the song features real people, agree on content limits with the user first. Check memory for
-  limits set on earlier projects. The repo is public, so ask whether the limits go in the project
-  README or stay private in memory (alt-f4 keeps them private).
+- When the song features real people, follow the user's standing rule on content limits in memory.
+  Don't ask about limits again for each project, and don't carry rules over from an earlier one.
+  The repo is public, so limits stay in memory, not in the project README.
 
 **Checkpoint:** the user approves the lyrics and style.
 
@@ -112,8 +112,8 @@ If you copy code from alt-f4 into a second project, move it into `pixelart/` ins
 
 ## 6. Wrap up
 
-- Update the project README with which take was picked and why, and the timing quirks. Add the content
-  limits too if the user agreed to publish them.
+- Update the project README with which take was picked and why, and the timing quirks. Content limits
+  stay in memory, out of the README.
 - Make thumbnails and the upload kit (`thumbs/youtube_upload.txt`) if the video is going on YouTube.
   `python -m pixelart.youtube PROJECT --dry-run` checks the kit, and without `--dry-run` it uploads
   privately after a yes at its prompt: pass `--yes` only when the user has asked for this upload. The
