@@ -1,13 +1,23 @@
 """Project settings read by the pixelart tools (see pixelart/project.py for the contract)."""
-import json
 from pathlib import Path
 
-from video import FPS, label, render_frame  # noqa: F401
-
 ROOT = Path(__file__).parent
+FPS = 24
 SONG = ROOT / "audio" / "song.wav"
 AUDIO = SONG if SONG.exists() else None
-# data/song.json is written by `python -m pixelart.song.pick`; lower END to cut a click at the tail.
-_song = ROOT / "data" / "song.json"
-END = json.loads(_song.read_text())["duration"] if _song.exists() else 8.0
-OUTPUT = ROOT / "video.mp4"
+# The take's last line ("Who?") ends at 118.3 s, then the chant runs on to 137 s: end under the end card.
+END = 124.0
+FADE = 3.5
+OUTPUT = ROOT / "blue-on-blue.mp4"
+
+
+# The renderer needs the song analysis in data/ (or falls back to draft timing), so it loads on first
+# use: `analyze` can load this project before that analysis exists.
+def render_frame(t):
+    import video
+    return video.render_frame(t)
+
+
+def label(t):
+    import video
+    return video.label(t)

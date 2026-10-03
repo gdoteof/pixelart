@@ -1,0 +1,103 @@
+YOUTUBE UPLOAD KIT - BLUE ON BLUE
+
+TITLE (recommended)
+Mamdani vs Newsom: Blue on Blue
+
+TITLE ALTERNATES (for Test & Compare or a re-title after 48h)
+Mamdani vs Newsom | Rap Battle on Gavin's Podcast
+Newsom vs Mamdani: Who Does Trump Call Handsome?
+Blue on Blue: Mamdani vs Newsom (feat. Trump on Speakerphone)
+
+THUMBNAILS (1280x720 PNG, in thumbs/)
+thumb_A_triangle.png    Donnie on the phone saying HANDSOME!, Zohran heart-eyed, Gavin jealous   <- upload this as the main one
+thumb_B_newscum.png     Gavin stamped NEWSCUM in tears; Zohran crowned and laughing
+thumb_C_was.png         the neon sign: THIS WAS GAVIN NEWSOM; Gavin crying, Zohran delighted
+
+ALTERED CONTENT
+Tick "Altered or synthetic content" in Studio: an AI-generated voice performs words written for real people.
+
+DESCRIPTION (paste everything between the lines)
+------------------------------------------------------------
+Zohran Mamdani vs Gavin Newsom, live on Gavin's own podcast. 🎙️
+
+Newsom once told the mayor, "I know how this love story ends." So it's a love triangle: Gavin is Trump's bitter ex, Zohran is the new crush, the live chat has opinions, and Donald calls in on speakerphone for the last word.
+
+Who won? Comment 🐻 for Gavin, 🗽 for Zohran, or 📞 for Donnie.
+
+The lyrics and pixel-art animation were made with Claude. The music and the voice were generated with YuE, an open-source music model, run locally. It is an AI voice, not Zohran Mamdani, Gavin Newsom or Donald Trump.
+
+Parody and satire. Not affiliated with or endorsed by Zohran Mamdani, Gavin Newsom, Donald Trump, or anyone depicted. These are cartoon caricatures, and every line is a joke, not a factual claim.
+
+0:00 Episode 112: The Mayor of New York
+0:10 Verse 1: Gavin Newsom
+0:36 Verse 2: Zohran Mamdani
+0:59 Hook: The Live Chat
+1:20 Verse 3: Gavin Newsom
+1:41 Verse 4: Zohran Mamdani
+1:53 Donnie Calls
+
+LYRICS
+
+[Intro - Gavin Newsom]
+This is Gavin Newsom. My guest: the mayor of New York.
+Zohran... I know how this love story ends.
+
+[Verse 1 - Gavin Newsom]
+Your campaign was cute, my little TikTok Trotsky;
+you chanted "Tax the rich!"; now you're sexting Donnie.
+Trump called you a commie, then switched it to "hottie". (Thank you.)
+Don't thank him, comrade: he says that to his caddie;
+you hound him for housing; he's your sugar daddy;
+he stood up the planet to swing by your lobby;
+he toasts you and texts you and tours your mansion;
+he pats you and praises your face and your fashion;
+then he'll sue you and squeeze you and seize Manhattan.
+I hugged him first, and he never called me handsome.
+
+[Verse 2 - Zohran Mamdani]
+Sorry, Gavin: me and Donald are a twosome;
+he calls me handsome, and he calls you Newscum.
+You're the bitter ex, bawlin', boozin' in all caps;
+you mimic his merch, and you mock up his ball caps;
+you're a Temu Trump, and he still won't call back.
+Your ex-wife picked a Trump; your Trump picked me instead;
+he sings me his praise, and he sends you the feds;
+he texts me "Tonight?", and he puts you to bed;
+he lounged at my place, but lives rent-free in your head.
+
+[Hook - Live Chat]
+Handsome! (Thank you!)
+Newscum! (Boo!)
+Handsome! (Thank you!)
+Has-been! (Boo!)
+
+[Verse 3 - Gavin Newsom]
+Kid, you're the king of living rent-free:
+you froze the rent, then moved in a mansion for free;
+you loathe landlords, but love the landlord-in-chief.
+In brief: my ex dated Junior; you date his dad;
+you've had more dates with him than Melania's had;
+Melania's not jealous; Melania's glad.
+I'm the future, Zohran; you're a fad with a crush;
+can't run for president; can't even run a bus.
+
+[Verse 4 - Zohran Mamdani]
+Can't run a bus? Your state is running to Texas:
+your billionaires, your businesses, your exes.
+Come January: jobless, jealous and losin';
+a lame duck, a ring light, the listeners snoozin';
+next year the show's called "This Was Gavin Newsom."
+
+[Outro - Donald Trump, on speakerphone]
+Zohran! Handsome!
+(Hi! Gavin says hi.)
+Who?
+
+#RapBattle #Mamdani #Newsom #PixelArt
+------------------------------------------------------------
+
+TAGS (Studio > Tags field)
+zohran mamdani, gavin newsom, donald trump, mamdani vs newsom, newsom vs mamdani, rap battle, political rap battle, diss track, this is gavin newsom, podcast, newscum, political satire, comedy rap, pixel art music video, 16 bit, ai music, yue, claude ai
+
+PINNED COMMENT
+Who won? 🐻 Gavin, 🗽 Zohran, or 📞 Donnie. Choose carefully: one of them has a podcast, one of them has a free bus, and one of them still won't call back.

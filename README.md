@@ -8,6 +8,8 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | [`two-georges`](projects/two-georges) | *Two Georges*, King George III vs George Washington, a rap battle across the Atlantic |
 | [`narrators`](projects/narrators) | *Attenborough vs. Freeman*, a narrators' rap battle where whoever raps holds the camera: nature documentary vs. film |
 | [`pardon-me`](projects/pardon-me) | *Pardon Me*, Trump vs. Netanyahu, a rap battle on the floor of the UN General Assembly, fought with visual aids |
+| [`trump-netanyahu-2`](projects/trump-netanyahu-2) | *Round 2*, Trump vs. Netanyahu in the Oval Office, fighting for the Nobel Peace Prize |
+| [`blue-on-blue`](projects/blue-on-blue) | *Blue on Blue*, Mamdani vs. Newsom on Newsom's podcast, a love triangle with Trump on speakerphone |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
@@ -40,6 +42,8 @@ projects/
   two-georges/
   narrators/
   pardon-me/
+  trump-netanyahu-2/
+  blue-on-blue/
 ```
 
 Inside a project:
