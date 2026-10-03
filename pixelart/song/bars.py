@@ -27,7 +27,9 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
             Shuffled words score as much (11-27%, more for longer bars): no song we measured
             alliterates beyond chance, so a sheet that aims for it should score well above
     held    share of clauses (two beats or more) with the same shape as the clause before them:
-            how often a flow is held instead of dropped (see below)
+            how often a flow is held instead of dropped (see below). Shuffled clauses score 7-15%;
+            the reference groups hold a median 4-8 points above chance, our first five sheets 0-4.
+            Plain clauses that end on a stress ("3m 3m") match easily, so read it with the al column
     local   how much more often neighbouring bars share an inner rhyme than bars eight or more
             apart: a rhyme of 2+ vowels between content words, at least one of them inside its
             bar. The reference songs run 1.4-1.9 (their sounds carry into the next bars and give
@@ -178,6 +180,22 @@ def cmu():
     return cmudict.dict()
 
 
+@cache
+def pron(word, end=True):
+    """CMUdict's first pronunciation of a word, or None. A word ending in "-ire(d)" or "-our(s)" always
+    takes two syllables there ("F AY1 ER0"), as CMUdict gives "fire", "desire" and "power". It gives
+    "retired", "admire" and "inspire" one ("AY1 R"), which would stop them rhyming with the family.
+    end=False leaves a word that starts a compound as it is ("lyre" in "lyrebird")."""
+    p = cmu().get(word)
+    if not p or not end:
+        return tuple(p[0]) if p else None
+    p = list(p[0])
+    for i in range(1, len(p)):
+        if p[i] == "R" and p[i - 1][:2] in ("AY", "AW") and set(p[i + 1:]) <= {"D", "Z", "S", "T"}:
+            p[i] = "ER0"
+    return tuple(p)
+
+
 def vowel_sounds(phones):
     """ARPAbet phones -> vowels without stress. Unstressed AH0, IH0 and ER0, and AH2 ("Qatar"), are
     all the schwa "@": rap rhymes "battery" with "tragedy" and "killer" with "Godzilla"."""
@@ -228,7 +246,6 @@ def vowels(word):
     """The vowel sounds of a word, one per syllable."""
     if word in LETTERS:
         return LETTERS[word]
-    d = cmu()
     variants = [(word, ())]
     if word.endswith("in"):
         variants.append((word + "g", ()))    # rappin' -> rapping
@@ -238,22 +255,21 @@ def vowels(word):
         for stem in (word[:-2], word[:-1]):
             variants.append((stem, ("@",) if stem.rstrip("e").endswith(("t", "d")) else ()))
     for v, extra in variants:
-        if v in d:
-            return tuple(vowel_sounds(d[v][0])) + extra
+        if pron(v):
+            return tuple(vowel_sounds(pron(v))) + extra
     for k in range(3, len(word) - 2):        # compounds: "littest" -> "lit" + "test"
-        if word[:k] in d and word[k:] in d:
-            return tuple(vowel_sounds(d[word[:k]][0]) + vowel_sounds(d[word[k:]][0]))
+        if pron(word[:k]) and pron(word[k:]):
+            return tuple(vowel_sounds(pron(word[:k], end=False)) + vowel_sounds(pron(word[k:])))
     return guess(word)
 
 
 @cache
 def phones(word):
     """CMUdict's phones for a word (or its stem before 's, -s or -in'), or None."""
-    d = cmu()
     for v in (word, word[:-2] if word.endswith("'s") else "", word + "g" if word.endswith("in") else "",
               word[:-1] if word.endswith("s") else ""):
-        if v in d:
-            return tuple(d[v][0])
+        if v and pron(v):
+            return pron(v)
     return None
 
 

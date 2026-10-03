@@ -51,12 +51,13 @@ Group medians:
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
 | flagged bars | 34-44% | 69% | 45% or fewer |
 | bars with alliteration (`allit`) | 13-22% | 28% | 50% or more |
-| clauses that hold the shape of the clause before (`held`) | (not comparable)† | 14% | 30% or more |
+| clauses that hold the shape of the clause before (`held`) | 11-18% (chance 7-11%)† | 14% (chance 12%) | 30% or more |
 | inner rhymes shared by neighbouring bars, against bars 8+ apart (`local`) | 1.4-2.0 | 1.0 | 1.4 or more |
 
 \* The ERB, Hamilton, diss and wordplay medians. Comedy rap runs shorter (7.6 syllables a bar) and
 rhymes less.
-† The reference lyrics are punctuated unevenly, and `held` splits clauses at punctuation.
+† Chance is a song's score with its clauses shuffled, which also allows for how much it punctuates
+(`held` splits clauses at punctuation). The references hold a median 4-8 points above chance, ours 0-4.
 
 - **Rhyme density isn't where we fall short.** Ours (0.88) sits inside the reference range (0.87-0.99).
   How far the rhymes run is the gap. Ours rarely rhyme on three syllables, and never hold a rhyme for
@@ -182,7 +183,10 @@ bunker busters; Donald drops the candy; / Bibi bombs Qatar, and Daddy dials the 
 the cart, and baby Bibi caddies."*
 
 `pixelart.song.bars --bars` prints each bar's alliteration ("b3": three words on b) and its flow: the
-beats and ending of every clause ("3f 3f"). `allit` and `held` in the summary measure both.
+beats and ending of every clause ("3f 3f"). `allit` and `held` in the summary measure both. `held` counts
+any clause that matches the one before, though, and plain clauses that end on a stress ("3m 3m") match
+easily: Round 2's Verse 3 scores 53%, mostly from its last six bars, while its alliterating flow (the
+bars that landed) lasts a bar and a half. Read `held` with the `al` column: the flow to hold alliterates.
 
 ## Where jokes come from
 

@@ -57,12 +57,14 @@ After the jokes in each verse:
   which bars could take a pair on a sound from the target's world.
 - **Cohesion:** the seams where the end rhyme changes, and which of them are tied (the scorer's `tie`
   column: an inner rhyme with the bar before) and which snap. For each snap, name the carry or seed
-  that would tie it, and give the verse's `local` score (the target is 1.4 or more).
+  that would tie it, and give the song's `local` score (the target is 1.4 or more; one verse has too
+  few bars eight apart to score alone).
 - **Flow:** the clause shapes (the scorer's `flow` column). Name the flow the verse holds, how many bars
-  it lasts, and the clause where it drops. A drop at a turn or at the button is fine. A drop mid-run to
-  explain (a simile, an aside) or to cram a fact is a fix: rewrite that clause as the next jab, in the
-  same shape. A verse with no flow held for four bars needs one: name the shape and the bars to put on
-  it.
+  it lasts, and the clause where it drops. The flow that counts alliterates: plain clauses that end on a
+  stress ("3m 3m") match by chance, and inflate `held`. A drop at a turn or at the button is fine. A drop
+  mid-run to explain (a simile, an aside) or to cram a fact is a fix: rewrite that clause as the next
+  jab, in the same shape. A verse with no flow held for four bars needs one: name the shape and the bars
+  to put on it.
 - **Length:** sung syllables, and whether later rounds are shorter than earlier ones.
 
 For the song as a whole:
