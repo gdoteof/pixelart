@@ -260,6 +260,8 @@ def vowels(word):
         if pron(v):
             return tuple(vowel_sounds(pron(v))) + extra
     for k in range(3, len(word) - 2):        # compounds: "littest" -> "lit" + "test"
+        if word.endswith("ie"):                # but "hottie" isn't "hot" + "tie"
+            break
         if pron(word[:k]) and pron(word[k:]):
             return tuple(vowel_sounds(pron(word[:k], end=False)) + vowel_sounds(pron(word[k:])))
     return guess(word)
