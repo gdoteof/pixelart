@@ -28,9 +28,16 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
             alliterates beyond chance, so a sheet that aims for it should score well above
     held    share of clauses (two beats or more) with the same shape as the clause before them:
             how often a flow is held instead of dropped (see below)
+    local   how much more often neighbouring bars share an inner rhyme than bars eight or more
+            apart: a rhyme of 2+ vowels between content words, at least one of them inside its
+            bar. The reference songs run 1.4-1.9 (their sounds carry into the next bars and give
+            way gradually); our first five sheets ran 0.8-1.2 (sounds scattered, couplets cut off)
 
 --bars lists every bar with its syllables, end-rhyme length, inner rhymes, alliteration (the
-sound and how many words share it, as "b3") and flow, and flags the bars worth a second look.
+sound and how many words share it, as "b3"), flow and tie, and flags the bars worth a second look.
+The tie is the longest inner rhyme between this bar and the one before ("daddy~candy"): a sound
+carried over, set up, or run through the middle of both. A blank tie where the end rhyme changes
+is a seam where the sound snaps.
 The flow is each clause's shape: its beats (stressed syllables) and how it ends, "f" on one
 unstressed syllable ("MOD-els"), "m" on a stressed one ("qa-TAR"), "d" on two ("GEN-tle-men").
 Clauses are split at punctuation, so put a comma or semicolon at every half-bar. Four clauses in a
@@ -313,6 +320,32 @@ def flow(bar):
     return out
 
 
+def inner_tie(a, b):
+    """The longest rhyme (2+ vowels, not all schwa) between a content word of bar a and one of bar b,
+    other than a repeated word or the two bars' last words: (word in a, word in b, vowels), or None.
+    a and b are lists of (word, vowels up to and including it)."""
+    best = None
+    for x, (u, su) in enumerate(a):
+        if u in FUNCTION or len(u) < 3:
+            continue
+        for y, (w, sw) in enumerate(b):
+            if w == u or w in FUNCTION or len(w) < 3 or (x == len(a) - 1 and y == len(b) - 1):
+                continue
+            k = tail_match(su, sw)
+            if k >= 2 and any(v != "@" for v in su[-k:]) and (best is None or k > best[2]):
+                best = (u, w, k)
+    return best
+
+
+def prefixes(ws):
+    """[(word, the bar's vowels up to and including it), ...]: what inner_tie compares."""
+    out, seq = [], ()
+    for w in ws:
+        seq += vowels(w)
+        out.append((w, seq))
+    return out
+
+
 def song_bars(text):
     """[(section label, bar), ...] for a lyric sheet or plain lyrics (label None without headers)."""
     out = []
@@ -426,7 +459,7 @@ def analyse(text):
             flags.append("NUMBER")
         recs.append({"label": label, "text": line, "syl": syl, "end": end, "partner": partner,
                      "inner2": sum(1 for r in bar_rhyme[a][:-1] if r >= 2), "flags": flags,
-                     "allit": alliteration(bar_words[a]), "flow": flow(line)})
+                     "allit": alliteration(bar_words[a]), "flow": flow(line), "tie": None})
 
     # Runs of consecutive bars ending on the same two vowels (a repeated line breaks a run).
     tails = [tuple(v[-2:]) if len(v) >= 2 and counts[" ".join(w)] == 1 else None
@@ -439,6 +472,19 @@ def analyse(text):
         if b - a >= 2:
             chained += b - a + 1
         a = b + 1
+
+    # Ties between neighbours, and how much likelier they are than between bars far apart.
+    pre = [prefixes(ws) for ws in bar_words]
+    solo = [counts[" ".join(ws)] == 1 for ws in bar_words]
+    for a in range(1, len(recs)):
+        if solo[a] and solo[a - 1] and recs[a]["label"] == recs[a - 1]["label"]:
+            recs[a]["tie"] = inner_tie(pre[a - 1], pre[a])
+    near, far = [], []
+    for a in range(len(recs)):
+        for b in range(a + 1, len(recs)):
+            if solo[a] and solo[b] and (b - a == 1 or b - a >= 8):
+                (near if b - a == 1 else far).append(inner_tie(pre[a], pre[b]) is not None)
+    local = (sum(near) / len(near)) / (sum(far) / len(far)) if near and far and any(far) else float("nan")
 
     # A clause holds the flow when it has the shape of the clause before it (in the same section).
     held = shaped = 0
@@ -471,6 +517,7 @@ def analyse(text):
         "flagged": sum(bool(r["flags"]) for r in recs) / len(recs),
         "allit": sum(bool(r["allit"]) for r in recs) / len(recs),
         "held": held / max(1, shaped),
+        "local": local,
         "per_bar": recs,
     }
 
@@ -485,7 +532,7 @@ def name_of(path):
 COLUMNS = [("bars", "{:>4.0f}"), ("words", "{:>5.0f}"), ("syl", "{:>5.1f}"), ("syl_sd", "{:>5.1f}"), ("long", "{:>5.0%}"),
            ("end2", "{:>5.0%}"), ("end3", "{:>5.0%}"), ("chain3", "{:>6.0%}"), ("RD", "{:>5.2f}"), ("inner2", "{:>6.2f}"), ("MATTR", "{:>5.2f}"),
            ("thats", "{:>5.0f}"), ("nums", "{:>4.1f}"), ("names", "{:>5.0f}"), ("flagged", "{:>7.0%}"),
-           ("allit", "{:>5.0%}"), ("held", "{:>5.0%}")]
+           ("allit", "{:>5.0%}"), ("held", "{:>5.0%}"), ("local", "{:>5.2f}")]
 
 
 def print_table(results):
@@ -509,7 +556,7 @@ def sound_name(sound):
 
 def print_bars(result):
     print(f"== {result['name']}   (syl = syllables, end = end-rhyme syllables, in = inner 2+ rhymes, "
-          "al = alliteration, flow = beats and ending per clause)")
+          "al = alliteration, flow = beats and ending per clause, tie = inner rhyme with the bar before)")
     label = object()
     for r in result["per_bar"]:
         if r["label"] != label:
@@ -517,7 +564,8 @@ def print_bars(result):
             print(f"[{label}]" if label else "")
         al = " ".join(f"{sound_name(s)}{len(ws)}" for s, ws in r["allit"])
         fl = " ".join(f"{b}{e}" for b, e in r["flow"])
-        print(f"  {r['syl']:3} {r['end']:2} {r['inner2']:2}  {al:6} {fl:12} {r['text']}"
+        tie = f"{r['tie'][0]}~{r['tie'][1]}"[:22] if r["tie"] else ""
+        print(f"  {r['syl']:3} {r['end']:2} {r['inner2']:2}  {al:6} {fl:12} {tie:22} {r['text']}"
               + (f"   <- {' '.join(r['flags'])}" if r["flags"] else ""))
     print()
 

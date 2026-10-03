@@ -15,8 +15,10 @@ stays blocked until it is rewound or cleared.
 
 1. One line is one bar: 9-12 syllables, one breath, the punch word last and nothing after it.
 2. A joke usually takes a couplet. The first bar sets up, and the second lands it on the rhyme.
-3. Let the rhymes run. Rhyme the punch on two or three syllables, and at least once a verse hold one
-   sound for three to six bars instead of switching every couplet.
+3. Let the rhymes run and overlap. Rhyme the punch on two or three syllables, hold one sound for three
+   to six bars at least once a verse, and tie every bar to the one before with a rhyme inside it: carry
+   the last sound in, or plant the next one early. A verse should sound like one piece, not a string of
+   couplets.
 4. Alliterate, and hold the flow. Write two short clauses to a bar, each with two or three stressed
    words on one sound ("I only marry models; NATO calls me Daddy"), and keep that shape for four bars:
    change the joke, not the rhythm.
@@ -48,8 +50,9 @@ Group medians:
 | number words per 100 words | 0.1-1.1 | 2.3 | 1 or fewer |
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
 | flagged bars | 34-44% | 69% | 45% or fewer |
-| bars with alliteration (`allit`) | 13-22% | 25% | 50% or more |
+| bars with alliteration (`allit`) | 13-22% | 28% | 50% or more |
 | clauses that hold the shape of the clause before (`held`) | (not comparable)† | 14% | 30% or more |
+| inner rhymes shared by neighbouring bars, against bars 8+ apart (`local`) | 1.4-2.0 | 1.0 | 1.4 or more |
 
 \* The ERB, Hamilton, diss and wordplay medians. Comedy rap runs shorter (7.6 syllables a bar) and
 rhymes less.
@@ -64,6 +67,8 @@ rhymes less.
   off the beat.
 - **Verses are too long.** ERB verses run about 130 sung syllables and shrink round by round. Ours ran
   170-290, and Two Georges saved its longest verse for last.
+- **Our sounds don't carry.** The biggest gap with the references isn't how much we rhyme but where:
+  their bars share sounds with their neighbours, ours with any bar at all (see Cohesion).
 - **Alliteration is our house style, not a reference habit.** No song we measured, ours or the
   references, alliterates more than its words shuffled at random would (11-27% of bars). We aim for it
   anyway because it is what landed: the best-received bars of Round 2 were its most alliterative.
@@ -108,6 +113,38 @@ example (the Roomba on Napoleon), on "tragedy":
 you on a stallion in the gallery; / it was a mule, Boney; the rest is flattery."*
 
 `pixelart.song.bars --bars` shows each bar's end-rhyme length, and `end3` and `chain3` in the summary.
+
+## Cohesion
+
+Great verses sound like one piece because their sounds are local. A sound starts inside a bar, carries
+into the next ones and gives way as the next sound comes in. In the reference songs, neighbouring bars
+share an inner rhyme (two vowels or more, with at least one of the words inside its bar) 1.4 to 2 times
+as often as bars far apart. Ours score about 1.0: the sounds inside our bars are scattered across the
+song, and only the line endings join neighbours, two by two. So every couplet ends with its sound cut
+off, and the next one starts cold: one rhyme scheme drops and another is picked up.
+
+Three moves tie the bars together:
+- **Carry:** bring the last bar's end sound back inside the next bar, early, before that bar lands its
+  own rhyme.
+- **Seed:** plant the next end sound inside the bar before the switch. Round 2's third verse does it:
+  "NATO calls me **Daddy**" seeds "candy", "Daddy" and "caddy" at the ends of the next three bars.
+- **Layer:** rhyme the middles of neighbouring bars with each other, a second scheme running under the
+  end rhymes. The half-bar is the natural place for it.
+
+Plan the sound before the jokes. A verse is three or four zones of three or four bars, each on one
+sound, overlapping at the seams: the last bar of each zone seeds the next zone's sound, and the first
+bar of the next zone carries the old one. Then fit the jokes into the zones. Repeated words and
+alliteration help a little at a seam, but the references tie their bars mostly with rhyme.
+
+Round 2's fourth verse has no ties at all: four couplets on four sounds, none of them heard inside a
+neighbour. One of its seams, cut off and then carried (the scorer's tie column shows "tummy~buddy"):
+
+*"on court days, I come down with a tummy bug. / Your caddy sees you kick the ball down the fairway;"*
+
+*"on court days, I come down with a tummy bug. / Buddy, your caddy saw you kick it down the fairway;"*
+
+`pixelart.song.bars --bars` prints each bar's tie, the longest inner rhyme it shares with the bar before,
+and `local` in the summary.
 
 ## Alliteration and flow
 
@@ -282,6 +319,7 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
   every couplet.
 - **Runs:** most verses hold at least one rhyme run of three to six bars.
 - **Flow:** every verse holds one flow, alliterating, for four bars or more.
+- **Cohesion:** every seam where the end rhyme changes is tied by an inner rhyme, carried or seeded.
 - **Rebuttal:** every verse answers something from the one before, and not always in its first line.
   Concede and flip it, or wave it away; never defend point by point.
 - **Persona:** each character raps in their own register, with their own self-owns. Not every bar has
@@ -308,6 +346,7 @@ Each failure mode, with a bar from our own sheets:
 | **Lecture:** a fact that needs a footnote | "Four balls through my coat on the Monongahela" / "Loudoun left you on read. Commission: declined." | famous facts only, or a two-layer bar |
 | **Prosecution:** a big, serious charge with no undercut | two-georges' teeth and slavery bars / "Families in court say you picked engagement over their kids" | a small receipt, a proud confession, or an undercut in the same bar |
 | **Template:** the same joke move bar after bar | Freeman's filmography roll call ("I played X. You did Y.") / "X? Y." at the top of every reply | change the mechanism with every joke (holding a rhythm is fine: see Alliteration and flow) |
+| **Snap:** a couplet that starts cold | Round 2's fourth verse: four couplets on four sounds, none of them heard inside a neighbour | carry the last sound into the next bar, or seed the next sound in the bar before |
 | **Dropped flow:** a held shape broken mid-run | "You beg for bunker busters like a kid for candy;" after three clauses of one shape | replace the clause that breaks it with the next jab, in the same shape |
 | **Explained ending:** the outro's joke, then its reasons | "...goes to... the turkey!" then "No wars, no trial, no drones, and he still got a pardon." | end on the reveal |
 | **Tour:** a new subject every couplet | alt-f4's third verse (leak, regex, sandbox, CAPTCHA, constitution, ladder and Trump in 13 bars) | one charge per rapper; hold a frame or mine one word |
@@ -352,11 +391,13 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
 3. **Overgenerate.** Draft about three jokes for every slot in the song, across different techniques,
    as couplets of 9-12 syllables a bar. Then choose each verse's run: an anchor sound and its bank,
    with three to six of the jokes rewritten onto it. Choose its flow too: a clause shape (such as
-   "3f 3f") to hold for four bars, with a sound from the target's world to alliterate on.
+   "3f 3f") to hold for four bars, with a sound from the target's world to alliterate on. Then lay out
+   the verse's sound zones (see Cohesion), so that every seam is carried or seeded.
 4. **Score and pick** with the table above. Order each verse with the runner-up first, the best last
    and a held frame in the middle. Plan the rebuttals, the callbacks and any chant or cameo.
 5. **Measure** with `pixelart.song.bars --bars`, fix every flag that isn't deliberate, and check the
-   targets table, rhyme length, runs, alliteration and held flow included.
+   targets table, rhyme length, runs, alliteration, held flow and `local` included. Read the tie
+   column for seams that snap.
 6. **Get a second opinion** from the `lyric-critic` agent, which scores the draft cold, without having
    written it. Apply its fixes and run it once more.
 7. **Show the user** the sheet, with the critic's score for each verse.
