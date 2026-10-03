@@ -22,9 +22,20 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
     thats   "that's" / "that ain't" tags per 100 bars (the reference songs use about one)
     nums    number words per 100 words: dates and figures usually mean a history lesson
     names   distinct capitalised names per 100 bars: each one is a fact the listener must know
+    allit   share of bars with alliteration: two or more content words starting on the same
+            consonant sound, at most one word apart ("marry models", "beg for bunker busters").
+            Shuffled words score as much (11-27%, more for longer bars): no song we measured
+            alliterates beyond chance, so a sheet that aims for it should score well above
+    held    share of clauses (two beats or more) with the same shape as the clause before them:
+            how often a flow is held instead of dropped (see below)
 
---bars lists every bar with its syllables, end-rhyme length and inner rhymes, and flags the
-bars worth a second look:
+--bars lists every bar with its syllables, end-rhyme length, inner rhymes, alliteration (the
+sound and how many words share it, as "b3") and flow, and flags the bars worth a second look.
+The flow is each clause's shape: its beats (stressed syllables) and how it ends, "f" on one
+unstressed syllable ("MOD-els"), "m" on a stressed one ("qa-TAR"), "d" on two ("GEN-tle-men").
+Clauses are split at punctuation, so put a comma or semicolon at every half-bar. Four clauses in a
+row of one shape ("3f 3f / 3f 3f") are a held flow; the clause that changes shape is where it drops.
+The flags:
 
     LONG      over 16 syllables
     UNRHYMED  rhymes with no bar up to 3 lines away
@@ -111,6 +122,22 @@ def number_words(n):
         return number_words(n // 100) + (number_words(n % 100) if n % 100 else ["hundred"])
     return [ONES[int(d)] for d in str(n)]
 
+
+# Words said without stress in a line: they carry no beat and don't alliterate.
+FUNCTION = set("""
+a an the and or but nor so yet for of to in on at by with from up out off into onto upon as than like if
+when then i me my mine myself you your yours yourself he him his himself she her hers herself it its itself
+we us our ours ourselves they them their theirs themselves who whom whose which what that this these those
+there is am are was were be been being do does did have has had will would shall should can could may might
+must i'm you're he's she's it's we're they're i'll you'll he'll she'll we'll they'll i'd you'd he'd she'd
+we'd they'd i've you've we've they've let's that's what's there's who's
+""".split())
+
+# Word-initial spellings for words CMUdict lacks: (spelling, first consonant sound).
+ONSETS = [("ph", "F"), ("ch", "CH"), ("sh", "SH"), ("th", "TH"), ("wh", "W"), ("kn", "N"), ("wr", "R"),
+          ("qu", "K"), ("ce", "S"), ("ci", "S"), ("cy", "S"), ("c", "K"), ("q", "K"), ("x", "Z"), ("j", "JH")]
+SOUND_NAMES = {"JH": "j", "DH": "th", "HH": "h"}
+ALLIT_GAP = 1               # words allowed between two alliterating words
 
 INITIALISM = re.compile(r"[A-Z]{2,3}s?")
 SAID_AS_WORDS = {"PAC", "GIF", "RAM", "ROM", "LOL", "SIM"}
@@ -210,6 +237,80 @@ def vowels(word):
         if word[:k] in d and word[k:] in d:
             return tuple(vowel_sounds(d[word[:k]][0]) + vowel_sounds(d[word[k:]][0]))
     return guess(word)
+
+
+@cache
+def phones(word):
+    """CMUdict's phones for a word (or its stem before 's, -s or -in'), or None."""
+    d = cmu()
+    for v in (word, word[:-2] if word.endswith("'s") else "", word + "g" if word.endswith("in") else "",
+              word[:-1] if word.endswith("s") else ""):
+        if v in d:
+            return tuple(d[v][0])
+    return None
+
+
+def onset(word):
+    """The consonant sound a word starts on ("K" for "candy" and "Qatar"), or None if it starts on a vowel."""
+    p = phones(word)
+    if p:
+        return None if p[0][-1].isdigit() else p[0]
+    w = re.sub(r"[^a-z]", "", word)
+    if not w or w[0] in "aeiouy":
+        return None
+    return next((sound for s, sound in ONSETS if w.startswith(s)), w[0].upper())
+
+
+@cache
+def beats(word):
+    """1 for each syllable that takes a beat, else 0, one per syllable of vowels(word). A function word
+    takes none, and a content word takes its main stress, plus a secondary one two or more syllables
+    away ("NE-ta-NYA-hu", "af-GHAN-i-STAN", but "FAIR-way" and "im-PRESSED" take one)."""
+    n = len(vowels(word))
+    if word in FUNCTION or (len(word) == 1 and word not in LETTERS):
+        return (0,) * n
+    p = phones(word)
+    marks = [ph[-1] for ph in p if ph[-1].isdigit()] if p else []
+    if len(marks) != n:
+        return (1,) + (0,) * (n - 1)                  # a guess: stress the first syllable
+    main = marks.index("1") if "1" in marks else 0
+    return tuple(int(i == main or (m == "2" and abs(i - main) >= 2)) for i, m in enumerate(marks))
+
+
+def alliteration(ws):
+    """[(sound, words), ...]: groups of two or more distinct content words starting on one consonant
+    sound, with at most ALLIT_GAP words between neighbours. Biggest first, one group per sound."""
+    content = [(i, w, onset(w)) for i, w in enumerate(ws) if w not in FUNCTION and len(w) > 1]
+    groups = {}
+    for k, (i, w, s) in enumerate(content):
+        if not s or s in groups:
+            continue
+        found, last, stems = [w], i, {w.rstrip("s")}
+        for j, w2, s2 in content[k + 1:]:
+            if j - last > ALLIT_GAP + 1:
+                break
+            if s2 == s and w2.rstrip("s") not in stems:
+                found.append(w2)
+                stems.add(w2.rstrip("s"))
+                last = j
+        if len(found) >= 2:
+            groups[s] = found
+    return sorted(groups.items(), key=lambda g: -len(g[1]))
+
+
+CLAUSE_BREAK = re.compile(r"[,;:.?!—]+")
+
+
+def flow(bar):
+    """The shape of each clause in a bar: (beats, ending), with ending "f" (one unstressed syllable after
+    the last beat), "m" (none) or "d" (two or more). Clauses are split at punctuation."""
+    out = []
+    for piece in CLAUSE_BREAK.split(re.sub(r"\(.*?\)", " ", bar)):
+        marks = [b for w in words(piece) for b in beats(w)]
+        if marks:
+            trail = len(marks) - 1 - max((i for i, b in enumerate(marks) if b), default=-1)
+            out.append((sum(marks), "m" if trail == 0 else "f" if trail == 1 else "d"))
+    return out
 
 
 def song_bars(text):
@@ -324,7 +425,8 @@ def analyse(text):
         if NUMBER_WORDS & set(bar_words[a]):
             flags.append("NUMBER")
         recs.append({"label": label, "text": line, "syl": syl, "end": end, "partner": partner,
-                     "inner2": sum(1 for r in bar_rhyme[a][:-1] if r >= 2), "flags": flags})
+                     "inner2": sum(1 for r in bar_rhyme[a][:-1] if r >= 2), "flags": flags,
+                     "allit": alliteration(bar_words[a]), "flow": flow(line)})
 
     # Runs of consecutive bars ending on the same two vowels (a repeated line breaks a run).
     tails = [tuple(v[-2:]) if len(v) >= 2 and counts[" ".join(w)] == 1 else None
@@ -337,6 +439,18 @@ def analyse(text):
         if b - a >= 2:
             chained += b - a + 1
         a = b + 1
+
+    # A clause holds the flow when it has the shape of the clause before it (in the same section).
+    held = shaped = 0
+    for k, r in enumerate(recs):
+        prev = None if k == 0 or recs[k - 1]["label"] != r["label"] else recs[k - 1]
+        before = [s for s in prev["flow"] if s[0] >= 2] if prev else []
+        for s in r["flow"]:
+            if s[0] < 2:
+                continue
+            shaped += 1
+            held += bool(before) and before[-1] == s
+            before.append(s)
 
     syls = [r["syl"] for r in recs]
     return {
@@ -355,6 +469,8 @@ def analyse(text):
         "nums": 100 * sum(w in NUMBER_WORDS for _, w, _ in toks) / len(toks),
         "names": 100 * len(lyrics.proper_nouns(text, limit=None)) / len(recs),
         "flagged": sum(bool(r["flags"]) for r in recs) / len(recs),
+        "allit": sum(bool(r["allit"]) for r in recs) / len(recs),
+        "held": held / max(1, shaped),
         "per_bar": recs,
     }
 
@@ -368,7 +484,8 @@ def name_of(path):
 
 COLUMNS = [("bars", "{:>4.0f}"), ("words", "{:>5.0f}"), ("syl", "{:>5.1f}"), ("syl_sd", "{:>5.1f}"), ("long", "{:>5.0%}"),
            ("end2", "{:>5.0%}"), ("end3", "{:>5.0%}"), ("chain3", "{:>6.0%}"), ("RD", "{:>5.2f}"), ("inner2", "{:>6.2f}"), ("MATTR", "{:>5.2f}"),
-           ("thats", "{:>5.0f}"), ("nums", "{:>4.1f}"), ("names", "{:>5.0f}"), ("flagged", "{:>7.0%}")]
+           ("thats", "{:>5.0f}"), ("nums", "{:>4.1f}"), ("names", "{:>5.0f}"), ("flagged", "{:>7.0%}"),
+           ("allit", "{:>5.0%}"), ("held", "{:>5.0%}")]
 
 
 def print_table(results):
@@ -386,14 +503,22 @@ def print_table(results):
         print()
 
 
+def sound_name(sound):
+    return SOUND_NAMES.get(sound, sound.lower())
+
+
 def print_bars(result):
-    print(f"== {result['name']}   (syl = syllables, end = end-rhyme syllables, in = inner 2+ rhymes)")
+    print(f"== {result['name']}   (syl = syllables, end = end-rhyme syllables, in = inner 2+ rhymes, "
+          "al = alliteration, flow = beats and ending per clause)")
     label = object()
     for r in result["per_bar"]:
         if r["label"] != label:
             label = r["label"]
             print(f"[{label}]" if label else "")
-        print(f"  {r['syl']:3} {r['end']:2} {r['inner2']:2}  {r['text']}" + (f"   <- {' '.join(r['flags'])}" if r["flags"] else ""))
+        al = " ".join(f"{sound_name(s)}{len(ws)}" for s, ws in r["allit"])
+        fl = " ".join(f"{b}{e}" for b, e in r["flow"])
+        print(f"  {r['syl']:3} {r['end']:2} {r['inner2']:2}  {al:6} {fl:12} {r['text']}"
+              + (f"   <- {' '.join(r['flags'])}" if r["flags"] else ""))
     print()
 
 

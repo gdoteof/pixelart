@@ -17,16 +17,20 @@ stays blocked until it is rewound or cleared.
 2. A joke usually takes a couplet. The first bar sets up, and the second lands it on the rhyme.
 3. Let the rhymes run. Rhyme the punch on two or three syllables, and at least once a verse hold one
    sound for three to six bars instead of switching every couplet.
-4. Give each rapper one charge against the other, and keep only the jokes that prove it or show who the
+4. Alliterate, and hold the flow. Write two short clauses to a bar, each with two or three stressed
+   words on one sound ("I only marry models; NATO calls me Daddy"), and keep that shape for four bars:
+   change the joke, not the rhythm.
+5. Give each rapper one charge against the other, and keep only the jokes that prove it or show who the
    speaker is.
-5. Bend the target's own world (their name, jargon, catchphrase or famous image) until a word means two
+6. Bend the target's own world (their name, jargon, catchphrase or famous image) until a word means two
    things at once.
-6. Small, embarrassing facts beat big, serious ones. Use only facts a teenager on YouTube already knows,
+7. Small, embarrassing facts beat big, serious ones. Use only facts a teenager on YouTube already knows,
    or state a lesser one in six plain words inside a joke that works without it.
-7. The calm one wins. A character who confesses, or talks down to the other, beats one who prosecutes
+8. The calm one wins. A character who confesses, or talks down to the other, beats one who prosecutes
    or rants.
-8. Each verse ends on its best bar, and later rounds are shorter than earlier ones.
-9. Write three times the jokes you need, score them with the rubric below, and keep the best.
+9. Each verse ends on its best bar, later rounds are shorter than earlier ones, and the outro is two
+   bars at most.
+10. Write three times the jokes you need, score them with the rubric below, and keep the best.
 
 ## Targets
 
@@ -44,9 +48,12 @@ Group medians:
 | number words per 100 words | 0.1-1.1 | 2.3 | 1 or fewer |
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
 | flagged bars | 34-44% | 69% | 45% or fewer |
+| bars with alliteration (`allit`) | 13-22% | 25% | 50% or more |
+| clauses that hold the shape of the clause before (`held`) | (not comparable)† | 14% | 30% or more |
 
 \* The ERB, Hamilton, diss and wordplay medians. Comedy rap runs shorter (7.6 syllables a bar) and
 rhymes less.
+† The reference lyrics are punctuated unevenly, and `held` splits clauses at punctuation.
 
 - **Rhyme density isn't where we fall short.** Ours (0.88) sits inside the reference range (0.87-0.99).
   How far the rhymes run is the gap. Ours rarely rhyme on three syllables, and never hold a rhyme for
@@ -57,6 +64,9 @@ rhymes less.
   off the beat.
 - **Verses are too long.** ERB verses run about 130 sung syllables and shrink round by round. Ours ran
   170-290, and Two Georges saved its longest verse for last.
+- **Alliteration is our house style, not a reference habit.** No song we measured, ours or the
+  references, alliterates more than its words shuffled at random would (11-27% of bars). We aim for it
+  anyway because it is what landed: the best-received bars of Round 2 were its most alliterative.
 
 ## The bar
 
@@ -98,6 +108,44 @@ example (the Roomba on Napoleon), on "tragedy":
 you on a stallion in the gallery; / it was a mule, Boney; the rest is flattery."*
 
 `pixelart.song.bars --bars` shows each bar's end-rhyme length, and `end3` and `chain3` in the summary.
+
+## Alliteration and flow
+
+Round 2's third verse opened with four clauses of one shape: three beats each, ending on an unstressed
+syllable, with the stressed words alliterating, and every clause a new jab. It was the best-received
+passage of the song:
+
+*"Model? Thank you! I only marry models; / NATO calls me Daddy; I warm Bibi's bottles. / You beg for
+bunker busters like a kid for candy;"*
+
+It drops at "like a kid for candy": a simile that explains the jab before it, one beat short. The next
+two bars change shape again, to a question with a one-word answer, then clauses ending on stressed words.
+
+- **Alliterate the stresses.** Give each clause two or three stressed words on one sound, close
+  together: an adjective and its noun, or a verb and its object ("marry models", "Bibi's bottles", "beg
+  for bunker busters"). Small unstressed words between them don't break it. Take the sound from the
+  target's world: their name, their props, their slogans.
+- **Two clauses to a bar.** Each clause is five to seven syllables with three beats, and each one is a
+  whole jab (who did what to whom). Put a comma or a semicolon at the half-bar.
+- **Hold the shape** for four bars or more: the same beats and the same ending in every clause. A clause
+  that ends on an unstressed syllable ("MOD-els", "DAD-dy", "BOT-tles") rolls into the next one. A
+  stressed ending ("qa-TAR", "clubs") stops the roll, so use it on purpose, the same way in every bar.
+- **Change the joke, not the flow.** Each clause takes a new hit: a word flipped back from the last
+  verse, a brag, a receipt. The Template failure is one joke move repeated; a held flow is one rhythm
+  with a new joke every time.
+- **Nothing that explains.** A simile, an aside or a "that's" inside a flow is a clause with no hit.
+  Replace it with the next jab.
+- **Break the flow at a turn:** a new topic, the button, or a hashtag punch. Never mid-joke.
+
+Held, the same opening runs five bars. All of them alliterate, the first three hold "3f 3f", the
+last two hold "3m 3f", and the anchor word (Daddy) climbs to the button:
+
+*"Model? Thank you! I only marry models; / NATO calls me Daddy; I warm Bibi's bottles. / You beg for
+bunker busters; Donald drops the candy; / Bibi bombs Qatar, and Daddy dials the sorry; / Daddy drives
+the cart, and baby Bibi caddies."*
+
+`pixelart.song.bars --bars` prints each bar's alliteration ("b3": three words on b) and its flow: the
+beats and ending of every clause ("3f 3f"). `allit` and `held` in the summary measure both.
 
 ## Where jokes come from
 
@@ -233,12 +281,18 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
 - **Build:** hold a frame, a ladder or an anchor word for four bars or more, instead of changing topic
   every couplet.
 - **Runs:** most verses hold at least one rhyme run of three to six bars.
+- **Flow:** every verse holds one flow, alliterating, for four bars or more.
 - **Rebuttal:** every verse answers something from the one before, and not always in its first line.
   Concede and flip it, or wave it away; never defend point by point.
 - **Persona:** each character raps in their own register, with their own self-owns. Not every bar has
   to aim outward.
 - **Surprise:** break the strict alternation once, with a volley of one-liners, a cameo, a moderator's
   ruling or an interruption.
+- **Outro:** two bars at most, ending on the joke, and nothing after it that explains it. Round 2's
+  outro announced the winner ("goes to... the turkey!"), then explained why ("no wars, no trial, no
+  drones, and he still got a pardon"). The take sang that line twice and the band played on for
+  fourteen seconds, so the ending took thirty-four seconds and dragged. Song models pad endings like
+  this, so end the video a few seconds after the last word (`END` and `FADE` in `project.py`).
 - **Style prompt:** ask for sincere, confident delivery. The music plays the straight man, and a
   "comedic" delivery fights the jokes.
 
@@ -253,7 +307,9 @@ Each failure mode, with a bar from our own sheets:
 | **Label:** the joke explained | "That ain't a bug in the model - that's what the business is" / "That ain't a diss, that's the truth" | let the picture land; cut the verdict |
 | **Lecture:** a fact that needs a footnote | "Four balls through my coat on the Monongahela" / "Loudoun left you on read. Commission: declined." | famous facts only, or a two-layer bar |
 | **Prosecution:** a big, serious charge with no undercut | two-georges' teeth and slavery bars / "Families in court say you picked engagement over their kids" | a small receipt, a proud confession, or an undercut in the same bar |
-| **Template:** the same move bar after bar | Freeman's filmography roll call ("I played X. You did Y.") / "X? Y." at the top of every reply | change the mechanism with every joke |
+| **Template:** the same joke move bar after bar | Freeman's filmography roll call ("I played X. You did Y.") / "X? Y." at the top of every reply | change the mechanism with every joke (holding a rhythm is fine: see Alliteration and flow) |
+| **Dropped flow:** a held shape broken mid-run | "You beg for bunker busters like a kid for candy;" after three clauses of one shape | replace the clause that breaks it with the next jab, in the same shape |
+| **Explained ending:** the outro's joke, then its reasons | "...goes to... the turkey!" then "No wars, no trial, no drones, and he still got a pardon." | end on the reveal |
 | **Tour:** a new subject every couplet | alt-f4's third verse (leak, regex, sandbox, CAPTCHA, constitution, ladder and Trump in 13 bars) | one charge per rapper; hold a frame or mine one word |
 | **Generic:** could be aimed at anyone | "Same mentor, same monologue, same velvet, same page" / "you lie about your crowds, your height, your hands and your maturity" | aim at what only this target has |
 | **Weak rhyme:** forced or stock | "penguins" / "onions"; "you" / "true"; "wall" / "all" | rhyme the punch on two syllables, with a fresh pair |
@@ -277,7 +333,8 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
 - **Verdicts:** keep at 9-12; fix at 6-8 (keep the premise, rewrite the bars); cut at 0-5, or find a
   new premise.
 - **Fix whatever the score:** a label or a tail after the punch, a crammed bar, a lecture fact, the same
-  move as the previous joke, or two bars in a row with no joke.
+  move as the previous joke, two bars in a row with no joke, or a clause that drops a held flow without
+  turning.
 - **Scope:** judge craft, not subject. The project's content limits are the user's call.
 
 ## Workflow
@@ -294,11 +351,12 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
    - the character's worst fact, to confess
 3. **Overgenerate.** Draft about three jokes for every slot in the song, across different techniques,
    as couplets of 9-12 syllables a bar. Then choose each verse's run: an anchor sound and its bank,
-   with three to six of the jokes rewritten onto it.
+   with three to six of the jokes rewritten onto it. Choose its flow too: a clause shape (such as
+   "3f 3f") to hold for four bars, with a sound from the target's world to alliterate on.
 4. **Score and pick** with the table above. Order each verse with the runner-up first, the best last
    and a held frame in the middle. Plan the rebuttals, the callbacks and any chant or cameo.
 5. **Measure** with `pixelart.song.bars --bars`, fix every flag that isn't deliberate, and check the
-   targets table, rhyme length and runs included.
+   targets table, rhyme length, runs, alliteration and held flow included.
 6. **Get a second opinion** from the `lyric-critic` agent, which scores the draft cold, without having
    written it. Apply its fixes and run it once more.
 7. **Show the user** the sheet, with the critic's score for each verse.

@@ -16,7 +16,7 @@ score it and propose fixes.
 2. Read the sheet. For a project, it is `projects/NAME/lyrics.txt`, and `style.txt` next to it gives
    the voices and tempo.
 3. From the repo root, run `uv run python -m pixelart.song.bars <sheet> --bars` for the syllable
-   counts, rhymes and flags.
+   counts, rhymes, alliteration, flow and flags.
 
 Don't open `~/claude/lyrics-corpus/`, and don't quote any published song, not even one line. The API
 blocks output that reproduces song lyrics, and the whole session stops working. To point at a reference,
@@ -53,6 +53,13 @@ After the jokes in each verse:
 - **Runs:** the longest stretch of bars on one end-rhyme sound, and how many punches rhyme on three
   syllables. A verse made only of couplets with one-syllable rhymes needs a run: name the anchor sound
   you would run it on, and which jokes would move onto it.
+- **Alliteration:** how many bars alliterate on their stressed words (the scorer's `al` column), and
+  which bars could take a pair on a sound from the target's world.
+- **Flow:** the clause shapes (the scorer's `flow` column). Name the flow the verse holds, how many bars
+  it lasts, and the clause where it drops. A drop at a turn or at the button is fine. A drop mid-run to
+  explain (a simile, an aside) or to cram a fact is a fix: rewrite that clause as the next jab, in the
+  same shape. A verse with no flow held for four bars needs one: name the shape and the bars to put on
+  it.
 - **Length:** sung syllables, and whether later rounds are shorter than earlier ones.
 
 For the song as a whole:
@@ -60,6 +67,7 @@ For the song as a whole:
 - **Hook:** if there is one, does it give the crowd a side to shout, or does it narrate the premise?
 - **Surprise:** is there a cameo, a volley or a moderator, or only strict alternation?
 - **Callbacks:** do they pay off?
+- **Outro:** two bars at most, ending on its joke, with nothing after it that explains the joke.
 
 ## Rewrites
 
@@ -67,7 +75,9 @@ For every joke rated fix or cut, propose two rewrites. Keep the premise, or repl
 the problem. Each rewrite must:
 - obey the guide's rules for a bar: 9-12 syllables, one breath, the punch last and nothing after it
 - score 9 or more on your own rubric (give the score)
-- fit its place: rhyme with the bars it pairs with, and stay in the speaker's voice
+- fit its place: rhyme with the bars it pairs with, keep the flow of the bars around it (the same
+  clause shapes), and stay in the speaker's voice
+- alliterate its stressed words where it can
 
 Check each rewrite with the scorer before you report it:
 

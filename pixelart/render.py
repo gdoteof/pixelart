@@ -93,7 +93,7 @@ def main():
     cmd = [FFMPEG, "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(listing)]
     if p.audio:
         cmd += ["-i", str(p.audio), "-map", "0:v", "-map", "1:a",
-                "-af", f"afade=t=out:st={dur - 0.08:.3f}:d=0.08", "-c:a", "aac", "-b:a", "320k"]
+                "-af", f"afade=t=out:st={dur - p.fade:.3f}:d={p.fade:.3f}", "-c:a", "aac", "-b:a", "320k"]
     cmd += ["-c:v", "copy", "-t", f"{dur:.3f}", "-movflags", "+faststart", out]
     subprocess.run(cmd, check=True)
     print(f"wrote {out} in {time.time() - t0:.0f}s", flush=True)

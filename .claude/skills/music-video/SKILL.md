@@ -98,6 +98,10 @@ drifted constantly (handheld sway, gate weave). Both came out jumpy and hard to 
 - Play gags inside the wide frame, or in an inset. Don't fly the camera over to them.
 - Cut rather than glide. Shake only on hits, never as constant drift.
 
+End a few seconds after the last line. Song models often repeat a closing line or play on for ten
+seconds or more, and filling that tail drags (Round 2's ending ran 34 seconds). Set `END` in
+`project.py` a few seconds after the last word, and `FADE` to fade the song out under the end card.
+
 The loop:
 - `uv run python -m pixelart.preview projects/NAME tag 12 30:40:2`, then read the contact sheet image
   to check every change visually.
