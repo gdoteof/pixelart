@@ -13,7 +13,8 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
     syl     syllables per bar (mean and spread)
     long    share of bars over 16 syllables, which a song model rushes or garbles
     end2    share of bars whose end rhymes on 2+ syllables with a bar up to 3 lines away
-    chain3  share of bars in a run of 3+ consecutive bars ending on the same two vowels
+    end3    the same on 3+ syllables
+    chain3  share of bars in a rhyme run: 3+ consecutive bars ending on the same two vowels
     RD      rhyme density (Malmi et al. 2016, "DopeLearning"): the mean over words of the
             longest vowel run ending at that word that also ends at one of the 15 words before it
     inner2  words per bar, besides the last, that rhyme on 2+ syllables with a nearby word
@@ -43,6 +44,7 @@ import json
 import re
 import statistics
 import sys
+import unicodedata
 from functools import cache
 from pathlib import Path
 
@@ -121,6 +123,7 @@ def words(bar):
     said letter by letter, so it becomes its letters, upper-cased: "the UN" -> ["the", "U", "N"],
     "BBs" -> ["B", "B"]. The few said as words ("PAC", "GIF") stay words.
     """
+    bar = "".join(c for c in unicodedata.normalize("NFKD", bar) if not unicodedata.combining(c))  # "Pelé"
     bar = re.sub(r"\(.*?\)", " ", bar).replace("-", " ")
     shouted = bar.isupper()
     out = []
@@ -142,12 +145,12 @@ def cmu():
 
 
 def vowel_sounds(phones):
-    """ARPAbet phones -> vowels without stress. Unstressed AH0 and IH0, and AH2 ("Qatar"), are all
-    the schwa "@"."""
+    """ARPAbet phones -> vowels without stress. Unstressed AH0, IH0 and ER0, and AH2 ("Qatar"), are
+    all the schwa "@": rap rhymes "battery" with "tragedy" and "killer" with "Godzilla"."""
     out = []
     for phone in phones:
         base = phone.rstrip("012")
-        if phone in ("AH0", "AH2", "IH0"):
+        if phone in ("AH0", "AH2", "IH0", "ER0"):
             out.append("@")
         elif base in VOWELS:
             out.append(SAME_VOWEL.get(base, base))
@@ -343,6 +346,7 @@ def analyse(text):
         "syl_sd": statistics.pstdev(syls),
         "long": sum(s > LONG for s in syls) / len(recs),
         "end2": sum(r["end"] >= 2 for r in recs) / len(recs),
+        "end3": sum(r["end"] >= 3 for r in recs) / len(recs),
         "chain3": chained / len(recs),
         "RD": statistics.mean(r for r, (_, _, v) in zip(rhyme, toks) if v),
         "inner2": statistics.mean(r["inner2"] for r in recs),
@@ -363,7 +367,7 @@ def name_of(path):
 
 
 COLUMNS = [("bars", "{:>4.0f}"), ("words", "{:>5.0f}"), ("syl", "{:>5.1f}"), ("syl_sd", "{:>5.1f}"), ("long", "{:>5.0%}"),
-           ("end2", "{:>5.0%}"), ("chain3", "{:>6.0%}"), ("RD", "{:>5.2f}"), ("inner2", "{:>6.2f}"), ("MATTR", "{:>5.2f}"),
+           ("end2", "{:>5.0%}"), ("end3", "{:>5.0%}"), ("chain3", "{:>6.0%}"), ("RD", "{:>5.2f}"), ("inner2", "{:>6.2f}"), ("MATTR", "{:>5.2f}"),
            ("thats", "{:>5.0f}"), ("nums", "{:>4.1f}"), ("names", "{:>5.0f}"), ("flagged", "{:>7.0%}")]
 
 

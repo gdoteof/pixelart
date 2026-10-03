@@ -15,16 +15,18 @@ stays blocked until it is rewound or cleared.
 
 1. One line is one bar: 9-12 syllables, one breath, the punch word last and nothing after it.
 2. A joke usually takes a couplet. The first bar sets up, and the second lands it on the rhyme.
-3. Give each rapper one charge against the other, and keep only the jokes that prove it or show who the
+3. Let the rhymes run. Rhyme the punch on two or three syllables, and at least once a verse hold one
+   sound for three to six bars instead of switching every couplet.
+4. Give each rapper one charge against the other, and keep only the jokes that prove it or show who the
    speaker is.
-4. Bend the target's own world (their name, jargon, catchphrase or famous image) until a word means two
+5. Bend the target's own world (their name, jargon, catchphrase or famous image) until a word means two
    things at once.
-5. Small, embarrassing facts beat big, serious ones. Use only facts a teenager on YouTube already knows,
+6. Small, embarrassing facts beat big, serious ones. Use only facts a teenager on YouTube already knows,
    or state a lesser one in six plain words inside a joke that works without it.
-6. The calm one wins. A character who confesses, or talks down to the other, beats one who prosecutes
+7. The calm one wins. A character who confesses, or talks down to the other, beats one who prosecutes
    or rants.
-7. Each verse ends on its best bar, and later rounds are shorter than earlier ones.
-8. Write three times the jokes you need, score them with the rubric below, and keep the best.
+8. Each verse ends on its best bar, and later rounds are shorter than earlier ones.
+9. Write three times the jokes you need, score them with the rubric below, and keep the best.
 
 ## Targets
 
@@ -35,17 +37,20 @@ Group medians:
 |---|---|---|---|
 | syllables per bar | 8.8-11.0 | 14.1 | 12 or fewer |
 | bars over 16 syllables | 1-4% | 12% | 3% or fewer |
-| end rhymes on 2+ syllables | 31-45% | 26% | 35% or more |
+| end rhymes on 2+ syllables | 36-45% | 27% | 40% or more |
+| end rhymes on 3+ syllables | 8-14% | 3% | 10% or more |
+| bars in a rhyme run (3+ bars on one two-syllable rhyme) | 1-15% | 0% | 10% or more |
 | "that's" / "that ain't" tags per 100 bars | 0-2 | 14 | 2 or fewer |
 | number words per 100 words | 0.1-1.1 | 2.3 | 1 or fewer |
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
-| flagged bars | 34-42% | 69% | 45% or fewer |
+| flagged bars | 34-44% | 69% | 45% or fewer |
 
 \* The ERB, Hamilton, diss and wordplay medians. Comedy rap runs shorter (7.6 syllables a bar) and
 rhymes less.
 
-- **Rhyme density isn't where we fall short.** Ours (0.84) sits inside the reference range (0.83-0.94).
-  Rhyme *length* on the punch is the gap.
+- **Rhyme density isn't where we fall short.** Ours (0.88) sits inside the reference range (0.87-0.99).
+  How far the rhymes run is the gap. Ours rarely rhyme on three syllables, and never hold a rhyme for
+  three bars: every sound lasts one couplet, so a verse sounds like a list of separate jokes.
 - **Bar length is audible.** A rapper fits about 4.5 syllables a second, so a 4/4 bar holds about 11
   syllables at 96 BPM and 12 at 90. In Pardon Me's take (ACE-Step XL, 96 BPM), lines averaged 1.29
   bars. 21 of 50 ran past a bar and a quarter, the worst took almost two, and the punch words drifted
@@ -64,12 +69,35 @@ rhymes less.
 - **One breath per bar.** One sentence, or a short question and its answer, or two clauses that mirror
   each other ("He got America; you got Ohio"). Full stops inside a bar mean a setup and a punch have
   been crammed together, so split them into a couplet.
-- **Rhyme the punch on two syllables or more** when that doesn't force it. The vowels must match and
-  the consonants may drift ("scenario" / "radio").
+- **Rhyme the punch on two syllables or more**, and on three when you can, as long as it doesn't force
+  the line. The vowels must match and the consonants may drift ("scenario" / "radio").
 - **Leave air.** After a big joke, leave a rest, a one- or two-syllable echo in parentheses, or a short
   bar.
 - **Keep it drawable.** The video gives each line a gag, so the punch word should be a prop, an action
   or a face, never a number or a verdict.
+
+## Rhyme runs
+
+A run holds one rhyme sound for three bars or more, and it's how a verse builds instead of listing jokes.
+In the diss tracks and wordplay showcases, about one bar in seven sits in a run on the same two-syllable
+rhyme, and the best runs stack the sound inside the bars too. Ours change sound every couplet.
+
+1. **Pick the anchor:** a two- or three-syllable sound from the target's name, the charge, or the best
+   punch word ("Qatar", "tragedy").
+2. **Bank it:** list 15-20 words and short phrases that end on those vowels, and keep the funny ones.
+   Phrases count, and the consonants may drift ("bomb art" runs with "cigars" and "Qatar").
+3. **Run it** for three to six bars, with a match or two inside the bars, and save the nastiest word
+   for the last one. Change sound when the topic turns, not before.
+4. **Place it** in the middle or at the end of a verse, leading into the button. The rest of the verse
+   can be couplets.
+
+A run carries a list well: stack receipts on one sound, and break the pattern on the last one. A synthetic
+example (the Roomba on Napoleon), on "tragedy":
+
+*"Cavalry froze; your strategy's a tragedy; / I cleaned your palace, Majesty, on one battery; / they paint
+you on a stallion in the gallery; / it was a mule, Boney; the rest is flattery."*
+
+`pixelart.song.bars --bars` shows each bar's end-rhyme length, and `end3` and `chain3` in the summary.
 
 ## Where jokes come from
 
@@ -172,8 +200,7 @@ autocorrect, and Columbus vs. a maps app.
 ### Sound
 
 - **Rhyme run.** Hold one two- or three-syllable vowel pattern for 4-10 hits across a few bars. Anchor it
-  on the opponent's name or the topic, and put the nastiest hit last.
-  *"Cavalry froze, the strategy's a tragedy; / Majesty, I took the whole house on one battery."*
+  on the opponent's name or the topic, and put the nastiest hit last (see Rhyme runs above).
 - **High-low rhyme.** Rhyme a learned word with a street or household phrase.
   *"I wrote in iambic pentameter; / you turn my curses into ducks, you amateur."*
 - **Forced rhyme, owned.** Let the rhyme visibly drag in an absurd word, then commit to it.
@@ -205,6 +232,7 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
   sung words, which is four minutes.
 - **Build:** hold a frame, a ladder or an anchor word for four bars or more, instead of changing topic
   every couplet.
+- **Runs:** most verses hold at least one rhyme run of three to six bars.
 - **Rebuttal:** every verse answers something from the one before, and not always in its first line.
   Concede and flip it, or wave it away; never defend point by point.
 - **Persona:** each character raps in their own register, with their own self-owns. Not every bar has
@@ -265,11 +293,12 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
    - the smallest embarrassing true detail
    - the character's worst fact, to confess
 3. **Overgenerate.** Draft about three jokes for every slot in the song, across different techniques,
-   as couplets of 9-12 syllables a bar.
+   as couplets of 9-12 syllables a bar. Then choose each verse's run: an anchor sound and its bank,
+   with three to six of the jokes rewritten onto it.
 4. **Score and pick** with the table above. Order each verse with the runner-up first, the best last
    and a held frame in the middle. Plan the rebuttals, the callbacks and any chant or cameo.
 5. **Measure** with `pixelart.song.bars --bars`, fix every flag that isn't deliberate, and check the
-   targets table.
+   targets table, rhyme length and runs included.
 6. **Get a second opinion** from the `lyric-critic` agent, which scores the draft cold, without having
    written it. Apply its fixes and run it once more.
 7. **Show the user** the sheet, with the critic's score for each verse.

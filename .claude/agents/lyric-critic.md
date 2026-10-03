@@ -50,6 +50,9 @@ After the jokes in each verse:
 - **Mechanisms:** list them in order. The same move three times running is a template.
 - **Rebuttal:** does it answer the previous verse by conceding and flipping, or by defending?
 - **Facts:** count the bars that need a footnote. More than one makes a lecture.
+- **Runs:** the longest stretch of bars on one end-rhyme sound, and how many punches rhyme on three
+  syllables. A verse made only of couplets with one-syllable rhymes needs a run: name the anchor sound
+  you would run it on, and which jokes would move onto it.
 - **Length:** sung syllables, and whether later rounds are shorter than earlier ones.
 
 For the song as a whole:
