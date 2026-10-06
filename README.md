@@ -23,7 +23,8 @@ pixelart/                 shared library and CLIs
   anim.py                 deterministic randomness, ramps and easing curves
   sprites.py              sprite canvases with palette names, ink outlines, pasting, scaling, tints and rim light
   fx.py                   comic effects: arcade title text, labels, speech bubbles, stamps, arrows, bursts
-  figure.py               a seated figure in layers: a torso, a head and two arms posed by named gestures
+  kit.py                  a project's palette bound to the drawing helpers: its Canvas, text in the two pixel fonts
+  figure.py               a seated figure in layers: a torso, a head and two arms posed by named gestures, at any scale
   gags.py                 per-lyric-line gags: generators that draw in the render phases they ask for
   timing.py               render-time clocks: tracked beat grid, "which lyric/word is being sung"
   songtime.py             a song's timeline for a renderer: fixed beat grid, timed lines, sections, vocal loudness

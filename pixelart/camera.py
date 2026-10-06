@@ -5,9 +5,11 @@ is always an integer so every world pixel stays square; the UI layer is the
 same size as the world and always shown at the base scale (out / world).
 Pans are smooth (whole screen pixels), zooms step from one integer to the next.
 """
+import math
+
 from PIL import Image
 
-from pixelart.anim import ease_in_out, lerp
+from pixelart.anim import ease_in_out, lerp, rnd
 
 
 class Cam:
@@ -47,6 +49,14 @@ def between(a, b, p, ease=ease_in_out, **kw):
     """A camera part way from shot a to shot b, each (cx, cy, k): the centre glides, the zoom steps."""
     q = ease(p)
     return Cam(lerp(a[0], b[0], q), lerp(a[1], b[1], q), round(lerp(a[2], b[2], q)), **kw)
+
+
+def shake_offset(amount, frame):
+    """Screen pixels to nudge the world by for a shake of `amount` on this frame: a new direction each frame."""
+    if amount < 0.5:
+        return (0, 0)
+    a = rnd("shake", frame) * 2 * math.pi
+    return (int(round(math.cos(a) * amount)), int(round(math.sin(a) * amount)))
 
 
 def compose(world, ui, cam, shake=(0, 0)):

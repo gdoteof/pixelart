@@ -4,11 +4,10 @@ Everything is drawn at 320x180 and shown 6x (nearest-neighbour) at 1080p.
 """
 from pathlib import Path
 
-from PIL import Image, ImageDraw  # noqa: F401
-
-from pixelart import pixel, sprites
-from pixelart.anim import (arc_pt, back_out, clamp, ease_in, ease_in_out, ease_out, lerp, pop_dy,  # noqa: F401
+from pixelart import kit
+from pixelart.anim import (arc_pt, back_out, clamp, ease_in, ease_in_out, ease_out, k_in, lerp, pop_dy,  # noqa: F401
                            ramp, rnd, wobble)
+from pixelart.kit import PRESS, PRESS16, SILK, SILK16, silk_w  # noqa: F401
 from pixelart.pixel import dither, dither_rect, mix, text_width  # noqa: F401
 from pixelart.sprites import (fade_to, fly, mirror, paste, paste_rot, paste_scaled, pop_in, scaled,  # noqa: F401
                               tint)
@@ -74,65 +73,6 @@ C = {
     "pan": (64, 150, 70), "pan_sh": (40, 104, 50), "sea": (60, 120, 190), "sea_hi": (120, 180, 230),
 }
 
-PRESS = pixel.font(size=8)
-PRESS16 = pixel.font(size=16)
-SILK = pixel.font("Silkscreen-Regular.ttf", 8)
-SILK16 = pixel.font("Silkscreen-Regular.ttf", 16)
-
-
-def col(c):
-    return C[c] if isinstance(c, str) else tuple(c)[:3]
-
-
-def rgba(c, a=255):
-    return col(c) + (a,)
-
-
-def silk(img, xy, s, fill="text", anchor="la", fnt=SILK):
-    """Silkscreen text with its glyph tops at y (the glyphs sit 4 px down their box, 8 px at double size)."""
-    x, y = xy
-    d = ImageDraw.Draw(img)
-    d.fontmode = "1"
-    d.text((x, y - fnt.size // 2), s, font=fnt, fill=rgba(fill) if img.mode == "RGBA" else col(fill), anchor=anchor)
-
-
-def press(img, xy, s, fill="text", anchor="la", fnt=PRESS, shadow=None):
-    """Press Start text; `shadow` is a colour for a 1 px drop shadow."""
-    pixel.text(img, xy, s, fnt, col(fill), col(shadow) if shadow else None, anchor)
-
-
-def outline_text(img, xy, s, fnt=PRESS, fill="text", outline=INK, anchor="la"):
-    pixel.outline_text(img, xy, s, fnt, col(fill), col(outline), anchor)
-
-
-def silk_w(s, fnt=SILK):
-    return pixel.text_width(s, fnt)
-
-
-class Canvas(sprites.Canvas):
-    """A sprite canvas drawing with this video's palette names; `done()` outlines in ink."""
-
-    def __init__(self, w, h):
-        super().__init__(w, h, C, SILK)
-
-    def silk(self, xy, s, col_="ink", anchor="la", fnt=SILK):
-        silk(self.img, xy, s, col_, anchor, fnt)
-
-    def done(self, outline=INK):
-        return super().done(outline)
-
-
-def picture(w, h, bg="bg"):
-    """A flat RGB picture and its ImageDraw, for tiles and for what ChatGPT's screen shows."""
-    img = Image.new("RGB", (w, h), col(bg))
-    d = ImageDraw.Draw(img)
-    d.fontmode = "1"
-    return img, d
-
-
-def vgrad(img, box, top, bottom, steps=None, phase=0, soft=0.3):
-    return pixel.vgrad(img, box, col(top), col(bottom), steps, phase, soft)
-
-
-def blend(img, m, color, alpha=0.3):
-    return pixel.blend(img, m, col(color), alpha)
+KIT = kit.Kit(C, INK)
+col, rgba, silk, press, outline_text = KIT.col, KIT.rgba, KIT.silk, KIT.press, KIT.outline_text
+Canvas, picture, vgrad, blend = KIT.Canvas, KIT.picture, KIT.vgrad, KIT.blend

@@ -70,6 +70,20 @@ def text_width(s, fnt):
     return int(fnt.getlength(s))
 
 
+def wrap(words, width, fnt):
+    """Break words into rows no wider than `width` in font `fnt`: each row is a list of indices into `words`."""
+    rows, row, x = [], [], 0
+    space = text_width(" ", fnt)
+    for i, w in enumerate(words):
+        ww = text_width(w, fnt)
+        if row and x + space + ww > width:
+            rows.append(row)
+            row, x = [], 0
+        x += (space if row else 0) + ww
+        row.append(i)
+    return rows + [row] if row else rows
+
+
 def mask(draw_fn, size):
     """Coverage mask in [0, 1] of shape (h, w), built by drawing with 255 on a blank L image."""
     m = Image.new("L", size, 0)

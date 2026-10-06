@@ -34,11 +34,12 @@ import video as V
 from call import DESK_Y, PIC, SCREEN, TH, TILE, TW
 from characters import FW, figure, head, helmet, mini, orb
 from engine import (C, INK, PRESS, PRESS16, SILK, SILK16, H, W, Canvas, arc_pt, back_out, blend, clamp, col, dither,
-                    dither_rect, ease_in, ease_in_out, ease_out, fade_to, fly, lerp, mirror, mix, outline_text, paste,
-                    paste_rot, paste_scaled, pop_dy, pop_in, ramp, rgba, rnd, scaled, silk, silk_w, text_width, tint,
-                    vgrad, wobble)
+                    dither_rect, ease_in, ease_in_out, ease_out, fade_to, fly, k_in, lerp, mirror, mix, outline_text,
+                    paste, paste_rot, paste_scaled, pop_dy, pop_in, ramp, rgba, rnd, scaled, silk, silk_w, text_width,
+                    tint, vgrad, wobble)
 from pictures import PH, PW, Pic
 from pixelart import fx, pixel
+from pixelart.gags import Sung, count
 
 FPS = TL.FPS
 GAGS = V.GAGS
@@ -63,34 +64,10 @@ def hooks(idx, pre=0.12, post=0.5):
 
 # --- timing ---------------------------------------------------------------------------------
 
-def k_in(a, dur=0.2):
-    """0 -> 1 over `dur` seconds from age a (clamped)."""
-    return clamp(a / dur, 0.0, 1.0)
-
-
 def when(sec, idx, pat=None, n=0):
     """The time a line starts (or a word in it is sung), for gags that outlive their line."""
     ln = TL.line(sec, idx)
     return ln["t0"] if pat is None else TL.timing.word_time(ln, pat, "t0", n)
-
-
-def count(L, *pats):
-    """How many of the words matching these patterns, in order, have been sung."""
-    return sum(1 for p in pats if L.on(p))
-
-
-class Sung:
-    """Stands in for a line once all of it has been sung: for a gag that keeps an earlier line's picture
-    up, and so can't ask its own line about that one's words."""
-
-    def __init__(self, t=0.0):
-        self.t = t
-
-    def on(self, pat, n=0):
-        return True
-
-    def age(self, pat=None, n=0):
-        return 9.0
 
 
 # --- ChatGPT's window ---------------------------------------------------------------------------

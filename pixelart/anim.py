@@ -25,6 +25,11 @@ def ramp(t, a, b):
     return clamp((t - a) / (b - a), 0.0, 1.0)
 
 
+def k_in(age, dur=0.2):
+    """0 -> 1 over `dur` seconds from age 0 (clamped): how far in something is that starts at age 0."""
+    return clamp(age / dur, 0.0, 1.0)
+
+
 def ease_out(p):
     p = clamp(p, 0.0, 1.0)
     return 1 - (1 - p) ** 3

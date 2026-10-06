@@ -24,7 +24,8 @@ import timeline as TL
 from characters import FW, figure
 from engine import C, INK, SILK, H, W, Canvas, blend, col, rgba, rnd, silk, silk_w
 from pixelart import pixel
-from pixelart.camera import Cam, compose
+from pixelart.camera import Cam, compose, shake_offset
+from pixelart.figure import pick
 from pixelart.gags import Gags
 
 FPS = TL.FPS
@@ -105,25 +106,6 @@ TALK = {"felix": (("palm", 3), ("point", 3), ("shrug", 2), ("guns", 2), ("finger
         "sam": (("steeple", 4), ("finger", 3), ("pinch", 3), ("point", 2), ("chest", 2))}   # his hands stay off the button
 
 
-def pick(who, slot):
-    """The gesture for a two-beat slot: weighted, and never the same twice running."""
-    opts = TALK[who]
-    total = sum(w for _, w in opts)
-
-    def draw(k):
-        r = rnd(who, "gesture", k) * total
-        for g, w in opts:
-            r -= w
-            if r < 0:
-                return g
-        return opts[-1][0]
-
-    g = draw(slot)
-    if g == draw(slot - 1):
-        g = draw(slot + 1000)
-    return g
-
-
 def singing(c, who):
     ln = c.ln
     if ln is None or ln["who"] != who:
@@ -147,7 +129,7 @@ def pose_rapper(c, who):
     ln = c.ln
     mine = ln is not None and ln["who"] == who
     if s["gesture"]:
-        s["arms"] = pick(who, c.beat_i // 2)
+        s["arms"] = pick(TALK[who], c.beat_i // 2, who, "gesture")
         if mine and (ln["sec"], ln["idx"]) in TL.KILL_SHOTS:
             if TL.last_word(ln) - 0.15 <= c.t <= TL.last_word(ln) + 0.9:    # the punchline: point at him
                 s["arms"] = "point"
@@ -351,19 +333,6 @@ def show_word(w):
     return w.strip("*") if TL.is_sound(w) else w
 
 
-def wrap(words, width):
-    rows, row, x = [], [], 0
-    space = silk_w(" ")
-    for i, w in enumerate(words):
-        ww = silk_w(w)
-        if row and x + space + ww > width:
-            rows.append(row)
-            row, x = [], 0
-        x += (space if row else 0) + ww
-        row.append(i)
-    return rows + [row] if row else rows
-
-
 def draw_lower_third(c):
     ln = c.ln
     if not ln or not c.subs:
@@ -372,7 +341,7 @@ def draw_lower_third(c):
     raw = [w["w"] for w in ln["words"]]
     words = [show_word(w) for w in raw]
     now = TL.word_index(ln, c.t)
-    rows = wrap(words, W - 16)[:2]
+    rows = pixel.wrap(words, W - 16, SILK)[:2]
     y0 = 148
     d.rectangle((0, y0, W, y0 + 18), fill=(12, 14, 24, 240))
     who = c.get("voice", ln.get("who"))
@@ -394,13 +363,6 @@ def draw_lower_third(c):
         silk(c.ui, (10, y0 - 8), name, "text")
         d.rectangle((6 + nw, y0 - 10, 6 + nw + rw, y0 - 1), fill=(232, 234, 242, 255))
         silk(c.ui, (10 + nw, y0 - 8), role, "ink")
-
-
-def shake_offset(c):
-    if c.shake < 0.5:
-        return (0, 0)
-    a = rnd("shake", c.f) * 2 * math.pi
-    return (int(round(math.cos(a) * c.shake)), int(round(math.sin(a) * c.shake)))
 
 
 # --- the frame ------------------------------------------------------------------------------------------
@@ -452,7 +414,7 @@ def build_frame(t, tweak=None):
 
 def render_frame(t):
     c = build_frame(t)
-    return compose(c.world, c.ui, c.cam, shake_offset(c))
+    return compose(c.world, c.ui, c.cam, shake_offset(c.shake, c.f))
 
 
 def label(t):

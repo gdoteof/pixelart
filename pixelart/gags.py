@@ -47,6 +47,25 @@ class LineRef:
         return self.words[-1]["t0"]
 
 
+class Sung:
+    """Stands in for a line once all of it has been sung: for a gag that keeps an earlier line's picture
+    up, and so can't ask its own line about that one's words."""
+
+    def __init__(self, t=0.0):
+        self.t = t
+
+    def on(self, pat, n=0):
+        return True
+
+    def age(self, pat=None, n=0):
+        return 9.0
+
+
+def count(L, *pats):
+    """How many of the words matching these patterns, in order, have been sung."""
+    return sum(1 for p in pats if L.on(p))
+
+
 class GagRunner:
     """Steps a frame's gag generators through the drawing phases in order."""
 
