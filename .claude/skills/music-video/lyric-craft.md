@@ -325,6 +325,10 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
 - **Length:** 530-570 sung words, which is about 3:30. Round 2's 534 words ran 3:25, and Blue on Blue's
   337 ran 2:24, which is too short. 650 words is four minutes, and that is the cap.
 - **Order:** open with the second-best joke and end on the best (the button).
+- **Openings:** a verse's first two bars have to hit: a flip of the target's name, or a few bars of
+  bouncy rhyme, even if they are less pointed than what follows. Never open on a line that only sets
+  up the next one. The first Great Question opener spent a bar on "Appeal denied, for a start:" to
+  rhyme with "startup", and the user heard a weak opening.
 - **Occasion:** when a news story prompts the matchup, it gets about a fifth of the bars: an intro gag,
   a few bars each and the outro. The rest is the two careers and personas, and each rapper brags as
   well as digs. A song that only retells the story is dated in a month.
@@ -344,6 +348,11 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
   to aim outward.
 - **Surprise:** break the strict alternation once, with a volley of one-liners, a cameo, a moderator's
   ruling or an interruption.
+- **Hook:** a hook in a third character's voice, built from that character's tics, can run long and
+  come back as a chorus: four bars that repeat and two that change (Great Question's ChatGPT, which
+  praises both rappers and offers the feud as a table).
+- **Interruptions:** write a line that gets cut off as a whole line, and cut it in post. A song model
+  sings an ellipsis as trailing off.
 - **Outro:** two bars at most, ending on the joke, and nothing after it that explains it. Round 2's
   outro announced the winner ("goes to... the turkey!"), then explained why ("no wars, no trial, no
   drones, and he still got a pardon"). The take sang that line twice and the band played on for
@@ -374,6 +383,8 @@ Each failure mode, with a bar from our own sheets:
 | **Narrating hook:** the crowd watches instead of taking a side | "Wouldn't hold hands, so they're throwing hands tonight!" / "Two defendants, one mic, and the verdict's overdue!" | a short chant built from a brand flip |
 | **Rerun:** a joke, a reference or a format from an earlier song | the first draft of the PewDiePie vs. Altman sheet, which nobody heard: Altman's firing, the borrowed voice and the nonprofit again (all in alt-f4), and Blue on Blue's call-and-answer chant | check with `pixelart.song.fresh`; a returning character's old references are spent |
 | **News report:** the story behind the matchup fills the song | the same draft: about 60% of its bars retold the ban | about a fifth of the bars; the rest is careers, personas and brags |
+| **Stray shot:** the pun lands on something the target doesn't care about | "Nobody's watching Big Brother": a dig at the TV show, not at Altman | turn it into a simile about the target ("You're Big Brother like the show: nobody's watching") |
+| **Private callback:** a punch that needs a made-up phrase from two verses back | "the day that your thumbnail comes true", 35 bars after the fake video title it answers | a button has to stand alone: say the thing itself |
 | **Prose:** a verse that stops rhyming | the end of two-georges (West's anecdote and the sword handed back) | spoken lines only in intros and outros |
 
 ## Judging a joke

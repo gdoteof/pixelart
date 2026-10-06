@@ -22,6 +22,9 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   where Section starts with Intro/Verse/Pre-Chorus/Chorus/Hook/Bridge/Outro/...; other bracketed lines like
   `[crowd roars]` are stage directions, not sung. Speakers and sections feed the video (speaker tags,
   section cards); `pixelart/lyrics.py` has the rules.
+- A cut-off, a bleep or a buzzer is a post effect. A song model sings "My name is Pew..." as a line
+  that trails off, so the interruption never lands. Write the line whole, mark the cut with a stage
+  direction, and cut the vocal stem once a take is picked.
 - Write for laughs and rhymes, not a history lesson. Read [lyric-craft.md](lyric-craft.md) before
   drafting. It distils 25 reference songs (ERB, Hamilton, diss tracks, wordplay showcases, comedy rap)
   into rules for a bar, joke techniques, a scoring rubric and a workflow. Don't model a sheet on our
