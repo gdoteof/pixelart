@@ -1,0 +1,56 @@
+{
+  "title": "Great Question",
+  "source": "yue2-s2+live-s4",
+  "duration": 195.679,
+  "picked": "2026-10-06T21:18:39+00:00",
+  "model": "acestep-xl",
+  "seed": 4,
+  "style": "English, 2010s YouTube diss-track hip hop, bouncy trap drums, 8-bit chiptune synth lead, punchy 808 bass, arcade blips, confident male rapper, crisp tenor, steady pocket flow, sincere confident delivery, clear diction, 94 BPM",
+  "base": "yue2-s2",
+  "base_style": "English, 2010s YouTube diss-track hip hop, bouncy trap drums, 8-bit chiptune synth lead, punchy 808 bass, arcade blips, confident male rapper, crisp tenor, steady pocket flow, sincere confident delivery, clear diction, 94 BPM",
+  "repainted": [
+    {
+      "start": 25.47,
+      "end": 33.1,
+      "gain_db": 1.54
+    }
+  ],
+  "lyrics_sha256": "3eaf4cc25027a567",
+  "cuts": [
+    {
+      "t0": 3.27,
+      "t1": 3.8,
+      "sound": "buzzer"
+    },
+    {
+      "t0": 7.96,
+      "t1": 8.02,
+      "sound": "none"
+    },
+    {
+      "t0": 8.02,
+      "t1": 10.23,
+      "sound": "buzzer"
+    },
+    {
+      "t0": 52.15,
+      "t1": 52.195,
+      "sound": "none"
+    },
+    {
+      "t0": 52.195,
+      "t1": 52.515,
+      "sound": "clap"
+    },
+    {
+      "t0": 52.515,
+      "t1": 52.725,
+      "sound": "clap"
+    },
+    {
+      "t0": 189.295,
+      "t1": 189.995,
+      "sound": "buzzer"
+    }
+  ]
+}

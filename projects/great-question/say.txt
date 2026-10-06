@@ -1,0 +1,3 @@
+# Spellings for the song model alone: as written = as it should be read.
+# YuE2 sang "live" as the verb, so the model gets a word it can only say one way.
+bridge, live. = bridge, life.
