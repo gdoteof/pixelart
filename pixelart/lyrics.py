@@ -16,8 +16,14 @@ sung and belongs to no section.
 
 Song models want only plain structure tags (`model_lyrics`); alignment and the
 video want the sung lines with their section and speaker (`lines`).
+
+A project can also hold a say.txt: spellings for the song model alone, one
+`as written = as it should be read` per line. A model guesses at a heteronym
+("on a bridge, live" came out as the verb), so `bridge, live. = bridge, life.`
+gives it a word it can only say one way, and the sheet keeps the real one.
 """
 import re
+from pathlib import Path
 
 # First word of a section header -> the tag song models understand.
 MODEL_TAGS = {
@@ -73,9 +79,24 @@ def sections(text):
     return out
 
 
-def model_lyrics(text):
-    """The sheet as song-model input: plain structure tags, speakers, notes and directions dropped."""
-    blocks = []
+def say_hints(text):
+    """[(as written, as read), ...] from a say.txt. Lines starting with # are comments."""
+    hints = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        written, _, read = (part.strip() for part in line.partition("="))
+        if not written or not read:
+            raise SystemExit(f"say.txt: expected `as written = as read`, got {line!r}")
+        hints.append((written, read))
+    return hints
+
+
+def model_lyrics(text, say=()):
+    """The sheet as song-model input: plain structure tags, speakers, notes and directions dropped,
+    and the spelling of each `say` hint swapped in."""
+    blocks, used = [], set()
     for sec in sections(text):
         if not sec["lines"]:
             continue
@@ -83,8 +104,24 @@ def model_lyrics(text):
         if sec["section"]:
             first = re.sub(r"[^a-z]", "", sec["section"].lower().split()[0])
             tag = MODEL_TAGS[first]
-        blocks.append(f"[{tag}]\n" + "\n".join(sec["lines"]))
+        lines = []
+        for line in sec["lines"]:
+            for written, read in say:
+                if written in line:
+                    line = line.replace(written, read)
+                    used.add(written)
+            lines.append(line)
+        blocks.append(f"[{tag}]\n" + "\n".join(lines))
+    stale = [written for written, _ in say if written not in used]
+    if stale:
+        raise SystemExit(f"say.txt: no sung line contains {stale[0]!r}")
     return "\n\n".join(blocks) + "\n"
+
+
+def for_model(root):
+    """A project's lyrics.txt as the song models get it, with its say.txt spellings if it has any."""
+    say = Path(root) / "say.txt"
+    return model_lyrics((Path(root) / "lyrics.txt").read_text(), say_hints(say.read_text()) if say.exists() else ())
 
 
 def sung_words(text):

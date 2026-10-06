@@ -17,6 +17,15 @@ copy and a line in the lyric check report.
 --window repaints explicit spans in seconds instead, e.g. to redo a few lines
 that a take mumbled or dropped. A take can be repainted again, so fixes stack
 up as <TAKE>+<TAG>-s<seed>+<TAG2>-s<seed2>.
+
+The model gets the sheet as it is now, with say.txt's spellings, so a window
+can also re-sing a line that was reworded or respelt since the take was made.
+Cut a window in the gaps between lines: the vocal stem shows where they are.
+
+ACE-Step hands the take back a decibel down, with each window a little quieter
+than what it replaced. So the take goes back around the windows at its own
+level, sample for sample, and each window is brought to the loudness of the
+audio it replaced (`fit_levels`).
 """
 import argparse
 import json
@@ -28,12 +37,50 @@ from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 
+import numpy as np
+
 from pixelart import lyrics
+from pixelart.ffmpeg import decode_stereo, encode
 from pixelart.song.check import words_of
 from pixelart.song.generate import listen_copy
 from pixelart.song.models import MODELS, ModelMissing
 
 MIN_WINDOW, MAX_WINDOW = 3.0, 90.0  # ACE-Step's repaint limits, in seconds
+SR = 48000                          # ACE-Step's sample rate
+SPLICE = 0.025                      # seconds ACE-Step crossfades the source back in at a window's edges
+
+
+def rms(x):
+    return float(np.sqrt(np.mean(np.square(x, dtype=np.float64)))) if len(x) else 0.0
+
+
+def fit_levels(src, new, windows, out):
+    """Write `new` (ACE-Step's repaint of `src`) to `out` with the source back at its own level
+    around the windows, and each window at the loudness of what it replaced. Returns each
+    window's gain in dB, or None when the audio outside the windows isn't the source any more."""
+    a, b = decode_stereo(src, SR), decode_stereo(new, SR)
+    n = min(len(a), len(b))
+    edge = int(SPLICE * SR)
+    spans = [(max(0, int(s * SR)), min(n, int(e * SR))) for s, e in windows]
+    kept = np.ones(n, bool)
+    for i, j in spans:
+        kept[max(0, i - 8 * edge):j + 8 * edge] = False
+    gain = float((b[:n][kept] * a[:n][kept]).sum() / max(1e-12, (a[:n][kept] ** 2).sum()))   # ACE-Step's own
+    if gain <= 0 or rms(b[:n][kept] - gain * a[:n][kept]) > 0.05 * rms(gain * a[:n][kept]):
+        shutil.copyfile(new, out)
+        return None
+    fitted, gains = a.copy(), []
+    for i, j in spans:
+        window = b[i:j] / gain
+        k = min(max(rms(a[i:j]) / max(rms(window), 1e-9), 0.5), 2.0, 0.999 / max(float(np.abs(window).max()), 1e-9))
+        lo, hi = max(0, i - edge), min(n, j + edge)
+        ramp = np.full(hi - lo, k)
+        ramp[:i - lo] = np.linspace(1, k, i - lo)
+        ramp[j - lo:] = np.linspace(k, 1, hi - j)
+        fitted[lo:hi] = b[lo:hi] / gain * ramp[:, None]
+        gains.append(round(20 * float(np.log10(k)), 2))
+    encode(fitted, SR, out)
+    return gains
 
 
 def section_spans(sheet, transcript, min_block=3):
@@ -124,6 +171,7 @@ def main():
             raise SystemExit(f"window is {b - a:.0f}s; ACE-Step repaints {MIN_WINDOW:.0f}-{MAX_WINDOW:.0f}s at a time")
 
     base = json.loads(src.with_suffix(".json").read_text())
+    (takes / "model_lyrics.txt").write_text(lyrics.for_model(root))
     work = takes / "work" / f"{args.take}+{args.name}"
     work.mkdir(parents=True, exist_ok=True)
     log_path = takes / "logs" / f"{args.take}+{args.name}.log"
@@ -136,14 +184,15 @@ def main():
             for seed, audio, _ in MODELS[args.model](takes / "model_lyrics.txt", args.style, args.seeds, work, log,
                                                      src_audio=src, repaint=windows):
                 take = f"{args.take}+{args.name}-s{seed}"
-                shutil.copyfile(audio, takes / f"{take}.flac")
+                gains = fit_levels(src, audio, windows, takes / f"{take}.flac")
                 (takes / f"{take}.json").write_text(json.dumps({
                     "take": take, "model": args.model, "seed": seed, "style": args.style,
                     "base": args.take, "base_style": base.get("style"),
-                    "repainted": base.get("repainted", []) + spans,
+                    "repainted": base.get("repainted", []) + [dict(sp, gain_db=g) for sp, g in
+                                                                 zip(spans, gains or [None] * len(spans))],
                     "lyrics_sha256": base.get("lyrics_sha256"), "source": str(audio),
                     "created": datetime.now(timezone.utc).isoformat(timespec="seconds")}, indent=2) + "\n")
-                listen_copy(audio, takes / "listen" / f"{take}.m4a")
+                listen_copy(takes / f"{take}.flac", takes / "listen" / f"{take}.m4a")
                 print(f"  {take} ({time.time() - start:.0f}s)", flush=True)
         except ModelMissing as e:
             raise SystemExit(str(e))

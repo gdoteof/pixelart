@@ -5,6 +5,7 @@
 lyrics.txt is a lyric sheet (pixelart.lyrics): speakers and performance notes
 in its headers are for the video and the alignment. The models only get plain
 structure tags, so put voice and delivery directions in style.txt as well.
+A say.txt next to it respells words for the models alone (pixelart.lyrics).
 style.txt is one line of genre, instruments, vocal character and tempo; a
 "NN BPM" in it is passed to ACE-Step as the tempo. ACE-Step also needs a
 length (left to itself it can pick 18 s for a full verse and chorus), so
@@ -76,7 +77,7 @@ def main():
     takes = root / "build" / "takes"
     (takes / "logs").mkdir(parents=True, exist_ok=True)
     model_lyrics = takes / "model_lyrics.txt"
-    model_lyrics.write_text(lyrics.model_lyrics(sheet))
+    model_lyrics.write_text(lyrics.for_model(root))
     sheet_sha = hashlib.sha256(sheet.encode()).hexdigest()[:16]
     n_words = len(lyrics.sung_words(sheet))
     estimate = estimate_duration(n_words, style)
