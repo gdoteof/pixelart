@@ -74,12 +74,15 @@ def word_index(line, t):
     return len(ws)
 
 
-def word_time(line, pattern, which="t0"):
-    """Start (or end) time of the first word in `line` matching a regex."""
+def word_time(line, pattern, which="t0", n=0):
+    """Start (or end) time of the first word in `line` matching a regex, or of the n-th one after it."""
+    k = 0
     for w in line["words"]:
         if re.search(pattern, w["w"], re.I):
-            return w[which]
-    raise KeyError(f"{pattern!r} not in {line['text']!r}")
+            if k == n:
+                return w[which]
+            k += 1
+    raise KeyError(f"{pattern!r} #{n} not in {line['text']!r}")
 
 
 def frame_value(env, t, fps):

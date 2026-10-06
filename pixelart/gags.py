@@ -30,15 +30,21 @@ class LineRef:
         self.t0, self.t1 = ln["t0"], ln["t1"]
         self.words = ln["words"]
 
-    def w(self, pat, which="t0"):
-        return timing.word_time(self.ln, pat, which)
+    def w(self, pat, which="t0", n=0):
+        return timing.word_time(self.ln, pat, which, n)
 
-    def age(self, pat=None):
-        """Seconds since the first word matching `pat` (or the line) started; negative before."""
-        return self.t - (self.w(pat) if pat else self.t0)
+    def age(self, pat=None, n=0):
+        """Seconds since the first word matching `pat` (or the n-th after it, or the line) started;
+        negative before."""
+        return self.t - (self.w(pat, n=n) if pat else self.t0)
 
-    def on(self, pat):
-        return self.t >= self.w(pat)
+    def on(self, pat, n=0):
+        return self.t >= self.w(pat, n=n)
+
+    @property
+    def end(self):
+        """When the line's last word is sung."""
+        return self.words[-1]["t0"]
 
 
 class GagRunner:

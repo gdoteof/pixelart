@@ -7,11 +7,15 @@ Inputs are a project's data/ files (pixelart.song.pick and pixelart.audio.analyz
     lyrics_timed.json  [{"section", "speaker", "text", "t0", "t1", "words": [{"w", "t0", "t1"}, ...]}, ...]
 
 Before a take is picked there is no timing yet; `draft_lines` lays the lyric sheet out on an even grid
-so the video can be built and previewed in the meantime.
+so the video can be built and previewed in the meantime. `Song` loads whichever there is.
 """
+import json
+import math
+from pathlib import Path
+
 import numpy as np
 
-from pixelart import lyrics
+from pixelart import lyrics, timing
 
 
 def fit_grid(beats, downbeats, duration, bpm_guess):
@@ -85,3 +89,95 @@ def draft_lines(text, bpm, start=4.0, gap_bars=2):
             t += bar
         t += gap_bars * bar
     return out
+
+
+def number_lines(raw, order, who_map):
+    """Timed lines with short names, like `load_lines`, for a sheet that repeats a section name: each
+    run of lines under one section name takes the next name in `order`, so a hook that is sung twice
+    is "hook1" and "hook2". Two headers in a row with the same section name are one run."""
+    out, counters, k, prev = [], {}, -1, None
+    for gi, ln in enumerate(raw):
+        if ln["section"] != prev:
+            k, prev = k + 1, ln["section"]
+        sec = order[k]
+        idx = counters.get(sec, 0)
+        counters[sec] = idx + 1
+        out.append({**ln, "sec": sec, "idx": idx, "gi": gi, "who": who_map[ln["speaker"]]})
+    return out
+
+
+class Song:
+    """A project's song as its renderer needs it: the beat grid, the timed lyric lines, the sections
+    and the vocal loudness, read from data/. Until a take is picked and analysed (no
+    data/lyrics_timed.json), the lyric sheet is laid out on an even grid at `bpm`, so the video can
+    be built and previewed.
+
+    `order` names the sections in song order (see `number_lines`), ending with the end card, which
+    has no lines. `who` maps the sheet's speakers to short names.
+    """
+
+    def __init__(self, root, bpm, order, who, fps=24):
+        root = Path(root)
+        data = root / "data"
+        self.fps, self.order = fps, tuple(order)
+        self.draft = not (data / "lyrics_timed.json").exists()
+        if self.draft:
+            raw = draft_lines((root / "lyrics.txt").read_text(), bpm)
+            self.meta = {}
+            self.duration = raw[-1]["t1"] + 8.0
+            self.period = 60.0 / bpm
+            self.beats = np.arange(0.0, self.duration + 4 * self.period, self.period)
+            self.bars = self.beats[::4]
+            self.env = None
+        else:
+            raw = json.loads((data / "lyrics_timed.json").read_text())
+            self.meta = json.loads((data / "song.json").read_text())
+            self.duration = self.meta["duration"]
+            tracked = json.loads((data / "beat_this.json").read_text())
+            self.beats, self.bars, self.period = fit_grid(tracked["beats"], tracked["downbeats"], self.duration, bpm)
+            self.env = np.load(data / "vocal_env.npy")
+        clock = timing.BeatClock(self.beats, self.bars)
+        self.beat_info, self.since_beat, self.bar_info = clock.beat_info, clock.since_beat, clock.bar_info
+        self.lines = number_lines(raw, self.order, who)
+        self.sections = section_spans(self.lines, self.order, self.duration)
+
+    def next_beat(self, t):
+        i = np.searchsorted(self.beats, t)
+        return float(self.beats[min(i, len(self.beats) - 1)])
+
+    def lines_of(self, sec):
+        return [ln for ln in self.lines if ln["sec"] == sec]
+
+    def line(self, sec, idx):
+        return next(ln for ln in self.lines if ln["sec"] == sec and ln["idx"] == idx)
+
+    def line_at(self, t, lead=0.12, hold=0.9):
+        return timing.line_at(self.lines, t, lead, hold)
+
+    def section_at(self, t):
+        """(name, start, end) of the section playing at t."""
+        for name, a, b in self.sections:
+            if a <= t < b:
+                return name, a, b
+        return self.sections[-1] if t >= self.sections[-1][1] else self.sections[0]
+
+    def section_bounds(self, name):
+        for n, a, b in self.sections:
+            if n == name:
+                return a, b
+        raise KeyError(name)
+
+    def section_start(self, name):
+        return self.section_bounds(name)[0]
+
+    def section_end(self, name):
+        return self.section_bounds(name)[1]
+
+    def loudness(self, t):
+        """The vocals' loudness in [0, 1] at t, to drive mouths."""
+        if self.env is not None:
+            return timing.frame_value(self.env, t, self.fps)
+        ln = self.line_at(t, lead=0.0, hold=0.0)                # draft: a syllable-ish pulse while a line is sung
+        if not ln or not ln["t0"] <= t <= ln["t1"]:
+            return 0.0
+        return 0.45 + 0.45 * math.sin(t * 2 * math.pi * 4.3)

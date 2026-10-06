@@ -14,6 +14,7 @@ without resampling blur.
 import numpy as np
 from PIL import Image, ImageDraw
 
+from pixelart.anim import arc_pt, back_out
 from pixelart.pixel import dither
 
 
@@ -104,6 +105,22 @@ def paste_rot(dst, img, x, y, angle, anchor="mm"):
     if angle:
         img = img.rotate(angle, resample=Image.NEAREST, expand=True)
     paste(dst, img, x, y, anchor)
+
+
+def pop_in(dst, img, x, y, age, dur=0.18, anchor="mm"):
+    """Paste a sprite that pops in from age 0: it overshoots its size and settles. Nothing before."""
+    if age < 0:
+        return
+    s = back_out(min(1.0, age / dur)) if age < dur else 1.0
+    paste_scaled(dst, img, int(round(x)), int(round(y)), s, anchor)
+
+
+def fly(dst, img, p0, p1, p, lift=20, turns=0.0):
+    """Paste a sprite thrown along an arc from p0 to p1 as p goes 0 -> 1, spinning `turns` times."""
+    if not 0 <= p <= 1:
+        return
+    x, y = arc_pt(p, p0, p1, lift)
+    paste_rot(dst, img, int(round(x)), int(round(y)), turns * 360 * p)
 
 
 def tint(img, color, amount=1.0):
