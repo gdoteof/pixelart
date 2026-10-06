@@ -9,7 +9,7 @@ Works on lyric sheets and on plain lyrics. Pronunciations come from CMUdict; wor
 get a rough guess from their spelling. Rhymes are matched on vowel sounds alone, the way rap
 rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
 
-    words   sung words, counted as song.generate counts them (about 650 fit in four minutes)
+    words   sung words, counted as song.generate counts them (530-570 make about 3:30; 650 is four minutes)
     syl     syllables per bar (mean and spread)
     long    share of bars over 16 syllables, which a song model rushes or garbles
     end2    share of bars whose end rhymes on 2+ syllables with a bar up to 3 lines away

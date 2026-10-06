@@ -33,6 +33,8 @@ stays blocked until it is rewound or cleared.
 9. Each verse ends on its best bar, later rounds are shorter than earlier ones, and the outro is two
    bars at most.
 10. Write three times the jokes you need, score them with the rubric below, and keep the best.
+11. Every song gets its own jokes and references. Don't draft with an earlier sheet open, and when a
+    news story prompts the matchup, give it about a fifth of the bars.
 
 ## Targets
 
@@ -320,8 +322,17 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
   jokes that prove it or that show who the speaker is. A tour of topics needs fresh setup every couplet
   and turns into a lecture. Promote the best receipt to a nickname or the chant.
 - **Verses:** 12-16 bars, about 130-160 sung syllables, with later rounds shorter.
-- **Order:** open with the second-best joke and end on the best (the button). Keep the song under 650
-  sung words, which is four minutes.
+- **Length:** 530-570 sung words, which is about 3:30. Round 2's 534 words ran 3:25, and Blue on Blue's
+  337 ran 2:24, which is too short. 650 words is four minutes, and that is the cap.
+- **Order:** open with the second-best joke and end on the best (the button).
+- **Occasion:** when a news story prompts the matchup, it gets about a fifth of the bars: an intro gag,
+  a few bars each and the outro. The rest is the two careers and personas, and each rapper brags as
+  well as digs. A song that only retells the story is dated in a month.
+- **Fresh:** every song gets its own jokes, references and hook format. Don't open an earlier
+  project's sheet while drafting. `uv run python -m pixelart.song.fresh projects/NAME` lists the names,
+  phrases and words a draft shares with each earlier sheet, without showing their lines. When a
+  character returns, run it with `--spent OLDNAME` first and treat the references it lists as used up:
+  the same famous facts come to mind first.
 - **Build:** hold a frame, a ladder or an anchor word for four bars or more, instead of changing topic
   every couplet.
 - **Runs:** most verses hold at least one rhyme run of three to six bars.
@@ -361,6 +372,8 @@ Each failure mode, with a bar from our own sheets:
 | **Weak rhyme:** forced or stock | "penguins" / "onions"; "you" / "true"; "wall" / "all" | rhyme the punch on two syllables, with a fresh pair |
 | **Abstract punch:** nothing to draw | "Fifty-two drawn over sixty-nine?" / "thirty-four for thirty-four" | punch on a prop, an action or a face |
 | **Narrating hook:** the crowd watches instead of taking a side | "Wouldn't hold hands, so they're throwing hands tonight!" / "Two defendants, one mic, and the verdict's overdue!" | a short chant built from a brand flip |
+| **Rerun:** a joke, a reference or a format from an earlier song | the first draft of the PewDiePie vs. Altman sheet, which nobody heard: Altman's firing, the borrowed voice and the nonprofit again (all in alt-f4), and Blue on Blue's call-and-answer chant | check with `pixelart.song.fresh`; a returning character's old references are spent |
+| **News report:** the story behind the matchup fills the song | the same draft: about 60% of its bars retold the ban | about a fifth of the bars; the rest is careers, personas and brags |
 | **Prose:** a verse that stops rhyming | the end of two-georges (West's anecdote and the sword handed back) | spoken lines only in intros and outros |
 
 ## Judging a joke
@@ -387,7 +400,9 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
 
 1. **Thesis and premises.** Write each rapper's charge in one sentence. Then, for each character, list
    20 or so things a general audience knows: looks, catchphrases, famous moments, products, scandals and
-   quirks. Mark which ones a teenager would know.
+   quirks. Mark which ones a teenager would know. If a character was in an earlier song, run
+   `pixelart.song.fresh --spent OLDNAME` and strike what that song used. If a news story prompted the
+   matchup, mark its premises too, and plan for them to fill about a fifth of the bars.
 2. **Hunt hinges.** For each premise, look for:
    - the pieces of the name or brand
    - jargon with an everyday meaning
@@ -404,7 +419,9 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
    and a held frame in the middle. Plan the rebuttals, the callbacks and any chant or cameo.
 5. **Measure** with `pixelart.song.bars --bars`, fix every flag that isn't deliberate, and check the
    targets table, rhyme length, runs, alliteration, held flow and `local` included. Read the tie
-   column for seams that snap.
+   column for seams that snap. Check the word count against the length target, and run
+   `pixelart.song.fresh projects/NAME`: rework any name or phrase the draft shares with an earlier
+   sheet.
 6. **Get a second opinion** from the `lyric-critic` agent, which scores the draft cold, without having
    written it. Apply its fixes and run it once more.
 7. **Show the user** the sheet, with the critic's score for each verse.

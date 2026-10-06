@@ -17,6 +17,9 @@ score it and propose fixes.
    the voices and tempo.
 3. From the repo root, run `uv run python -m pixelart.song.bars <sheet> --bars` for the syllable
    counts, rhymes, alliteration, flow, ties and flags.
+4. Run `uv run python -m pixelart.song.fresh <sheet>` for the names, phrases and words the sheet
+   shares with earlier sheets. Don't open any other project's lyric sheet: this list is all you need
+   from them, and a rewrite modelled on an old sheet repeats it.
 
 Don't open `~/claude/lyrics-corpus/`, and don't quote any published song, not even one line. The API
 blocks output that reproduces song lyrics, and the whole session stops working. To point at a reference,
@@ -68,7 +71,15 @@ After the jokes in each verse:
 - **Length:** sung syllables, and whether later rounds are shorter than earlier ones.
 
 For the song as a whole:
-- **Length:** is it under 650 sung words?
+- **Length:** is it 530-570 sung words, which is about 3:30? Past 650 it runs over the four-minute
+  cap. If it is over 570, list the bars to cut to reach the target, weakest first, with the words
+  each cut saves.
+- **Occasion:** when a news story prompted the matchup, count the bars that lean on it. About a fifth
+  is right; a song that mostly retells the story needs more of the two careers.
+- **Brags:** does each rapper brag as well as dig? Count the bars each spends on their own record.
+- **Fresh:** the names and phrases `pixelart.song.fresh` found in earlier sheets, and any reference
+  you were told is spent (a returning character's jokes from an earlier song). A joke that reuses one
+  is a fix whatever it scores, and no rewrite may use one.
 - **Hook:** if there is one, does it give the crowd a side to shout, or does it narrate the premise?
 - **Surprise:** is there a cameo, a volley or a moderator, or only strict alternation?
 - **Callbacks:** do they pay off?
@@ -101,3 +112,6 @@ Keep it tight, in this order:
 3. **Rewrites:** for each fix or cut, the original bars, then the two rewrites with their scores and
    syllable counts.
 4. **Top five:** the five changes that would most improve the song, most important first.
+
+On a second pass over a revised sheet, score every joke again, but write up only what changed: the
+jokes that are new or rewritten, any verdict that moved, and the checks that now fail.

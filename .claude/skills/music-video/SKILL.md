@@ -30,8 +30,19 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   pick. Measure the draft with `uv run python -m pixelart.song.bars projects/NAME/lyrics.txt --bars`
   and fix its flags. Then have the `lyric-critic` agent score it cold, revise, and show the user the
   sheet with the critic's scores.
-- Keep the song to 4 minutes or less: about 650 sung words for rap (Alt-F4 is 561 words, 3:20).
-  `generate` refuses a longer lyric sheet, so cut verses rather than passing `--long`.
+- Every song needs its own jokes and references. Don't open an earlier project's `lyrics.txt` while
+  drafting: the header syntax is above, and a sheet drafted next to an old one picks up its hook and
+  its pet words. Check the draft with `uv run python -m pixelart.song.fresh projects/NAME`, which lists
+  the names, phrases and words it shares with every earlier sheet (never their lines), and rework
+  what it finds. When a character returns from an earlier song, run
+  `uv run python -m pixelart.song.fresh --spent OLDNAME` before drafting and treat the references in
+  that list as used up: the same famous facts come to mind first.
+- When a news story prompts the matchup, it is the occasion, not the song: give it about a fifth of
+  the bars (an intro gag, a few bars each, the outro). The rest is the two people's whole careers and
+  personas, with brags as well as digs.
+- Aim for about 3:30, give or take 25 seconds: 530-570 sung words for rap (Round 2 is 534 words and
+  3:25; Blue on Blue's 337 words came out at 2:24, too short). Four minutes is the cap: `generate`
+  refuses a sheet that runs longer, so cut verses rather than passing `--long`.
 - `style.txt`: one line of genre, instruments, vocal character, delivery and tempo ("... 91 BPM").
   The models only see plain section tags, so per-verse voice notes are lost. Put the voices in the style
   too, and expect one vocalist unless the user accepts that. Ask for a sincere, confident delivery, not
