@@ -26,6 +26,7 @@ import numpy as np
 from pixelart.ffmpeg import FFMPEG
 
 CUT, RETURN = 0.004, 0.04   # seconds to fade the vocals out at the cut, and back in after the span
+NEAR = 3                    # seconds either side of a span that set the sound's level
 SOUNDS = ("buzzer", "bleep", "none")
 
 
@@ -61,14 +62,15 @@ def tone(sound, n, sr):
 
 def cut(song, backing, sr, spans, sound="buzzer", length=0.45, gain=-3.0):
     """`song` with the vocals cut in each (start, end) span: the backing plays there instead, and
-    `sound` starts on the cut, `gain` dB louder than the song's overall level (RMS)."""
+    `sound` starts on the cut, `gain` dB louder than the song is (RMS) in the few seconds around it."""
     n = min(len(song), len(backing))
     out = song.copy()
-    level = np.sqrt(np.mean(song ** 2)) * 10 ** (gain / 20)
     for start, end in spans:
         a, b = int(start * sr), min(n, int(end * sr))
         if not 0 <= a < b:
             raise SystemExit(f"span {start}:{end} is outside the song or empty")
+        near = song[max(0, a - NEAR * sr):b + NEAR * sr]   # a quiet intro gets a quiet buzzer
+        level = np.sqrt(np.mean(near ** 2)) * 10 ** (gain / 20)
         mix = np.ones(b - a)   # how much of the backing replaces the song
         fade_in, fade_out = min(b - a, int(CUT * sr)), min(b - a, int(RETURN * sr))
         mix[:fade_in] = np.linspace(0, 1, fade_in)
@@ -97,7 +99,7 @@ def main():
                     help="list the words Whisper heard in this span instead, to find the cut points")
     ap.add_argument("--sound", choices=SOUNDS, default="buzzer")
     ap.add_argument("--length", type=float, default=0.45, help="seconds of buzzer or bleep (default 0.45)")
-    ap.add_argument("--gain", type=float, default=-3.0, help="its level against the song's, in dB (default -3)")
+    ap.add_argument("--gain", type=float, default=-3.0, help="its level against the song around it, in dB (default -3)")
     args = ap.parse_args()
 
     root = Path(args.project).resolve()
