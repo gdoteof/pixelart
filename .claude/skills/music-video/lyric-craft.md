@@ -353,6 +353,13 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
   praises both rappers and offers the feud as a table).
 - **Interruptions:** write a line that gets cut off as a whole line, and cut it in post. A song model
   sings an ellipsis as trailing off.
+- **Sound effects:** a song model sings "(Clap, clap!)" as two words. If the sound can't be dropped in
+  afterwards (`pixelart.audio.bleep` has a buzzer, a bleep and a handclap), cut the bar rather than
+  have it read out. If it can, keep the words in the sheet as placeholders: they hold the gap open.
+- **Words with two readings:** the model picks one, and in Great Question it sang "live" (on air) as
+  the verb. Check the punchline words for these (live, read, lead, tear, wind, bow, bass, close,
+  minute) and either write around them or give the model a spelling it can only say one way, in the
+  project's `say.txt` ("bridge, live. = bridge, life."). The sheet keeps the real word.
 - **Outro:** two bars at most, ending on the joke, and nothing after it that explains it. Round 2's
   outro announced the winner ("goes to... the turkey!"), then explained why ("no wars, no trial, no
   drones, and he still got a pardon"). The take sang that line twice and the band played on for

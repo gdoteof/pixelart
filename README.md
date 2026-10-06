@@ -10,6 +10,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | [`pardon-me`](projects/pardon-me) | *Pardon Me*, Trump vs. Netanyahu, a rap battle on the floor of the UN General Assembly, fought with visual aids |
 | [`trump-netanyahu-2`](projects/trump-netanyahu-2) | *Round 2*, Trump vs. Netanyahu in the Oval Office, fighting for the Nobel Peace Prize |
 | [`blue-on-blue`](projects/blue-on-blue) | *Blue on Blue*, Mamdani vs. Newsom on Newsom's podcast, a love triangle with Trump on speakerphone |
+| [`great-question`](projects/great-question) | *Great Question*, PewDiePie vs. Sam Altman on a video call, moderated by ChatGPT, which shares a picture for every bar |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
@@ -22,8 +23,10 @@ pixelart/                 shared library and CLIs
   anim.py                 deterministic randomness, ramps and easing curves
   sprites.py              sprite canvases with palette names, ink outlines, pasting, scaling, tints and rim light
   fx.py                   comic effects: arcade title text, labels, speech bubbles, stamps, arrows, bursts
+  figure.py               a seated figure in layers: a torso, a head and two arms posed by named gestures
   gags.py                 per-lyric-line gags: generators that draw in the render phases they ask for
   timing.py               render-time clocks: tracked beat grid, "which lyric/word is being sung"
+  songtime.py             a song's timeline for a renderer: fixed beat grid, timed lines, sections, vocal loudness
   lyrics.py               lyric sheets: [Section - Speaker: note] headers, model tags, sung words
   project.py              the project.py contract, and the loader the CLIs use
   new.py                  python -m pixelart.new NAME                 new project from _template
@@ -33,7 +36,7 @@ pixelart/                 shared library and CLIs
   sheet.py                python -m pixelart.sheet OUT a.png …       contact sheet of any PNGs
   youtube.py              python -m pixelart.youtube PROJECT         upload to YouTube from thumbs/youtube_upload.txt
   song/                   lyrics -> song with local models: score lyric bars, compare sheets, generate takes, check and repaint them, pick one
-  audio/                  song analysis: analyze runs stems, beats, envelope, transcribe, align; bleep cuts a line short
+  audio/                  song analysis: analyze runs stems, beats, envelope, transcribe, align; bleep cuts a line short or drops a sound in
   gpu.py                  CUDA library path for faster-whisper, VRAM size
   fonts/                  Press Start 2P, Silkscreen (SIL OFL)
 projects/
@@ -44,6 +47,7 @@ projects/
   pardon-me/
   trump-netanyahu-2/
   blue-on-blue/
+  great-question/
 ```
 
 Inside a project:
@@ -97,6 +101,8 @@ The models give a whole song one voice, so a duet or a battle comes out in one v
 
 A song model can't perform an interruption either: it sings a line that should be cut off as one that trails off. Write the line whole in `lyrics.txt`, and after `analyze` cut it short with `pixelart.audio.bleep PROJECT START:END`. Inside the span the song is swapped for its backing (the Demucs stem), so the beat carries on, and a buzzer or a censor bleep starts on the cut. `--words START:END` lists the word times, the take as picked is kept in `audio/song.take.wav`, and the spans go into `data/song.json` as `cuts` for the video.
 
+A model can't make a sound effect: it sings "(Clap, clap!)" as two words. Leave the words in the sheet, so the take has room for the sound, and name a sound on each span to swap them: `bleep PROJECT 52.2:52.5:clap 52.5:52.7:clap` (spans that touch make one cut with a sound at the start of each). A word with two readings is a coin toss as well: `say.txt` in a project gives the models a spelling they can only say one way (`bridge, live. = bridge, life.`), and the sheet keeps the real word. `repaint --window` then re-sings just that line, and brings the window back to the loudness of what it replaced.
+
 **Analysis.** `analyze` skips steps whose output exists (`--force` redoes them). Whisper is primed with the proper nouns in `lyrics.txt`, or with the project's `prompt.txt` if it has one. The lyrics are aligned in one pass over the whole song. Whisper tends to start the first word after a pause while the singer is still silent, so word starts that land in a pause move to where the vocal stem gets loud again. The report marks lines that are mostly interpolated with `!`; these are usually chants or ad-libs Whisper can't hear. When that isn't good enough, write a per-song `align.py` with a time window per section and hand timings (`projects/alt-f4/align.py` is a worked example), and `analyze` leaves alignment to it. The single steps are also CLIs: `python -m pixelart.audio.{stems,beats,envelope,transcribe,align,tempo}`.
 
 Demucs applies a random time shift, so regenerated stems (and the loudness envelope built from them) differ a little from run to run. Commit `data/` and treat it as the source of truth once a video depends on it.
@@ -140,5 +146,6 @@ Uploading needs a Google Cloud project with the YouTube Data API v3 enabled and 
 - `gagkit.py` and `video.py`: how a video wires up per-line gags (`pixelart.gags`), shots for the camera, hit reactions and karaoke
 - two-georges' `characters.py` and `scene.py`: posable characters as cached sprites with anchors (hand, mouth, head), and a set drawn once and mirrored, animated per frame
 - `thumbnail.py`: YouTube thumbnails in the video's style, with a sheet previewing them at YouTube's display sizes
+- great-question's `characters.py`, `call.py` and `pictures.py`: seated figures on the shared rig (`pixelart.figure`), a fixed three-pane frame, and a small canvas class for drawing a picture per bar
 
 If the same code gets copied into a second project, move it into `pixelart/` instead.

@@ -27,6 +27,15 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   direction, and cut it short once the take is picked and analysed:
   `uv run python -m pixelart.audio.bleep projects/NAME --words 0:12` lists the word times, and
   `... bleep projects/NAME 3.42:4.6` swaps the song for its backing in that span and adds a buzzer.
+- A sound effect is a post effect too: the model sings "(Clap, clap!)" as two words. Leave the words in
+  the sheet, so the take has room for the sound, and swap each one for a clap by naming the sound on
+  its span: `... bleep projects/NAME 3.42:4.6 52.2:52.5:clap 52.5:52.7:clap`. Every run starts again
+  from the take as picked, so give all the spans each time. If the sound can't be made, cut the bar
+  rather than have it read out.
+- A word with two readings ("live", "read", "tear") comes out as whichever the model picks. Give the
+  model a spelling it can only say one way in the project's `say.txt` (`bridge, live. = bridge, life.`):
+  `generate` and `repaint` read it, and the sheet and the captions keep the real word. To fix one line
+  of a take the user otherwise likes, `pixelart.song.repaint ... --window A:B` re-sings that span.
 - Write for laughs and rhymes, not a history lesson. Read [lyric-craft.md](lyric-craft.md) before
   drafting. It distils 25 reference songs (ERB, Hamilton, diss tracks, wordplay showcases, comedy rap)
   into rules for a bar, joke techniques, a scoring rubric and a workflow. Don't model a sheet on our
@@ -90,6 +99,10 @@ uv run python -m pixelart.audio.analyze projects/NAME     # stems, beats, envelo
 - If many lines are off, write a per-song `align.py` with section windows and hand timings
   (`projects/alt-f4/align.py` is the worked example). `analyze` then leaves alignment to it.
 - `data/` is the source of truth once a video depends on it; `audio/` and `build/` are not committed.
+- `bleep` records its spans in `data/song.json` as `cuts`, for the video to stamp on. In
+  `data/lyrics_timed.json` a word in asterisks (`*BZZT*`, `*CLAP*`) is a sound laid over the song, not
+  a sung word: captions show it without the asterisks, in another colour, once it sounds
+  (`projects/great-question/align.py` writes them, `video.py` draws them).
 
 ## 4. Baseline video
 
@@ -103,7 +116,10 @@ star that hops on beats and glows with the vocals. Show it to the user early.
 ## 5. Custom video
 
 Design the look with the user. Then replace `video.py`, reusing what fits from `projects/alt-f4`:
-characters, props, per-line gag generators, the camera and thumbnails.
+characters, props, per-line gag generators, the camera and thumbnails. `projects/great-question` is
+a worked example of one fixed frame: two seated figures (`pixelart.figure`: a torso, a head and arms
+posed by named gestures) either side of a screen that shows a picture for every bar, with
+`timeline.py` built on `pixelart.songtime.Song` and one `gags_<section>.py` per section.
 
 Keep the camera calm, so it's always clear what the viewer is looking at. Alt-F4 reads best of the
 three videos: it cuts often, but between a few fixed framings, and it stays in a wide shot with both
@@ -121,7 +137,11 @@ seconds or more, and filling that tail drags (Round 2's ending ran 34 seconds). 
 The loop:
 - `uv run python -m pixelart.preview projects/NAME tag 12 30:40:2`, then read the contact sheet image
   to check every change visually.
-- `uv run python -m pixelart.sweep projects/NAME` to catch exceptions on any frame.
+- `uv run python -m pixelart.sweep projects/NAME` to catch exceptions on any frame. Run it before every
+  render: a gag that is still alive during the next line, and asks that line about its own words,
+  fails only on those frames.
+- Read text at its real size. A sheet of twelve full frames is scaled down until small print can't be
+  judged, so crop to the picture being checked and enlarge it (six frames, or 24 crops, per sheet).
 - `render --fresh` after code changes.
 
 If you copy code from alt-f4 into a second project, move it into `pixelart/` instead.
