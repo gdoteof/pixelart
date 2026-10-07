@@ -98,6 +98,12 @@ uv run python -m pixelart.audio.analyze projects/NAME     # stems, beats, envelo
   ad-libs or crowd parts Whisper can't hear, so check them against the audio.
 - If many lines are off, write a per-song `align.py` with section windows and hand timings
   (`projects/alt-f4/align.py` is the worked example). `analyze` then leaves alignment to it.
+  When only some words are off (a held word, an echo, the first word after a pause), keep the
+  automatic alignment and move those: `pixelart.audio.align.hand_fixed` and `set_starts`
+  (`projects/play-the-video/align.py`).
+- The whole-song transcript mishears crowd and chant parts. Before calling a punchline word mis-sung,
+  transcribe that bar alone from the vocal stem, with and without the line as a prompt. Give the user
+  the timestamps either way: their ear decides.
 - `data/` is the source of truth once a video depends on it; `audio/` and `build/` are not committed.
 - `bleep` records its spans in `data/song.json` as `cuts`, for the video to stamp on. In
   `data/lyrics_timed.json` a word in asterisks (`*BZZT*`, `*CLAP*`) is a sound laid over the song, not
@@ -133,6 +139,7 @@ drifted constantly (handheld sway, gate weave). Both came out jumpy and hard to 
 End a few seconds after the last line. Song models often repeat a closing line or play on for ten
 seconds or more, and filling that tail drags (Round 2's ending ran 34 seconds). Set `END` in
 `project.py` a few seconds after the last word, and `FADE` to fade the song out under the end card.
+`AUDIO_END` stops the sound before the picture ends (Play the Video stops dead on its last word).
 
 The loop:
 - `uv run python -m pixelart.preview projects/NAME tag 12 30:40:2`, then read the contact sheet image
@@ -142,6 +149,9 @@ The loop:
   fails only on those frames.
 - Read text at its real size. A sheet of twelve full frames is scaled down until small print can't be
   judged, so crop to the picture being checked and enlarge it (six frames, or 24 crops, per sheet).
+- A take sings its verses back to back, with none of the gaps a draft grid has. After retiming, look
+  at the first and last half second of every bar: the gag before is still alive there, and what it
+  draws over the frame (a label, a clip's progress bar, a shake) lands on the next bar's picture.
 - `render --fresh` after code changes.
 
 If you copy code from alt-f4 into a second project, move it into `pixelart/` instead.

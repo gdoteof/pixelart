@@ -40,8 +40,8 @@ def _hook(sec):
     t0, t1 = TL.section_bounds(sec)
     L0, L1, L2, L3, L4, L5 = (TL.line(sec, i) for i in range(6))
     paused = TL.timing.word_time(L1, "paused")
-    work = L2["t0"] - 0.25                                   # the cut to the desk
-    back = L4["t0"] - 0.25 if sec == "hook2" else t1         # hook 2 comes back for its ending
+    work = L2["t0"] - TL.LEAD                                # the cut to the desk
+    back = L4["t0"] - TL.LEAD if sec == "hook2" else t1      # hook 2 comes back for its ending
 
     @span(t0, t1)
     def hook(c, L):
@@ -107,7 +107,7 @@ def _twins(sec):
     bathed = TL.timing.word_time(L5, "bathed")
     MOVES = ("cross", "type", "facepalm")                       # the same chair, the same job, the same ban
 
-    @span(L4["t0"] - 0.25, TL.section_end(sec))
+    @span(L4["t0"] - TL.LEAD, TL.section_end(sec))
     def twins(c, L):
         t = c.t
         k = sum(t >= w for w in words) - 1

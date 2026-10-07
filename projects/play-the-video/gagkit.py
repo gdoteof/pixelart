@@ -46,6 +46,8 @@ def gag(sec, idx, pre=0.12, post=0.5):
     punchline on the last word stays up while the next gag starts (the later gag's poses win). A section's
     last line runs to the end of the section and no further: the next one is somebody else's stream."""
     last = (sec, idx + 1) not in {(ln["sec"], ln["idx"]) for ln in TL.LINES}
+    if idx == 0:                                 # nor does a section's first line start before the cut to it
+        pre = min(pre, TL.line(sec, 0)["t0"] - TL.section_start(sec))
     return GAGS.gag(sec, idx, pre, 0.0 if last else post)
 
 
@@ -80,10 +82,11 @@ def hold_up(c, who, prop, lift=0):
 # --- the window, and the chat ----------------------------------------------------------------------
 
 def show(c, pic, title=None, badge="CLIP", a=0.0):
-    """Put a picture (PW x PH) in the host's window from age `a`, in place of the other man's video."""
+    """Put a picture (PW x PH) in the host's window from age `a`, in place of the other man's video. It
+    starts clean, whatever the gag before it was doing to the video (playing it, shaking it)."""
     if a < 0:
         return
-    c.window.update(pic=getattr(pic, "img", pic), title=title, badge=badge, paused=False)
+    c.window.update(pic=getattr(pic, "img", pic), title=title, badge=badge, paused=False, progress=0.02, shake=0)
 
 
 def alert(c, a, title, text=None, icon="star", dur=2.6, host=None, accent=None):

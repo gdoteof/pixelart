@@ -11,6 +11,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | [`trump-netanyahu-2`](projects/trump-netanyahu-2) | *Round 2*, Trump vs. Netanyahu in the Oval Office, fighting for the Nobel Peace Prize |
 | [`blue-on-blue`](projects/blue-on-blue) | *Blue on Blue*, Mamdani vs. Newsom on Newsom's podcast, a love triangle with Trump on speakerphone |
 | [`great-question`](projects/great-question) | *Great Question*, PewDiePie vs. Sam Altman on a video call, moderated by ChatGPT, which shares a picture for every bar |
+| [`play-the-video`](projects/play-the-video) | *Play the Video*, Asmongold vs. Hasan, each on his own stream with the other one's video paused in a corner window, and chat watching from work |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
@@ -49,6 +50,7 @@ projects/
   trump-netanyahu-2/
   blue-on-blue/
   great-question/
+  play-the-video/
 ```
 
 Inside a project:
@@ -104,11 +106,11 @@ A song model can't perform an interruption either: it sings a line that should b
 
 A model can't make a sound effect: it sings "(Clap, clap!)" as two words. Leave the words in the sheet, so the take has room for the sound, and name a sound on each span to swap them: `bleep PROJECT 52.2:52.5:clap 52.5:52.7:clap` (spans that touch make one cut with a sound at the start of each). A word with two readings is a coin toss as well: `say.txt` in a project gives the models a spelling they can only say one way (`bridge, live. = bridge, life.`), and the sheet keeps the real word. `repaint --window` then re-sings just that line, and brings the window back to the loudness of what it replaced.
 
-**Analysis.** `analyze` skips steps whose output exists (`--force` redoes them). Whisper is primed with the proper nouns in `lyrics.txt`, or with the project's `prompt.txt` if it has one. The lyrics are aligned in one pass over the whole song. Whisper tends to start the first word after a pause while the singer is still silent, so word starts that land in a pause move to where the vocal stem gets loud again. The report marks lines that are mostly interpolated with `!`; these are usually chants or ad-libs Whisper can't hear. When that isn't good enough, write a per-song `align.py` with a time window per section and hand timings (`projects/alt-f4/align.py` is a worked example), and `analyze` leaves alignment to it. The single steps are also CLIs: `python -m pixelart.audio.{stems,beats,envelope,transcribe,align,tempo}`.
+**Analysis.** `analyze` skips steps whose output exists (`--force` redoes them). Whisper is primed with the proper nouns in `lyrics.txt`, or with the project's `prompt.txt` if it has one. The lyrics are aligned in one pass over the whole song. Whisper tends to start the first word after a pause while the singer is still silent, so word starts that land in a pause move to where the vocal stem gets loud again. The report marks lines that are mostly interpolated with `!`; these are usually chants or ad-libs Whisper can't hear. When that isn't good enough, write a per-song `align.py` with a time window per section and hand timings (`projects/alt-f4/align.py` is a worked example), and `analyze` leaves alignment to it. When only a few words are off, the song's `align.py` can keep the automatic alignment and move those words: `pixelart.audio.align.hand_fixed` runs it and then a function of yours, and `set_starts` gives the words of one line their starts (`projects/play-the-video/align.py`). The single steps are also CLIs: `python -m pixelart.audio.{stems,beats,envelope,transcribe,align,tempo}`.
 
 Demucs applies a random time shift, so regenerated stems (and the loudness envelope built from them) differ a little from run to run. Commit `data/` and treat it as the source of truth once a video depends on it.
 
-Things to check by ear or eye: Suno renders are sometimes spliced mid-song, which makes a fixed-BPM grid drift. Use the tracked beats, and filter any spurious downbeats around the splice. There can also be a click in the last few frames, so set `END` to stop just before it.
+Things to check by ear or eye: Suno renders are sometimes spliced mid-song, which makes a fixed-BPM grid drift. Use the tracked beats, and filter any spurious downbeats around the splice. There can also be a click in the last few frames, so set `END` to stop just before it. Song models often play on after the last line: `AUDIO_END` stops the sound there while the picture runs on to `END`.
 
 ## Working loop
 
@@ -148,5 +150,6 @@ Uploading needs a Google Cloud project with the YouTube Data API v3 enabled and 
 - two-georges' `characters.py` and `scene.py`: posable characters as cached sprites with anchors (hand, mouth, head), and a set drawn once and mirrored, animated per frame
 - `thumbnail.py`: YouTube thumbnails in the video's style, with a sheet previewing them at YouTube's display sizes
 - great-question's `characters.py`, `call.py` and `pictures.py`: seated figures on the shared rig (`pixelart.figure`), a fixed three-pane frame, and a small canvas class for drawing a picture per bar
+- play-the-video's `stream.py`, `chatlog.py` and `rooms.py`: a live stream's overlay (a video window, a chat that reacts to punchlines, alerts, captions) over a webcam frame of a room
 
 If the same code gets copied into a second project, move it into `pixelart/` instead.

@@ -193,7 +193,7 @@ def katanas_shake(c, L):
         pose(c, "hasan", arms="chop" if int(c.t * 6) % 2 else "fist", eyes="squint", brows="angry", mouth="wide",
              react=False, shake=2 if L.on("katanas") else 1)
     yield "front"
-    if L.on("teens") and c.t < when("v4", 8):
+    if L.on("teens") and c.t < when("v4", 8) - TL.LEAD:            # until the next bar's picture takes the window
         label(c, *win(c, 54, 46), "VS. A TEENAGER", L.age("teens"), bg="ink", fg="text")
 
 
@@ -304,8 +304,8 @@ def future_pic(stage):
 
 @gag("v4", 11)
 def ghost_of_hairline_future(c, L):
-    ghost = L.on("Ghost")
-    show(c, future_pic(1 if L.on("Future") else 0), "HASANABI", "LIVE" if not L.on("Future") else "2046")
+    ghost = L.on("Ghost")                                 # the hook comes in on the last word: the reveal can't wait for it
+    show(c, future_pic(1 if ghost else 0), "HASANABI", "2046" if ghost else "LIVE")
     if ghost:
         pose(c, "asmon", arms="up2", eyes="wide", brows="up", mouth="o")
         c.chat += [("ROACH77:", "asmon_hi", "OOOOOO"), ("BALD4:", "asmon_hi", "ONE OF US")]

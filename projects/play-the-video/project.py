@@ -1,14 +1,14 @@
 """Project settings read by the pixelart tools (see pixelart/project.py for the contract)."""
-import json
 from pathlib import Path
 
 ROOT = Path(__file__).parent
 FPS = 24
 SONG = ROOT / "audio" / "song.wav"
 AUDIO = SONG if SONG.exists() else None
-# data/song.json is written by `python -m pixelart.song.pick`. Until then the video runs on draft timing.
-_song = ROOT / "data" / "song.json"
-END = json.loads(_song.read_text())["duration"] if _song.exists() else 241.5      # the draft's length
+# The last word is "Pause." (190.3-190.7 s), and the song obeys: it stops dead before the next beat, with the
+# take's ad-libs ("oh, oh, pause") still to come, and the picture holds while chat complains into the quiet.
+AUDIO_END = 190.9
+END = 194.0
 OUTPUT = ROOT / "play-the-video.mp4"
 
 

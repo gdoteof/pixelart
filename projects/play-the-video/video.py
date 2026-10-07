@@ -201,6 +201,8 @@ def apply_hits(c):
         s = c.st[who]
         if not h or not s["react"]:
             continue
+        if c.ln is not None and c.ln["who"] == who and h["line"]["gi"] < c.ln["gi"]:
+            continue                                                      # it's his verse now: he has the floor
         age, big = c.t - h["t"], h["big"]
         if age < (1.3 if big else 0.6):
             s["eyes"] = "wide" if big else "side"

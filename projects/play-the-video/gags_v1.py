@@ -23,10 +23,9 @@ def gold_pic(fuzz, mold=False):
 
 @gag("v1", 0)
 def gold_mold(c, L):
-    if L.on("^gold"):
-        grown = L.age("grown")
-        fuzz = 0 if grown < 0 else min(3, 1 + int(grown / 0.11))
-        show(c, gold_pic(fuzz, L.on("mold")), "ASMONMOLD" if L.on("mold") else "ASMONGOLD", "LOGO")
+    grown = L.age("has")                                  # his logo, from his name on: it turns as Hasan says so
+    fuzz = 0 if grown < 0 else min(3, 1 + int(grown / 0.14))
+    show(c, gold_pic(fuzz, L.on("mold")), "ASMONMOLD" if L.on("mold") else "ASMONGOLD", "LOGO", L.age())
     if L.on("mold"):
         pose(c, "hasan", arms="window", eyes="up", brows="up")
     yield "front"
@@ -72,7 +71,8 @@ def mold_report(n):
 
 @gag("v1", 1)
 def mold_on(c, L):
-    show(c, mold_report(count(L, "bread", "bedding", "takes")), "ASMONMOLD", "LOGO")
+    n = count(L, "bread", "bedding", "takes")                      # the logo stays up until there's a first exhibit
+    show(c, mold_report(n) if n else gold_pic(3, True), "ASMONMOLD", "LOGO")
     if L.on("sold"):
         pose(c, "hasan", arms="shrug", brows="up", eyes="open")
     yield "front"
@@ -259,8 +259,8 @@ def evolution(stage, t=0.0):
 def evolve(c, L):
     if L.on("evolve"):
         show(c, evolution(0), "SCIENCE", "DAY 105")
-    elif L.on("baths"):
-        c.window.update(badge="DAY 105")
+    elif c.window["pic"] is None:                         # his paused video, once the last bar's picture is gone
+        c.window.update(title="NO BATH", badge="DAY 105")
     if L.on("bold"):
         pose(c, "hasan", arms="acc0" if int(c.t * 5) % 2 else "acc1", brows="up", eyes="open")    # a slow clap
     yield "front"
@@ -362,7 +362,7 @@ def legendary_loot(c, L):
     if L.on("legendary"):
         pose(c, "hasan", arms="window", eyes="up", brows="up")
     yield "front"
-    if L.on("legendary"):
+    if L.on("legendary") and c.t < when("v1", 10) - TL.LEAD:
         fx.sparkle(c.world, *win(c, 19 + int(8 * math.sin(c.t * 9)), 16), 2, col("gold_hi"))
 
 
@@ -421,7 +421,7 @@ def reactionary(c, L):
         c.window.update(title="REACT ANDY")
         c.chat += [("MARXBRO:", "hasan_hi", "REACT ANDY"), ("LATTE:", "hasan_hi", ":skull: :skull:")]
     yield "front"
-    if L.on("Reactionary") and c.t < when("v1", 12) - 0.1:
+    if L.on("Reactionary") and c.t < when("v1", 12) - TL.LEAD:
         label(c, *win(c, 54, 44), "REACTIONARY", L.age("Reactionary"), bg="live", fg="white")
 
 

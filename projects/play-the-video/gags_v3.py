@@ -202,11 +202,11 @@ def health_pic(n):
 
 @gag("v3", 5, post=0.8)
 def board_of_health(c, L):
-    if L.on("Board"):
-        show(c, health_pic(min(3, 1 + int(L.age("Board") / 0.14))), "HIS DOOR", "NOTICE")
+    if L.on("by"):                                        # up until the next bar has a picture of its own
+        show(c, health_pic(min(3, 1 + int(L.age("by") / 0.16))), "HIS DOOR", "NOTICE")
         pose(c, "hasan", arms="window", eyes="up", brows="up")
     yield "front"
-    if L.on("flagged") and not L.on("Board"):
+    if L.on("flagged") and not L.on("by"):
         label(c, *win(c, 54, 44), "FLAGGED", L.age("flagged"), bg="live", fg="white")
 
 
@@ -217,10 +217,6 @@ def pass_pic(stage):
     """A health tip, and the ticket it comes with."""
     p = Pic("sky")
     p.header("HEALTH TIP", "ok", "ink", h=9)
-    if stage == 0:
-        p.rect((44, 16, 56, 46), "white"); p.rect((35, 25, 65, 37), "white")                          # a cross
-        p.rect((46, 18, 54, 44), "ok"); p.rect((37, 27, 63, 35), "ok")
-        return p.img
     p.rbox((3, 12, 96, 50), "white", "ink", 2)
     p.rect((4, 13, 95, 21), "blue"); p.silk((7, 15), "BOARDING PASS", "white")
     for y in range(23, 49, 3):
@@ -239,7 +235,8 @@ def pass_pic(stage):
 
 @gag("v3", 6)
 def fly_to_turkey(c, L):
-    show(c, pass_pic(count(L, "fly", "hair", "math")), "ASMONGOLD", "TRIP")
+    if L.on("fly"):                                       # the take sings "Board of Health tip" in one breath:
+        show(c, pass_pic(count(L, "fly", "hair", "math")), "ASMONGOLD", "TRIP")       # the notice stays up till here
     if L.on("math"):
         pose(c, "hasan", arms="finger", eyes="open", brows="up")
     yield "front"

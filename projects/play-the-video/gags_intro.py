@@ -3,7 +3,9 @@ it played, and he gets one second in before he has notes."""
 from gagkit import *  # noqa: F403
 
 L0, L1 = TL.line("intro", 0), TL.line("intro", 1)
-LIVE_AT = max(0.6, L0["t0"] - 1.6)                  # the holding card comes down
+# The holding card comes down. The take opens on "Chat," with no bars in front of it, so the card gets
+# that one word and the breath after it.
+LIVE_AT = max(L0["t0"] - 1.6, TL.timing.word_time(L0, "Asmon") - 0.1)
 PLAY = TL.timing.word_time(L0, "Play")
 PAUSE = L1["t0"]
 INTRO_END = TL.section_end("intro")

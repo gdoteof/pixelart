@@ -4,7 +4,7 @@ from gagkit import *  # noqa: F403
 L0, L1 = TL.line("outro", 0), TL.line("outro", 1)
 START = TL.section_start("outro")
 CLAP = TL.timing.word_time(L0, "applause")
-PAUSE = TL.timing.word_time(L1, "Pause")
+PAUSE = TL.STOP                                        # they say it, and it happens: the sound stops here too
 NAMES = ("ZYNGOD", "ROACH77", "LATTE", "BALD4", "MARXBRO", "GRUG", "OATMILK", "RATKING", "KAYA4", "DRPEPR")
 
 
@@ -57,8 +57,8 @@ def outro(c, L):
         pop_in(c.world, icon, 60, 80, a, 0.12)
         pop_in(c.world, icon, W - 60, 80, a, 0.12)
     yield "top"
-    if t >= TL.END_CARD + 0.6:                           # the title, where the words were
-        b = t - TL.END_CARD - 0.6
+    if t >= TL.END_CARD:                                 # the title, where the words were
+        b = t - TL.END_CARD
         d = ImageDraw.Draw(c.ui)
         d.rectangle((0, stream.CAP_Y, W, H), fill=(12, 12, 20, 236))
         d.line([(0, stream.CAP_Y), (W // 2, stream.CAP_Y)], fill=C["hasan"] + (255,))

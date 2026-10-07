@@ -3,6 +3,7 @@
 All times are seconds into audio/song.wav. Until a take is picked and analysed, pixelart.songtime lays the
 lyric sheet out on an even grid at the song's tempo, so the video can be previewed.
 """
+import project
 from engine import ROOT
 from pixelart import songtime, timing
 
@@ -18,8 +19,27 @@ MEN = ("hasan", "asmon")
 VERSES = ("v1", "v2", "v3", "v4")
 HOOKS = ("hook1", "hook2")
 
+LEAD = 0.12         # a line's caption and its gag come up this long before its first word: and so does a cut
+
 SONG = songtime.Song(ROOT, BPM, ORDER, WHO, FPS)
 LINES, DURATION, DRAFT = SONG.lines, SONG.duration, SONG.draft
+
+
+def _sections():
+    """Where each section starts. The take sings its verses back to back, so the cut to the next stream
+    lands on the new rapper's first word, as its caption comes up. Where the song leaves a gap the section
+    starts in it: once the last word before it is over, and no more than 0.9 s before its own first."""
+    starts = {ORDER[0]: 0.0}
+    for sec in ORDER[1:-1]:
+        first = SONG.lines_of(sec)[0]
+        before = LINES[first["gi"] - 1]
+        starts[sec] = max(first["t0"] - 0.9, min(before["t1"] + 0.05, first["t0"] - LEAD))
+    starts[ORDER[-1]] = songtime.last_word(LINES[-1]) + 1.6
+    return [(a, starts[a], starts[b] if b else DURATION + 1) for a, b in zip(ORDER, ORDER[1:] + ("",))]
+
+
+if not DRAFT:
+    SONG.sections = _sections()
 beat_info, since_beat, bar_info, next_beat = SONG.beat_info, SONG.since_beat, SONG.bar_info, SONG.next_beat
 lines_of, line, line_at = SONG.lines_of, SONG.line, SONG.line_at
 section_at, section_bounds, section_start, section_end = (SONG.section_at, SONG.section_bounds, SONG.section_start,
@@ -29,7 +49,9 @@ word_index = timing.word_index
 loudness = SONG.loudness
 LAST_WORD_END = LINES[-1]["t1"]
 MAO_AT = section_start("v3")        # from his second verse on, Hasan is in the Mao suit he brags about in its first bar
-END_CARD = LAST_WORD_END + 0.25
+# The last word is "Pause.", and the song does: the sound stops dead there and the picture with it.
+STOP = LAST_WORD_END + 0.2 if DRAFT else getattr(project, "AUDIO_END", LAST_WORD_END + 0.2)
+END_CARD = STOP + 0.9               # the title comes up, in the quiet
 
 
 # --- punchlines -------------------------------------------------------------------------------
@@ -61,4 +83,5 @@ if __name__ == "__main__":
           + f"{len(SONG.beats)} beats, period {SONG.period:.4f}s ({60 / SONG.period:.2f} BPM), duration {DURATION:.1f}s")
     for s in SONG.sections:
         print(f"{s[0]:8s} {s[1]:7.2f} {s[2]:7.2f}  {len(lines_of(s[0]))} lines")
+    print(f"the song stops at {STOP:.2f}, the title comes up at {END_CARD:.2f}, the video ends at {project.END:.2f}")
     print(len(LINES), "lines,", len(HITS), "hits,", sum(h["big"] for h in HITS), "big")
