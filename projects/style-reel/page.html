@@ -1,0 +1,257 @@
+<title>Style Reel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screening room. One large player, the cue track of the bar under it, a filmstrip of styles to
+   switch between, then the notes for the chosen style and one table that compares them all. */
+:root {
+  --bg: #e9ebf0; --panel: #f7f8fa; --ink: #14161c; --dim: #565d6b; --rule: #cbd0da; --stage: #0b0c10;
+  --accent: #5a2fe0; --on-accent: #ffffff; --cue: #1c8f3a;
+  --strong: #136c43; --good: #2f6f9f; --fair: #8a5a00; --rough: #a6321f;
+  --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101217; --panel: #191c23; --ink: #e9ebf0; --dim: #9aa1b0; --rule: #2e333e; --stage: #000000;
+    --accent: #a88bff; --on-accent: #14101f; --cue: #6fe04a;
+    --strong: #5fd39a; --good: #7dbbe8; --fair: #e2b253; --rough: #f08a76;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101217; --panel: #191c23; --ink: #e9ebf0; --dim: #9aa1b0; --rule: #2e333e; --stage: #000000;
+  --accent: #a88bff; --on-accent: #14101f; --cue: #6fe04a;
+  --strong: #5fd39a; --good: #7dbbe8; --fair: #e2b253; --rough: #f08a76;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 64px; display: flex; flex-direction: column; gap: 28px; }
+h1 { font: 800 clamp(2.3rem, 6vw, 4rem)/0.95 var(--display); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+h2 { font: 800 1.6rem/1.1 var(--display); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h3 { font: 500 0.74rem/1.2 var(--mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--dim); margin: 0 0 6px; }
+p { margin: 0; }
+.lede { max-width: 66ch; color: var(--dim); font-size: 1.05rem; }
+.lede b { color: var(--ink); font-weight: 600; }
+header { display: flex; flex-direction: column; gap: 14px; }
+blockquote { margin: 0; padding-left: 14px; border-left: 3px solid var(--cue); font: 500 1.02rem/1.45 var(--body); max-width: 60ch; }
+
+.stage { position: relative; aspect-ratio: 16 / 9; max-width: 100%; background: var(--stage); border-radius: 6px; overflow: hidden; }
+.stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; }
+.stage video.live { opacity: 1; }
+.transport { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.btn { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 7px 14px; font: 500 0.9rem/1.2 var(--body); min-width: 44px; }
+.btn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn:focus-visible, .chip:focus-visible, .track:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.clock { font: 400 0.86rem/1 var(--mono); color: var(--dim); font-variant-numeric: tabular-nums; margin-left: auto; }
+
+.track { position: relative; height: 46px; cursor: pointer; border-radius: 4px; touch-action: none; }
+.track .rail { position: absolute; left: 0; right: 0; top: 8px; height: 6px; background: var(--rule); border-radius: 3px; }
+.track .fill { position: absolute; left: 0; top: 8px; height: 6px; width: 0; background: var(--accent); border-radius: 3px; }
+.track .cue { position: absolute; top: 3px; width: 2px; height: 16px; background: var(--cue); }
+.track .cue span { position: absolute; top: 20px; left: 0; transform: translateX(-50%); font: 400 0.7rem/1 var(--mono); color: var(--dim); white-space: nowrap; }
+.track .cue.b span { top: 33px; }
+@media (max-width: 560px) { .track .cue.b span, .track .cue.a span { font-size: 0.6rem; } }
+
+.strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; }
+.chip { display: flex; flex-direction: column; gap: 6px; text-align: left; background: none; border: 0; padding: 0; min-width: 0; }
+.chip img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-radius: 4px; outline: 1px solid var(--rule); background: var(--stage); }
+.chip b { font: 600 0.9rem/1.2 var(--body); }
+.chip small { font: 400 0.7rem/1.2 var(--mono); color: var(--dim); letter-spacing: 0.04em; text-transform: uppercase; }
+.chip[aria-pressed="true"] img { outline: 3px solid var(--accent); }
+.chip[aria-pressed="true"] b { color: var(--accent); }
+.pending { color: var(--dim); font-size: 0.92rem; }
+
+.notes { display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--rule); padding-top: 22px; }
+.notes .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 18px 36px; }
+.grid div { min-width: 0; }
+.grid p { max-width: 62ch; }
+.grade { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 8px; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; }
+.grade.strong { color: var(--strong); } .grade.good { color: var(--good); } .grade.fair { color: var(--fair); } .grade.rough { color: var(--rough); }
+
+.tablebox { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.93rem; }
+th { font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); }
+td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td button { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+section { display: flex; flex-direction: column; gap: 12px; }
+.foot { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px 32px; border-top: 1px solid var(--rule); padding-top: 22px; }
+.foot div { min-width: 0; }
+.foot p { color: var(--dim); max-width: 62ch; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Style Reel</h1>
+    <p class="lede"><b>One couplet from Play the Video, drawn <span id="count">several</span> ways.</b> Every clip is the same 7.7 seconds: the same audio, the same joke, landing on the same words. Pick a style and the bar keeps its place, so you can switch in the middle of a line.</p>
+    <blockquote>Your mansion's got five and a half baths: how austere;<br>five and a half more than I've had all year.</blockquote>
+  </header>
+
+  <section aria-label="Player">
+    <div class="stage" id="stage"></div>
+    <div class="track" id="track" tabindex="0" role="slider" aria-label="Position in the bar" aria-valuemin="0" aria-valuemax="7.7" aria-valuenow="0">
+      <div class="rail"></div><div class="fill" id="fill"></div>
+    </div>
+    <div class="transport">
+      <button class="btn" id="play" aria-pressed="false">Play</button>
+      <button class="btn" id="sound" aria-pressed="false">Sound off</button>
+      <button class="btn" id="prev" aria-label="Previous style">&larr;</button>
+      <button class="btn" id="next" aria-label="Next style">&rarr;</button>
+      <span class="clock" id="clock">0.0 / 7.7 s</span>
+    </div>
+  </section>
+
+  <section aria-label="Styles">
+    <div class="strip" id="strip"></div>
+    <p class="pending" id="pending"></p>
+  </section>
+
+  <section class="notes" aria-live="polite">
+    <div class="head"><h2 id="n-name"></h2><span class="grade" id="n-grade"></span></div>
+    <div class="grid">
+      <div><h3>How it's drawn</h3><p id="n-drawn"></p></div>
+      <div><h3>How it moves</h3><p id="n-moves"></p></div>
+      <div><h3>What a whole video would cost</h3><p id="n-cost"></p></div>
+      <div><h3>My read</h3><p id="n-read"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Side by side</h2>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Style</th><th>Built on</th><th>Effort per video, against pixel art</th><th>How well I can do it</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div><h3>How these were made</h3><p id="made"></p></div>
+    <div><h3>Not on this page</h3><p>Painted or photographic imagery, which needs an image model or an artist and is not something I can draw in code. Hand-drawn character animation frame by frame: I pose rigs and move between poses. Lit, textured 3D: that is a job for Blender or an engine, and the voxel diorama is as far as the current pipeline goes.</p></div>
+  </div>
+</div>
+
+<script>
+const DUR = 184 / 24;
+const CUES = [[1.16, "mansion's", "a"], [1.78, "five", "b"], [2.42, "half", "a"], [3.28, "austere", "b"], [3.80, "line 2", "a"], [5.74, "had", "b"], [6.14, "year", "a"]];
+const STYLES = /*STYLES*/[]/*END*/;
+const PENDING = /*PENDING*/""/*END*/;
+const MADE = /*MADE*/""/*END*/;
+
+const $ = id => document.getElementById(id);
+const stage = $("stage"), vids = {};
+let cur = null, muted = true, wantPlay = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function vid(id) {
+  if (!vids[id]) {
+    const v = document.createElement("video");
+    v.src = "clips/" + id + ".mp4"; v.poster = "posters/" + id + ".jpg";
+    v.loop = true; v.muted = true; v.playsInline = true; v.preload = "auto";
+    v.setAttribute("playsinline", ""); v.setAttribute("aria-label", "The bar in this style");
+    v.addEventListener("click", toggle);
+    stage.appendChild(v); vids[id] = v;
+  }
+  return vids[id];
+}
+
+function select(id) {
+  const s = STYLES.find(x => x.id === id) || STYLES[0];
+  const prev = cur ? vids[cur] : null, next = vid(s.id);
+  const t = prev ? prev.currentTime : 0;
+  const go = () => {
+    if (prev && prev !== next) {
+      try { next.currentTime = Math.min(t, DUR - 0.08); } catch (e) {}
+      prev.pause(); prev.classList.remove("live");
+    }
+    next.muted = muted; next.classList.add("live");
+    if (wantPlay) next.play().catch(() => { wantPlay = false; paint(); });
+  };
+  if (next.readyState >= 1) go(); else next.addEventListener("loadedmetadata", go, { once: true });
+  cur = s.id;
+  $("n-name").textContent = s.name;
+  $("n-grade").textContent = s.grade; $("n-grade").className = "grade " + s.grade.toLowerCase();
+  $("n-drawn").textContent = s.drawn; $("n-moves").textContent = s.moves; $("n-cost").textContent = s.cost; $("n-read").textContent = s.read;
+  for (const b of document.querySelectorAll(".chip")) b.setAttribute("aria-pressed", b.dataset.id === s.id);
+  try { history.replaceState(null, "", "#" + s.id); } catch (e) {}
+  const i = STYLES.indexOf(s);                                   // have the neighbours ready
+  for (const k of [i + 1, i - 1]) if (STYLES[k]) vid(STYLES[k].id);
+  paint();
+}
+
+function toggle() {
+  const v = vids[cur];
+  if (!v) return;
+  wantPlay = v.paused;
+  if (wantPlay) v.play().catch(() => {}); else v.pause();
+  paint();
+}
+
+function paint() {
+  $("play").textContent = wantPlay ? "Pause" : "Play"; $("play").setAttribute("aria-pressed", wantPlay);
+  $("sound").textContent = muted ? "Sound off" : "Sound on"; $("sound").setAttribute("aria-pressed", !muted);
+}
+
+function step(d) {
+  const i = STYLES.findIndex(x => x.id === cur);
+  select(STYLES[(i + d + STYLES.length) % STYLES.length].id);
+}
+
+function seek(e) {
+  const r = $("track").getBoundingClientRect(), v = vids[cur];
+  if (v) v.currentTime = Math.max(0, Math.min(DUR - 0.05, (e.clientX - r.left) / r.width * DUR));
+}
+
+$("play").addEventListener("click", toggle);
+$("sound").addEventListener("click", () => { muted = !muted; if (vids[cur]) vids[cur].muted = muted; paint(); });
+$("prev").addEventListener("click", () => step(-1));
+$("next").addEventListener("click", () => step(1));
+$("track").addEventListener("pointerdown", e => { seek(e); $("track").setPointerCapture(e.pointerId); });
+$("track").addEventListener("pointermove", e => { if (e.buttons) seek(e); });
+$("track").addEventListener("keydown", e => {
+  const v = vids[cur];
+  if (v && (e.key === "ArrowLeft" || e.key === "ArrowRight")) { v.currentTime = Math.max(0, Math.min(DUR - 0.05, v.currentTime + (e.key === "ArrowRight" ? 0.25 : -0.25))); e.preventDefault(); }
+});
+
+for (const [t, word, row] of CUES) {
+  const c = document.createElement("div");
+  c.className = "cue " + row; c.style.left = (t / DUR * 100) + "%";
+  c.innerHTML = "<span></span>"; c.firstChild.textContent = word;
+  $("track").appendChild(c);
+}
+for (const s of STYLES) {
+  const b = document.createElement("button");
+  b.className = "chip"; b.dataset.id = s.id; b.setAttribute("aria-pressed", "false");
+  const img = document.createElement("img"); img.src = "posters/" + s.id + ".jpg"; img.alt = ""; img.loading = "lazy";
+  const name = document.createElement("b"); name.textContent = s.name;
+  const tag = document.createElement("small"); tag.textContent = s.tag;
+  b.append(img, name, tag); b.addEventListener("click", () => select(s.id));
+  $("strip").appendChild(b);
+  const tr = document.createElement("tr");
+  const cells = [null, s.base, s.effort, null].map(x => { const td = document.createElement("td"); if (x) td.textContent = x; return td; });
+  const link = document.createElement("button"); link.textContent = s.name; link.addEventListener("click", () => { select(s.id); stage.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
+  cells[0].appendChild(link);
+  const g = document.createElement("span"); g.className = "grade " + s.grade.toLowerCase(); g.textContent = s.grade; cells[3].appendChild(g);
+  tr.append(...cells); $("rows").appendChild(tr);
+}
+$("count").textContent = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen"][STYLES.length] || STYLES.length;
+$("pending").textContent = PENDING; $("pending").hidden = !PENDING;
+$("made").textContent = MADE;
+
+(function tick() {
+  const v = vids[cur];
+  if (v) {
+    const t = v.currentTime || 0;
+    $("fill").style.width = (t / DUR * 100) + "%";
+    $("clock").textContent = t.toFixed(1) + " / " + DUR.toFixed(1) + " s";
+    $("track").setAttribute("aria-valuenow", t.toFixed(1));
+  }
+  requestAnimationFrame(tick);
+})();
+
+select((location.hash || "").slice(1));
+</script>

@@ -12,6 +12,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | [`blue-on-blue`](projects/blue-on-blue) | *Blue on Blue*, Mamdani vs. Newsom on Newsom's podcast, a love triangle with Trump on speakerphone |
 | [`great-question`](projects/great-question) | *Great Question*, PewDiePie vs. Sam Altman on a video call, moderated by ChatGPT, which shares a picture for every bar |
 | [`play-the-video`](projects/play-the-video) | *Play the Video*, Asmongold vs. Hasan, each on his own stream with the other one's video paused in a corner window, and chat watching from work |
+| [`style-reel`](projects/style-reel) | One couplet of *Play the Video* drawn in eleven styles (flat vector, comic book, paper cut-out, pencil, two-colour print, neon, shadow puppets, rubber hose, voxels, kinetic type and the pixel art itself), to compare looks like for like |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
 
