@@ -95,8 +95,9 @@ def say_hints(text):
 
 def model_lyrics(text, say=()):
     """The sheet as song-model input: plain structure tags, speakers, notes and directions dropped,
-    and the spelling of each `say` hint swapped in."""
-    blocks, used = [], set()
+    and the spelling of each `say` hint swapped in. Two headers in a row with the same section name
+    (an outro shared by two speakers) are one section to the model."""
+    blocks, used, prev = [], set(), object()
     for sec in sections(text):
         if not sec["lines"]:
             continue
@@ -111,7 +112,11 @@ def model_lyrics(text, say=()):
                     line = line.replace(written, read)
                     used.add(written)
             lines.append(line)
-        blocks.append(f"[{tag}]\n" + "\n".join(lines))
+        if sec["section"] == prev:
+            blocks[-1] += "\n" + "\n".join(lines)
+        else:
+            blocks.append(f"[{tag}]\n" + "\n".join(lines))
+        prev = sec["section"]
     stale = [written for written, _ in say if written not in used]
     if stale:
         raise SystemExit(f"say.txt: no sung line contains {stale[0]!r}")
