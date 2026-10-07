@@ -17,84 +17,23 @@ from PIL import Image, ImageDraw
 
 import call
 from characters import orb
-from engine import (C, INK, PRESS, PRESS16, SILK, SILK16, Canvas, back_out, clamp, col, paste, rgba, rnd, silk_w,
-                    text_width, vgrad)
+from engine import C, KIT, PRESS, PRESS16, SILK16, Canvas, back_out, clamp, col, rgba, rnd, text_width
 from pixelart import fx
 
 PW, PH = call.PW, call.PH
 
 
-class Pic(Canvas):
-    """An opaque picture (PW x PH unless told otherwise) drawn with palette names; `img` is the picture."""
+class Pic(KIT.Pic):
+    """An opaque picture for ChatGPT's window (PW x PH unless told otherwise); `img` is the picture."""
 
     def __init__(self, bg="paper", w=PW, h=PH):
-        super().__init__(w, h)
-        self.w, self.h = w, h
-        self.rect((0, 0, w, h), bg)
-
-    def put(self, spr, x, y, anchor="mm"):
-        paste(self.img, spr, int(round(x)), int(round(y)), anchor)
-
-    def press(self, xy, s, col_="ink", anchor="la", fnt=PRESS, shadow=None):
-        x, y = xy
-        if shadow:
-            self.d.text((x + 1, y + 1), s, font=fnt, fill=self.c(shadow), anchor=anchor)
-        self.d.text((x, y), s, font=fnt, fill=self.c(col_), anchor=anchor)
-
-    def big(self, xy, s, top="gold", bottom="orange", anchor="ma", fnt=PRESS16, scale=1.0, outline="black"):
-        fx.big_text(self.img, xy, s, fnt, col(top), col(bottom), col(outline), anchor=anchor, scale=scale, ink=INK)
-
-    def pop(self, xy, s, age, top="gold", bottom="orange", fnt=PRESS16, anchor="mm"):
-        fx.pop_text(self.img, xy[0], xy[1], s, age, fnt, col(top), col(bottom), col("black"), anchor=anchor, ink=INK)
-
-    def grad(self, box, top, bottom, steps=4):
-        rgb = self.img.convert("RGB")
-        vgrad(rgb, box, top, bottom, steps=steps)
-        self.img.paste(rgb)
-
-    def header(self, s, bg="blue", fg="white", h=11, fnt=SILK):
-        """A title bar across the top."""
-        self.rect((0, 0, self.w, h - 1), bg)
-        self.silk((self.w // 2, (h - 5) // 2), s, fg, anchor="ma", fnt=fnt)
-
-    def box(self, box, fill, outline="ink"):
-        self.d.rectangle(box, fill=self.c(fill), outline=self.c(outline) if outline else None)
-
-    def rbox(self, box, fill, outline="ink", r=3):
-        self.d.rounded_rectangle(box, r, fill=self.c(fill), outline=self.c(outline) if outline else None)
-
-    def stamp(self, x, y, s, age=1.0, color="red", angle=-12, fnt=PRESS):
-        fx.stamp(self.img, x, y, s, fnt, col(color), angle, age)
-
-    def tag(self, xy, s, bg="ink", fg="white", anchor="la"):
-        """Small text on a plate."""
-        w = silk_w(s) + 5
-        x, y = xy
-        x -= {"l": 0, "m": w // 2, "r": w}[anchor[0]]
-        self.rect((x, y, x + w, y + 8), bg)
-        self.silk((x + 3, y + 2), s, fg)
-        return x + w
-
-    def tick(self, x, y, col_="green"):
-        self.line([(x, y + 3), (x + 2, y + 5), (x + 6, y)], col_, w=2)
-
-    def cross(self, x, y, col_="red", r=3):
-        self.line([(x - r, y - r), (x + r, y + r)], col_, w=2)
-        self.line([(x - r, y + r), (x + r, y - r)], col_, w=2)
-
-    def heart(self, x, y, col_="red"):
-        self.rect((x, y, x + 1, y + 1), col_); self.rect((x + 3, y, x + 4, y + 1), col_)
-        self.rect((x, y + 1, x + 4, y + 2), col_); self.rect((x + 1, y + 3, x + 3, y + 3), col_)
-        self.px((x + 2, y + 4), col_)
+        super().__init__(bg, w, h)
 
     def orb(self, x, y, r=8, mood="happy", talk=0, kind="gpt", ring=0):
         self.put(orb(r, mood, talk, kind, ring), x, y)
 
     def lines(self, box, n, col_="paper_ln", gap=5, short=()):
-        """Ruled lines of pretend text in a box; the rows in `short` stop early."""
-        x0, y0, x1, _ = box
-        for i in range(n):
-            self.line([(x0, y0 + i * gap), (x1 - (12 if i in short else 0), y0 + i * gap)], col_)
+        super().lines(box, n, col_, gap, short)
 
 
 # --- small things ------------------------------------------------------------------------------------
