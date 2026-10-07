@@ -1,8 +1,9 @@
 """Join the clips into one reel, a title card before each: projects/style-reel/style-reel.mp4.
 
-    uv run python projects/style-reel/combine.py
+    uv run python projects/style-reel/combine.py [OUT.mp4]
 
-Uses the frames reel.py left in build/frames/, so render the styles first; a style with no frames is left out.
+Joins the 1080p clips reel.py wrote to build/clips/, and stops if a style's clip is missing: half a reel
+would replace the whole one.
 """
 import subprocess
 import sys
@@ -35,7 +36,11 @@ def card(i, n, style, path):
 
 
 def main():
-    styles = [s for s in STYLES if (BUILD / "frames" / s["id"] / f"f{S.FRAMES - 1:04d}.png").exists()]
+    styles = STYLES
+    missing = [s["id"] for s in styles if not (BUILD / "clips" / f"{s['id']}.mp4").exists()]
+    if missing:
+        sys.exit(f"no clip for {', '.join(missing)}: render with reel.py first")
+    out = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT / "style-reel.mp4"
     cards = BUILD / "cards"
     cards.mkdir(exist_ok=True)
     bar = decode_stereo(BUILD / "audio.wav", SR)[:round(S.FRAMES / S.FPS * SR)]
@@ -47,11 +52,10 @@ def main():
     for i, s in enumerate(styles):
         card(i + 1, len(styles), s, cards / f"{s['id']}.png")
         cmd += ["-loop", "1", "-framerate", str(S.FPS), "-t", str(CARD), "-i", str(cards / f"{s['id']}.png")]
-        cmd += ["-framerate", str(S.FPS), "-i", str(BUILD / "frames" / s["id"] / "f%04d.png")]
+        cmd += ["-i", str(BUILD / "clips" / f"{s['id']}.mp4")]
         chain += [f"[{2 * i}:v]format=yuv420p,setsar=1[c{i}]", f"[{2 * i + 1}:v]format=yuv420p,setsar=1[v{i}]"]
     joined = "".join(f"[c{i}][v{i}]" for i in range(len(styles)))
     chain.append(f"{joined}concat=n={2 * len(styles)}:v=1:a=0[v]")
-    out = ROOT / "style-reel.mp4"
     cmd += ["-i", str(BUILD / "reel.wav"), "-filter_complex", ";".join(chain), "-map", "[v]", "-map", f"{2 * len(styles)}:a",
             "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-c:a", "aac", "-b:a", "192k", "-shortest",
             "-movflags", "+faststart", str(out)]

@@ -11,6 +11,7 @@ bar's audio; build/web/ gets a 720p copy for the page.
 """
 import argparse
 import importlib
+import shutil
 import subprocess
 import sys
 import time
@@ -75,6 +76,7 @@ def render(name, workers):
                     "-crf", str(getattr(_style, "WEB_CRF", 21)), *common, str(web)], check=True)
     poster = Image.open(frames / f"f{S.frame_no(POSTER):04d}.png").convert("RGB").resize((960, 540), Image.LANCZOS)
     poster.save(BUILD / "web" / f"{name}.jpg", quality=86)
+    shutil.rmtree(frames)                   # up to half a gigabyte a style, and nothing else reads them
     print(f"{name}: {S.FRAMES} frames in {took:.1f}s ({took / S.FRAMES * workers:.2f}s a frame per worker) -> "
           f"{clip} ({clip.stat().st_size / 1e6:.1f} MB), {web} ({web.stat().st_size / 1e6:.1f} MB)")
 
