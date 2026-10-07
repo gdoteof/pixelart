@@ -272,6 +272,40 @@ def snap_onsets(timed, env, fps, quiet=0.08, loud=0.3, gap=0.2, slack=0.4, lead=
     return moved
 
 
+def set_starts(line, starts, end=None):
+    """Move words of a timed line by hand. `starts` maps a word to its start in seconds: the word as
+    the sheet spells it, case and punctuation aside, or "word#2" for its second occurrence in the
+    line. Every word of the line then runs to the next one's start, none longer than a held note,
+    and the last to `end` (or to where it ended before)."""
+    words = line["words"]
+    for key, t in starts.items():
+        name, _, nth = key.partition("#")
+        hits = [w for w in words if norm(w["w"]) == norm(name)]
+        assert len(hits) >= int(nth or 1), (line["text"], key)
+        hits[int(nth or 1) - 1]["t0"] = t
+    assert all(a["t0"] <= b["t0"] for a, b in zip(words, words[1:])), (line["text"], [w["t0"] for w in words])
+    for a, b in zip(words, words[1:]):
+        a["t1"] = round(min(b["t0"], a["t0"] + MAX_WORD), 3)
+    last = words[-1]
+    last["t1"] = end if end is not None else max(last["t1"], round(last["t0"] + 0.1, 3))
+    line["t0"], line["t1"] = words[0]["t0"], last["t1"]
+
+
+def hand_fixed(root, fix, fps=24):
+    """What a song's own align.py does: the automatic alignment of PROJECT/lyrics.txt, then
+    `fix(timed)` to put right in place what it got wrong, written to data/lyrics_timed.json."""
+    import numpy as np
+    root = Path(root)
+    data = root / "data"
+    transcripts = [json.loads((data / n).read_text()) for n in ("vocals.whisper.json", "song.whisper.json")]
+    duration = json.loads((data / "song.json").read_text())["duration"]
+    timed, report = auto((root / "lyrics.txt").read_text(), transcripts, duration, np.load(data / "vocal_env.npy"), fps)
+    fix(timed)
+    (data / "lyrics_timed.json").write_text(json.dumps(timed, indent=1))
+    print_report(report)
+    return timed
+
+
 def sheet_lines(text):
     """Sung lines of a lyric sheet (pixelart.lyrics format), ready for `build`."""
     from pixelart import lyrics

@@ -92,8 +92,9 @@ def main():
     out = args.out or str(p.output)
     cmd = [FFMPEG, "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(listing)]
     if p.audio:
+        stop = dur if p.audio_end is None else min(dur, p.audio_end)       # silence from here to the end
         cmd += ["-i", str(p.audio), "-map", "0:v", "-map", "1:a",
-                "-af", f"afade=t=out:st={dur - p.fade:.3f}:d={p.fade:.3f}", "-c:a", "aac", "-b:a", "320k"]
+                "-af", f"afade=t=out:st={stop - p.fade:.3f}:d={p.fade:.3f}", "-c:a", "aac", "-b:a", "320k"]
     cmd += ["-c:v", "copy", "-t", f"{dur:.3f}", "-movflags", "+faststart", out]
     subprocess.run(cmd, check=True)
     print(f"wrote {out} in {time.time() - t0:.0f}s", flush=True)

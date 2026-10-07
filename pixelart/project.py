@@ -7,6 +7,8 @@ project.py is the contract between a project and the shared tools:
     AUDIO = ROOT / "audio" / "song.wav"   muxed into the render; None for a silent video
     FADE = 2.5                            optional, seconds the audio fades out before END
                                           (default 0.08, just enough to stop a click)
+    AUDIO_END = 190.9                     optional, when the audio stops if that is before END: it fades
+                                          out before this instead, and the picture runs on in silence
     OUTPUT = ROOT / "name.mp4"            optional, defaults to <dir name>.mp4
     SIZE = (1920, 1080)                   optional, output frame size
     def render_frame(t): ...              PIL RGB image of SIZE for time t (seconds)
@@ -34,6 +36,7 @@ class Project:
     render_frame: Callable
     fade: float
     label: Callable
+    audio_end: float | None = None
 
     @property
     def build(self):
@@ -58,4 +61,4 @@ def load(path):
                    audio=Path(audio) if audio else None,
                    output=Path(getattr(mod, "OUTPUT", root / f"{root.name}.mp4")),
                    render_frame=mod.render_frame, fade=float(getattr(mod, "FADE", 0.08)),
-                   label=getattr(mod, "label", lambda t: ""))
+                   label=getattr(mod, "label", lambda t: ""), audio_end=getattr(mod, "AUDIO_END", None))
