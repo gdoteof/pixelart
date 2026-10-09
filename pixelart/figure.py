@@ -20,7 +20,7 @@ The rig is 84x96 with a 40x40 head. A bigger figure is a bigger rig, with its ow
     desk clasp steeple acc0 acc1 acc2 pinch point thumb shrug cross hold show beg hold1 wave fist chop
     finger palm chin drink chest hair type phone ear facepalm guns thumbs2 bro up2 hush wipe reach press
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from typing import Callable
 
@@ -90,6 +90,13 @@ class Body:
     shoulders: tuple = SHOULDERS
     eye: tuple = (19, 21)           # the near eye and the mouth in head pixels, for the anchors
     mouth: tuple = (28, 33)
+    far_glove: tuple | None = None  # (hand, its shade, forearm): a glove on the far hand, as a falconer wears
+
+    def far(self):
+        """This body as its far arm is drawn."""
+        if not self.far_glove:
+            return self
+        return replace(self, skin=self.far_glove[:2], forearm=self.far_glove[2], far_glove=None)
 
 
 class Rig:
@@ -191,8 +198,8 @@ class Rig:
 
     def hands_layer(self, body, arms):
         f = self.canvas(*self.size)
-        for _, e, h, kind in arms:
-            self.hand_draw(f, body, e, h, kind)
+        for b, (_, e, h, kind) in zip((body, body.far()), arms):
+            self.hand_draw(f, b, e, h, kind)
         return f.done()
 
     def _flip(self, xy, facing):
@@ -202,17 +209,17 @@ class Rig:
         near, far, layer = self.gesture(body, arms)
         img = Image.new("RGBA", self.size, (0, 0, 0, 0))
         if layer == "back":
-            img.alpha_composite(self.arm_layer(body, *far))
+            img.alpha_composite(self.arm_layer(body.far(), *far))
         f = self.canvas(*self.size)
         body.torso(f)
         img.alpha_composite(f.done())
         if layer == "front":
-            img.alpha_composite(self.arm_layer(body, *far))
+            img.alpha_composite(self.arm_layer(body.far(), *far))
         hx, hy = self.neck[0] - self.chin[0] + lean, self.neck[1] - self.chin[1] + bob
         img.alpha_composite(body.head(**dict(expr)), (hx, hy))
         img.alpha_composite(self.arm_layer(body, *near))
         if layer == "over":
-            img.alpha_composite(self.arm_layer(body, *far))
+            img.alpha_composite(self.arm_layer(body.far(), *far))
         hands = self.hands_layer(body, (near, far))
         if facing < 0:
             img, hands = mirror(img), mirror(hands)

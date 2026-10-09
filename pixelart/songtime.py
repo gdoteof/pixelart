@@ -74,6 +74,20 @@ def section_spans(lines, order, duration, lead=0.9, gap=0.3, tail=1.6):
     return [(a, starts[a], starts[b] if b else duration + 1) for a, b in zip(order, order[1:] + ("",))]
 
 
+def cut_spans(lines, order, duration, lead=0.12, tail=1.6):
+    """`section_spans` for a video that cuts to a new frame with each section. A take sings its verses
+    back to back, so the cut lands on the new section's first word, as its caption comes up (`lead`
+    before it). Where the song leaves a gap the section starts in it: once the line before is over, and
+    no more than 0.9 s before its own first word."""
+    starts = {order[0]: 0.0}
+    for sec in order[1:-1]:
+        first = next(ln for ln in lines if ln["sec"] == sec)
+        before = lines[first["gi"] - 1]
+        starts[sec] = max(first["t0"] - 0.9, min(before["t1"] + 0.05, first["t0"] - lead))
+    starts[order[-1]] = last_word(lines[-1]) + tail
+    return [(a, starts[a], starts[b] if b else duration + 1) for a, b in zip(order, order[1:] + ("",))]
+
+
 def draft_lines(text, bpm, start=4.0, gap_bars=2):
     """Stand-in timing for a lyric sheet before there is a song: one bar per line, words spread evenly
     over its first three beats, `gap_bars` bars between sections. Same shape as lyrics_timed.json."""

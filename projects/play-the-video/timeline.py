@@ -25,21 +25,10 @@ SONG = songtime.Song(ROOT, BPM, ORDER, WHO, FPS)
 LINES, DURATION, DRAFT = SONG.lines, SONG.duration, SONG.draft
 
 
-def _sections():
-    """Where each section starts. The take sings its verses back to back, so the cut to the next stream
-    lands on the new rapper's first word, as its caption comes up. Where the song leaves a gap the section
-    starts in it: once the last word before it is over, and no more than 0.9 s before its own first."""
-    starts = {ORDER[0]: 0.0}
-    for sec in ORDER[1:-1]:
-        first = SONG.lines_of(sec)[0]
-        before = LINES[first["gi"] - 1]
-        starts[sec] = max(first["t0"] - 0.9, min(before["t1"] + 0.05, first["t0"] - LEAD))
-    starts[ORDER[-1]] = songtime.last_word(LINES[-1]) + 1.6
-    return [(a, starts[a], starts[b] if b else DURATION + 1) for a, b in zip(ORDER, ORDER[1:] + ("",))]
-
-
+# The take sings its verses back to back, so the cut to the next stream lands on the new rapper's first
+# word, as its caption comes up.
 if not DRAFT:
-    SONG.sections = _sections()
+    SONG.sections = songtime.cut_spans(LINES, ORDER, DURATION, LEAD)
 beat_info, since_beat, bar_info, next_beat = SONG.beat_info, SONG.since_beat, SONG.bar_info, SONG.next_beat
 lines_of, line, line_at = SONG.lines_of, SONG.line, SONG.line_at
 section_at, section_bounds, section_start, section_end = (SONG.section_at, SONG.section_bounds, SONG.section_start,
