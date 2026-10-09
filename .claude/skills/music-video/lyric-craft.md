@@ -351,6 +351,8 @@ Test every fact: would a 16-year-old on YouTube know it without searching?
 - **Hook:** a hook in a third character's voice, built from that character's tics, can run long and
   come back as a chorus: four bars that repeat and two that change (Great Question's ChatGPT, which
   praises both rappers and offers the feud as a table).
+  A hook that only repeats is a place for viewers to leave: Out of Your League's was cut, and its
+  title line is said once, as a verse's last couplet.
 - **Interruptions:** write a line that gets cut off as a whole line, and cut it in post. A song model
   sings an ellipsis as trailing off.
 - **Sound effects:** a song model sings "(Clap, clap!)" as two words. If the sound can't be dropped in

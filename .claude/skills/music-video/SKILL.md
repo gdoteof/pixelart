@@ -54,6 +54,9 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
 - When a news story prompts the matchup, it is the occasion, not the song: give it about a fifth of
   the bars (an intro gag, a few bars each, the outro). The rest is the two people's whole careers and
   personas, with brags as well as digs.
+- Open on verse 1 and run the verses back to back. An `[Intro]` kept the drums and bass out for 14 to
+  40 seconds on every take of Out of Your League, and a hook that only repeats is where viewers
+  leave: its three were cut. Put a framing gag in the picture, and say a title line once, in a verse.
 - Aim for about 3:30, give or take 25 seconds: 530-570 sung words for rap (Round 2 is 534 words and
   3:25; Blue on Blue's 337 words came out at 2:24, too short). Four minutes is the cap: `generate`
   refuses a sheet that runs longer, so cut verses rather than passing `--long`.
@@ -61,6 +64,10 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   The models only see plain section tags, so per-verse voice notes are lost. Put the voices in the style
   too, and expect one vocalist unless the user accepts that. Ask for a sincere, confident delivery, not
   a comedic one: the music plays the straight man.
+- When the rapper is a woman, name her voice first ("female rapper, bright confident young woman's
+  voice, high clear female vocals"). "Cool low voice" and "deadpan menace" got a man's voice.
+- The tempo sets the flow: the models put one bar of the sheet in one bar of music. At 140 BPM that
+  is 1.7 seconds for eleven syllables, too fast to follow; 90 to 100 BPM gives about 2.5 seconds.
 - When the song features real people, follow the user's standing rule on content limits in memory.
   Don't ask about limits again for each project, and don't carry rules over from an earlier one.
   The repo is public, so limits stay in memory, not in the project README.
@@ -72,6 +79,7 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
 ```sh
 uv run python -m pixelart.song.generate projects/NAME     # YuE2 + ACE-Step XL, seeds 1 2
 uv run python -m pixelart.song.generate projects/NAME --models acestep-xl --seeds 3 4 5   # more takes
+uv run python -m pixelart.song.generate projects/NAME --style club    # styles/club.txt -> <model>-club-s<seed>
 ```
 
 - Takes go to `build/takes/`. Loudness-matched m4a copies go to `build/takes/listen/`, and
@@ -81,7 +89,13 @@ uv run python -m pixelart.song.generate projects/NAME --models acestep-xl --seed
 - Some seeds come out duds: garbled vocals, or Whisper hearing only "Thank you." When that happens,
   generate more seeds rather than rewriting the style.
 - ACE-Step's length is estimated from the word count; override it with `--duration`.
-- The report measures diction, not quality.
+- The report measures diction, not quality. Before handing takes over, also check each one line by
+  line (ACE-Step XL drops whole verses on most seeds, so run four or more), when its first word and
+  its bass land, and whether the voice is the one asked for: about half of ACE-Step's takes of a
+  female style came out male.
+- YuE2 often opens with ten to twenty seconds of wordless singing. Cut it before `pick`, a bar before
+  the first word, and give the cut file its own take name and JSON (`base`, `trim_start`).
+- Offer two or three styles when the first doesn't land: one line each in `styles/NAME.txt`.
 
 **Checkpoint:** give the user the `listen/` path and the report, then let them pick by ear.
 

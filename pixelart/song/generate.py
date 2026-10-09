@@ -1,6 +1,7 @@
 """Generate song takes from a project's lyrics.txt and style.txt.
 
     python -m pixelart.song.generate PROJECT [--models yue2 acestep-xl] [--seeds 1 2] [--force] [--no-check]
+    python -m pixelart.song.generate PROJECT --style NAME      # try PROJECT/styles/NAME.txt
 
 lyrics.txt is a lyric sheet (pixelart.lyrics): speakers and performance notes
 in its headers are for the video and the alignment. The models only get plain
@@ -17,6 +18,9 @@ Each take lands in PROJECT/build/takes/:
     <model>-s<seed>.flac        the model's audio, untouched
     <model>-s<seed>.json        how it was made
     listen/<model>-s<seed>.m4a  loudness-matched (-14 LUFS) for A/B listening
+--style NAME reads the style from styles/NAME.txt and names its takes
+<model>-NAME-s<seed>, so several styles can be compared side by side; copy
+the winner's line into style.txt.
 Existing takes are kept (pass --force to redo them). Afterwards the lyric
 check (pixelart.song.check) scores every take; skip it with --no-check.
 """
@@ -58,6 +62,7 @@ def main():
     ap.add_argument("project")
     ap.add_argument("--models", nargs="+", default=list(DEFAULT), choices=sorted(MODELS))
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 2])
+    ap.add_argument("--style", metavar="NAME", help="use styles/NAME.txt; takes are named <model>-NAME-s<seed>")
     ap.add_argument("--duration", type=float, help="ACE-Step only: target seconds (default: from word count)")
     ap.add_argument("--force", action="store_true", help="regenerate takes that already exist")
     ap.add_argument("--long", action="store_true", help=f"allow a song longer than {MAX_SECONDS // 60} minutes")
@@ -65,7 +70,8 @@ def main():
     args = ap.parse_args()
 
     root = Path(args.project).resolve()
-    sheet_file, style_file = root / "lyrics.txt", root / "style.txt"
+    sheet_file = root / "lyrics.txt"
+    style_file = root / "styles" / f"{args.style}.txt" if args.style else root / "style.txt"
     for f in (sheet_file, style_file):
         if not f.exists():
             raise SystemExit(f"missing {f}")
@@ -92,14 +98,15 @@ def main():
 
     made = 0
     for name in args.models:
-        seeds = [s for s in args.seeds if args.force or not (takes / f"{name}-s{s}.flac").exists()]
+        tag = f"{name}-{args.style}" if args.style else name
+        seeds = [s for s in args.seeds if args.force or not (takes / f"{tag}-s{s}.flac").exists()]
         if not seeds:
-            print(f"{name}: takes for seeds {args.seeds} exist", flush=True)
+            print(f"{tag}: takes for seeds {args.seeds} exist", flush=True)
             continue
-        work = takes / "work" / name
+        work = takes / "work" / tag
         work.mkdir(parents=True, exist_ok=True)
         log_path = takes / "logs" / f"{name}.log"
-        print(f"{name}: seeds {seeds} (log: {log_path})", flush=True)
+        print(f"{tag}: seeds {seeds} (log: {log_path})", flush=True)
         start = time.time()
         with open(log_path, "a") as log:
             log.write(f"\n=== {datetime.now().isoformat(timespec='seconds')} seeds {seeds}\n")
@@ -107,7 +114,7 @@ def main():
             try:
                 for seed, audio, extra in MODELS[name](model_lyrics, style, seeds, work, log,
                                                        bpm=bpm, duration=duration):
-                    take = f"{name}-s{seed}"
+                    take = f"{tag}-s{seed}"
                     shutil.copyfile(audio, takes / f"{take}.flac")
                     (takes / f"{take}.json").write_text(json.dumps({
                         "take": take, "model": name, "seed": seed, "style": style, "lyrics_sha256": sheet_sha,
@@ -118,7 +125,7 @@ def main():
                     print(f"  {take} ({time.time() - start:.0f}s)", flush=True)
             except ModelMissing as e:
                 print(f"  skipped: {e}", flush=True)
-        missing = [s for s in seeds if not (takes / f"{name}-s{s}.flac").exists()]
+        missing = [s for s in seeds if not (takes / f"{tag}-s{s}.flac").exists()]
         if missing:
             print(f"  FAILED seeds {missing}: see {log_path}", flush=True)
 
