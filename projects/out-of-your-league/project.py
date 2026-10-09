@@ -9,4 +9,4 @@ AUDIO = SONG if SONG.exists() else None
 # The last word ends at 168.8 s and the take plays on for another 18 s: stop here and fade the beat out.
 END = 173.0
 FADE = 3.0
-OUTPUT = ROOT / "video.mp4"
+OUTPUT = ROOT / "out-of-your-league.mp4"

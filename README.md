@@ -12,6 +12,7 @@ Pixel-art music videos, drawn procedurally in Python (Pillow + numpy), frame by 
 | [`blue-on-blue`](projects/blue-on-blue) | *Blue on Blue*, Mamdani vs. Newsom on Newsom's podcast, a love triangle with Trump on speakerphone |
 | [`great-question`](projects/great-question) | *Great Question*, PewDiePie vs. Sam Altman on a video call, moderated by ChatGPT, which shares a picture for every bar |
 | [`play-the-video`](projects/play-the-video) | *Play the Video*, Asmongold vs. Hasan, each on his own stream with the other one's video paused in a corner window, and chat watching from work |
+| [`out-of-your-league`](projects/out-of-your-league) | *Out of Your League*, Emiru and Maya Higa as a duo: each on her own stream with the other on a call, then together at the sanctuary's gate |
 | [`style-reel`](projects/style-reel) | One couplet of *Play the Video* drawn in eleven styles (flat vector, comic book, paper cut-out, pencil, two-colour print, neon, shadow puppets, rubber hose, voxels, kinetic type and the pixel art itself), to compare looks like for like |
 | [`smoke-test`](projects/smoke-test) | *Lyrics In, Video Out*, a 30-second demo of the whole pipeline on the template, untouched |
 | [`_template`](projects/_template) | Starting point for the next video |
@@ -30,6 +31,9 @@ pixelart/                 shared library and CLIs
   gags.py                 per-lyric-line gags: generators that draw in the render phases they ask for
   timing.py               render-time clocks: tracked beat grid, "which lyric/word is being sung"
   songtime.py             a song's timeline for a renderer: fixed beat grid, timed lines, sections, vocal loudness
+  streamui.py             a live stream's overlay: a window with a picture in it, a chat, alerts, captions with a name tab
+  chatlog.py              what a stream's chat types and when: regulars idling, and a burst for each punchline
+  gagkit.py               helpers for the gags of a video staged as a stream: poses, props, the window, words over the frame
   lyrics.py               lyric sheets: [Section - Speaker: note] headers, model tags, sung words
   project.py              the project.py contract, and the loader the CLIs use
   new.py                  python -m pixelart.new NAME                 new project from _template
@@ -52,6 +56,7 @@ projects/
   blue-on-blue/
   great-question/
   play-the-video/
+  out-of-your-league/
 ```
 
 Inside a project:
@@ -151,6 +156,7 @@ Uploading needs a Google Cloud project with the YouTube Data API v3 enabled and 
 - two-georges' `characters.py` and `scene.py`: posable characters as cached sprites with anchors (hand, mouth, head), and a set drawn once and mirrored, animated per frame
 - `thumbnail.py`: YouTube thumbnails in the video's style, with a sheet previewing them at YouTube's display sizes
 - great-question's `characters.py`, `call.py` and `pictures.py`: seated figures on the shared rig (`pixelart.figure`), a fixed three-pane frame, and a small canvas class for drawing a picture per bar
-- play-the-video's `stream.py`, `chatlog.py` and `rooms.py`: a live stream's overlay (a video window, a chat that reacts to punchlines, alerts, captions) over a webcam frame of a room
+- play-the-video's `stream.py`, `chatlog.py` and `rooms.py`: a live stream's overlay (a video window, a chat that reacts to punchlines, alerts, captions) over a webcam frame of a room. The overlay, the chat and the gag helpers are shared now (`pixelart.streamui`, `pixelart.chatlog`, `pixelart.gagkit`), and each project binds them to its own palette and people
+- out-of-your-league's `characters.py`, `animals.py` and `stream.py`: softer, near-frontal portraits on the shared rig, a small cast of animals, and a guest on a call in a corner tile
 
 If the same code gets copied into a second project, move it into `pixelart/` instead.
