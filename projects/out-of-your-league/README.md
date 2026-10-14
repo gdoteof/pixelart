@@ -10,7 +10,8 @@ outward, at the people and companies they have really had words with.
   her overlay, with the other one on a call in the corner. The last verse puts the two at the sanctuary's
   gate, and the song ends over the counter of the gift shop.
 - Render: `uv run python -m pixelart.render projects/out-of-your-league` -> `out-of-your-league.mp4` (2:53)
-- Upload: `thumbs/youtube_upload.txt` (no thumbnails yet)
+- Upload: `thumbs/youtube_upload.txt`; `uv run python projects/out-of-your-league/thumbnail.py` makes the
+  three thumbnails for an A/B test, one per hook: Twitch as the boss, the wolf on the detail, Kai's call
 
 ## The song
 
@@ -69,6 +70,6 @@ outward, at the people and companies they have really had words with.
 The code: `video.py` builds the frame and poses the two women, `stream.py` binds the overlay
 (`pixelart.streamui`) and adds the call tile and the one-line chat, `rooms.py` the four places,
 `characters.py` the figures, `animals.py` who lives at the sanctuary, `chatlog.py` what the chats type,
-`timeline.py` the song's clock. `gagkit.py` is what the gags are written with (`pixelart.gagkit`),
-`pictures.py` the canvas for the window and the things drawn in more than one verse, and there is one
-`gags_<section>.py` per section.
+`timeline.py` the song's clock, `thumbnail.py` the thumbnails. `gagkit.py` is what the gags are written
+with (`pixelart.gagkit`), `pictures.py` the canvas for the window and the things drawn in more than one
+verse, and there is one `gags_<section>.py` per section.

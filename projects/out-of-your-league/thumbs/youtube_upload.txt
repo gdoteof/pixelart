@@ -8,6 +8,11 @@ Emiru x Maya Higa | Out of Your League (Pixel Art Rap)
 Emiru and Maya Higa Rap About Wigs, Wolves and a Cow Named Winnie
 Out of Your League: Emiru + Maya Higa, a Duo Track
 
+THUMBNAILS (1280x720 PNG, in thumbs/)
+thumb_A_twitch.png      Emiru points at the Twitch boss on its last sliver of health: TWITCH IS NEXT   <- upload this as the main one
+thumb_B_bodyguard.png   the two of them either side of the wolf in shades and an earpiece: NEW BODYGUARD
+thumb_C_voicemail.png   Kai Cenat is calling; Maya has sent him to VOICEMAIL, and Emiru gasps
+
 ALTERED CONTENT
 Tick "Altered or synthetic content" in Studio: an AI-generated voice performs words written for real people.
 
