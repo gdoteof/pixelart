@@ -36,6 +36,9 @@ Don't edit any file. Your report is your only output.
   more.
 - Be a tough room. Most first drafts score 5-8. A 9 needs a real double meaning or a real surprise on
   the last word, and a 12 is rare. Grade what lands, not effort or intent.
+- For every double meaning, name the words around it that back each sense. One with nothing backing its
+  second sense is a bare pun: it scores 1 on Hinge, and its rewrites build the bar from both senses'
+  vocabulary, on the rhyme and alliteration slots where they can (the guide's "Backed hinge").
 - Name the technique each joke uses, from the craft guide, or "none". A joke with no technique is
   usually just a statement.
 - The scorer's flags are hints. A flag can be deliberate (a number that is the joke), and a clean bar
@@ -57,11 +60,16 @@ After the jokes in each verse:
   syllables. A verse made only of couplets with one-syllable rhymes needs a run: name the anchor sound
   you would run it on, and which jokes would move onto it.
 - **Alliteration:** how many bars alliterate on their stressed words (the scorer's `al` column), and
-  which bars could take a pair on a sound from the target's world.
+  which bars could take a pair on a sound from the target's world. Judge the song on `allit+`, not
+  `allit`: long bars alliterate by chance.
 - **Cohesion:** the seams where the end rhyme changes, and which of them are tied (the scorer's `tie`
   column: an inner rhyme with the bar before) and which snap. For each snap, name the carry or seed
   that would tie it, and give the song's `local` score (the target is 1.4 or more; one verse has too
   few bars eight apart to score alone).
+- **Lane:** the bars that rhyme with the bar before at the same place inside it (`a=b` in the
+  scorer's tie column), and the song's `lane+` (the target is +8 or more). A verse with no three bars in
+  a row on a lane needs one: name the half-bar sound, the bars to put it on, and which of the guide's
+  three builds fits (clause and tag, refrain word, matched openers).
 - **Flow:** the clause shapes (the scorer's `flow` column). Name the flow the verse holds, how many bars
   it lasts, and the clause where it drops. The flow that counts alliterates: plain clauses that end on a
   stress ("3m 3m") match by chance, and inflate `held`. A drop at a turn or at the button is fine. A drop
@@ -95,6 +103,8 @@ the problem. Each rewrite must:
   the end rhyme changes, keep the flow of the bars around it (the same clause shapes), and stay in the
   speaker's voice
 - alliterate its stressed words where it can
+- back any double meaning with words from both of its senses, and rhyme in the lane where the bars
+  around it run one
 
 Check each rewrite with the scorer before you report it:
 

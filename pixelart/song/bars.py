@@ -12,7 +12,8 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
     words   sung words, counted as song.generate counts them (530-570 make about 3:30; 650 is four minutes)
     syl     syllables per bar (mean and spread)
     long    share of bars over 16 syllables, which a song model rushes or garbles
-    end2    share of bars whose end rhymes on 2+ syllables with a bar up to 3 lines away
+    end2    share of bars whose end rhymes on 2+ syllables with a bar up to 3 lines away. When two
+            bars end on the same word (a refrain: "backed out" / "tapped out"), the rhyme before it counts
     end3    the same on 3+ syllables
     chain3  share of bars in a rhyme run: 3+ consecutive bars ending on the same two vowels
     RD      rhyme density (Malmi et al. 2016, "DopeLearning"): the mean over words of the
@@ -28,6 +29,8 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
             he'll text you"). Shuffled words score nearly as much (10-40%, more for longer bars):
             the reference groups alliterate a median 0-6 points above chance, so a sheet that aims
             for it should score well above
+    allit+  allit minus its chance level: the mean score of the same bars with their words shuffled.
+            Compare sheets on this, not on allit, which grows with bar length
     held    share of clauses (two beats or more) with the same shape as the clause before them:
             how often a flow is held instead of dropped (see below). Shuffled clauses score 7-15%;
             the reference groups hold a median 4-8 points above chance, our first five sheets 0-4.
@@ -36,12 +39,19 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
             apart: a rhyme of 2+ vowels between content words, at least one of them inside its
             bar. The reference songs run 1.4-1.9 (their sounds carry into the next bars and give
             way gradually); our first five sheets ran 0.8-1.2 (sounds scattered, couplets cut off)
+    lane    share of neighbouring bars that also rhyme inside the bar, at about the same place in both:
+            a rhyme of 2+ vowels between content words at most a fifth of a bar apart in position,
+            neither of them the bar's last word. It is a second rhyme scheme running under the end rhymes
+    lane+   lane minus its chance level: the mean score of the same bars in shuffled order. The best
+            reference songs (Mural, Ebonics, Rap God, My Shot and both Pete & Bas songs) run 13-19
+            points above chance and the rest 0-8; our first nine sheets ran -3 to +9, a median 0
 
 --bars lists every bar with its syllables, end-rhyme length, inner rhymes, alliteration (the
 sound and how many words share it, as "b3"), flow and tie, and flags the bars worth a second look.
 The tie is the longest inner rhyme between this bar and the one before ("daddy~candy"): a sound
 carried over, set up, or run through the middle of both. A blank tie where the end rhyme changes
-is a seam where the sound snaps.
+is a seam where the sound snaps. When the two bars rhyme at the same place inside them, the tie
+shows that rhyme instead, with "=" ("bark=mark"): the lane.
 The flow is each clause's shape: its beats (stressed syllables) and how it ends, "f" on one
 unstressed syllable ("MOD-els"), "m" on a stressed one ("qa-TAR"), "d" on two ("GEN-tle-men").
 Clauses are split at punctuation, so put a comma or semicolon at every half-bar. Four clauses in a
@@ -63,6 +73,7 @@ A flag only points at a bar to read again. Whether the bar is funny is still a j
 """
 import argparse
 import json
+import random
 import re
 import statistics
 import sys
@@ -78,6 +89,8 @@ WINDOW = 15                 # words looked back for rhyme density, as in DopeLea
 NEIGHBOURS = 3              # bars either side that an end rhyme may pair with
 LONG = 16                   # syllables
 UNEVEN = 6                  # syllables between a bar and the bar it rhymes with
+LANE = 0.2                  # how far apart, as a share of the bar, two inner rhymes may sit and share a lane
+SHUFFLES = 8                # random shuffles averaged for a chance level
 TAG = re.compile(r"\bthat(?:'s| is| ain't| was)\b", re.I)
 
 # Stock rhyme families: the second word is the one every listener sees coming.
@@ -359,6 +372,32 @@ def inner_tie(a, b):
     return best
 
 
+def lane_rhyme(a, b):
+    """The longest rhyme (2+ vowels, not all schwa) between content words of bars a and b that sit at
+    about the same place in both, neither of them its bar's last word: (word in a, word in b, vowels),
+    or None. a and b are prefixes() lists, so a word's place is how many vowels lead up to it."""
+    na, nb = (len(x[-1][1]) if x else 0 for x in (a, b))
+    if not na or not nb:
+        return None
+    best = None
+    for u, su in a[:-1]:
+        if u in FUNCTION or len(u) < 3:
+            continue
+        for w, sw in b[:-1]:
+            if w == u or w in FUNCTION or len(w) < 3 or abs(len(su) / na - len(sw) / nb) > LANE:
+                continue
+            k = tail_match(su, sw)
+            if k >= 2 and any(v != "@" for v in su[-k:]) and (best is None or k > best[2]):
+                best = (u, w, k)
+    return best
+
+
+def lane_share(bars):
+    """The share of neighbours in a list of prefixes() lists that rhyme in a lane."""
+    pairs = list(zip(bars, bars[1:]))
+    return sum(lane_rhyme(a, b) is not None for a, b in pairs) / len(pairs) if pairs else float("nan")
+
+
 def prefixes(ws):
     """[(word, the bar's vowels up to and including it), ...]: what inner_tie compares."""
     out, seq = [], ()
@@ -403,6 +442,18 @@ def tail_match(a, b):
     while k < min(len(a), len(b)) and a[-1 - k] == b[-1 - k]:
         k += 1
     return k
+
+
+def end_rhyme(wa, wb, va, vb):
+    """How many vowels the endings of two bars rhyme on, given their words and vowels. When they end on
+    the same word or phrase (a refrain: "backed out" / "tapped out"), only the rhyme before it counts."""
+    if wa[-1] != wb[-1]:
+        return tail_match(va, vb)
+    n = 0
+    while n < min(len(wa), len(wb)) and wa[-1 - n] == wb[-1 - n]:
+        n += 1
+    shared = sum(len(vowels(w)) for w in wa[len(wa) - n:])
+    return tail_match(va[:len(va) - shared], vb[:len(vb) - shared])
 
 
 def mattr(ws, window=50):
@@ -453,8 +504,8 @@ def analyse(text):
     for a, (label, line) in enumerate(bars):
         end, partner = 0, None
         for c in range(max(0, a - NEIGHBOURS), min(len(bars), a + NEIGHBOURS + 1)):
-            if c != a and bar_words[c][-1] != bar_words[a][-1]:
-                k = tail_match(bar_vowels[a], bar_vowels[c])
+            if c != a:
+                k = end_rhyme(bar_words[a], bar_words[c], bar_vowels[a], bar_vowels[c])
                 if k > end:
                     end, partner = k, c
         syl = len(bar_vowels[a])
@@ -467,7 +518,8 @@ def analyse(text):
         if (partner is not None and not repeated and counts[" ".join(bar_words[partner])] == 1
                 and abs(syl - len(bar_vowels[partner])) >= UNEVEN):
             flags.append("UNEVEN")
-        if partner is not None and any({bar_words[a][-1], bar_words[partner][-1]} <= f for f in CLICHES):
+        if (partner is not None and bar_words[a][-1] != bar_words[partner][-1]
+                and any({bar_words[a][-1], bar_words[partner][-1]} <= f for f in CLICHES)):
             flags.append("CLICHE")
         if TAG.search(line):
             flags.append("THATS")
@@ -481,7 +533,7 @@ def analyse(text):
             flags.append("NUMBER")
         recs.append({"label": label, "text": line, "syl": syl, "end": end, "partner": partner,
                      "inner2": sum(1 for r in bar_rhyme[a][:-1] if r >= 2), "flags": flags,
-                     "allit": alliteration(bar_words[a]), "flow": flow(line), "tie": None})
+                     "allit": alliteration(bar_words[a]), "flow": flow(line), "tie": None, "lane": None})
 
     # Runs of consecutive bars ending on the same two vowels (a repeated line breaks a run).
     tails = [tuple(v[-2:]) if len(v) >= 2 and counts[" ".join(w)] == 1 else None
@@ -507,6 +559,20 @@ def analyse(text):
             if solo[a] and solo[b] and (b - a == 1 or b - a >= 8):
                 (near if b - a == 1 else far).append(inner_tie(pre[a], pre[b]) is not None)
     local = (sum(near) / len(near)) / (sum(far) / len(far)) if near and far and any(far) else float("nan")
+
+    # The lane, against the same bars in random orders; alliteration, against their words shuffled.
+    lanes = []
+    for a in range(1, len(recs)):
+        if solo[a] and solo[a - 1] and recs[a]["label"] == recs[a - 1]["label"]:
+            recs[a]["lane"] = lane_rhyme(pre[a - 1], pre[a])
+            lanes.append(recs[a]["lane"] is not None)
+    lane = sum(lanes) / len(lanes) if lanes else float("nan")
+    once = [p for p, s in zip(pre, solo) if s]
+    lane_chance = statistics.mean(lane_share(random.Random(k).sample(once, len(once))) for k in range(SHUFFLES))
+    allit_chance = statistics.mean(
+        statistics.mean(bool(alliteration(random.Random(k * 1000 + a).sample(ws, len(ws))))
+                        for a, ws in enumerate(bar_words))
+        for k in range(SHUFFLES))
 
     # A clause holds the flow when it has the shape of the clause before it (in the same section).
     held = shaped = 0
@@ -538,8 +604,11 @@ def analyse(text):
         "names": 100 * len(lyrics.proper_nouns(text, limit=None)) / len(recs),
         "flagged": sum(bool(r["flags"]) for r in recs) / len(recs),
         "allit": sum(bool(r["allit"]) for r in recs) / len(recs),
+        "allit+": sum(bool(r["allit"]) for r in recs) / len(recs) - allit_chance,
         "held": held / max(1, shaped),
         "local": local,
+        "lane": lane,
+        "lane+": lane - lane_chance,
         "per_bar": recs,
     }
 
@@ -554,7 +623,8 @@ def name_of(path):
 COLUMNS = [("bars", "{:>4.0f}"), ("words", "{:>5.0f}"), ("syl", "{:>5.1f}"), ("syl_sd", "{:>5.1f}"), ("long", "{:>5.0%}"),
            ("end2", "{:>5.0%}"), ("end3", "{:>5.0%}"), ("chain3", "{:>6.0%}"), ("RD", "{:>5.2f}"), ("inner2", "{:>6.2f}"), ("MATTR", "{:>5.2f}"),
            ("thats", "{:>5.0f}"), ("nums", "{:>4.1f}"), ("names", "{:>5.0f}"), ("flagged", "{:>7.0%}"),
-           ("allit", "{:>5.0%}"), ("held", "{:>5.0%}"), ("local", "{:>5.2f}")]
+           ("allit", "{:>5.0%}"), ("allit+", "{:>+6.0%}"), ("held", "{:>5.0%}"), ("local", "{:>5.2f}"),
+           ("lane", "{:>5.0%}"), ("lane+", "{:>+6.0%}")]
 
 
 def print_table(results):
@@ -578,7 +648,8 @@ def sound_name(sound):
 
 def print_bars(result):
     print(f"== {result['name']}   (syl = syllables, end = end-rhyme syllables, in = inner 2+ rhymes, "
-          "al = alliteration, flow = beats and ending per clause, tie = inner rhyme with the bar before)")
+          "al = alliteration, flow = beats and ending per clause, tie = inner rhyme with the bar before, "
+          "a=b where it sits at the same place in both)")
     label = object()
     for r in result["per_bar"]:
         if r["label"] != label:
@@ -586,7 +657,8 @@ def print_bars(result):
             print(f"[{label}]" if label else "")
         al = " ".join(f"{sound_name(s)}{len(ws)}" for s, ws in r["allit"])
         fl = " ".join(f"{b}{e}" for b, e in r["flow"])
-        tie = f"{r['tie'][0]}~{r['tie'][1]}"[:22] if r["tie"] else ""
+        tie = (f"{r['lane'][0]}={r['lane'][1]}" if r["lane"]
+               else f"{r['tie'][0]}~{r['tie'][1]}" if r["tie"] else "")[:22]
         print(f"  {r['syl']:3} {r['end']:2} {r['inner2']:2}  {al:6} {fl:12} {tie:22} {r['text']}"
               + (f"   <- {' '.join(r['flags'])}" if r["flags"] else ""))
     print()

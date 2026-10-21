@@ -37,7 +37,7 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   `generate` and `repaint` read it, and the sheet and the captions keep the real word. To fix one line
   of a take the user otherwise likes, `pixelart.song.repaint ... --window A:B` re-sings that span.
 - Write for laughs and rhymes, not a history lesson. Read [lyric-craft.md](lyric-craft.md) before
-  drafting. It distils 25 reference songs (ERB, Hamilton, diss tracks, wordplay showcases, comedy rap)
+  drafting. It distils 27 reference songs (ERB, Hamilton, diss tracks, wordplay showcases, comedy rap, UK drill)
   into rules for a bar, joke techniques, a scoring rubric and a workflow. Don't model a sheet on our
   earlier videos: all four fall short of the references, and the guide's failure table quotes them.
 - Follow the guide's workflow: one charge per rapper, three times the jokes you need, then score and

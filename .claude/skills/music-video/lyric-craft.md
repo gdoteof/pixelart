@@ -1,10 +1,10 @@
 # Lyric craft
 
 How to write rap-battle bars that land, and how to judge them before anything is sung. This file distils
-25 reference songs and sets them against our first four sheets (alt-f4, two-georges, narrators,
+27 reference songs and sets them against our first four sheets (alt-f4, two-georges, narrators,
 pardon-me), none of which reaches the reference bar. The references are 8 Epic Rap Battles of History
-(ERB) episodes, 4 Hamilton battle numbers, 4 famous diss tracks, 6 wordplay showcases and 3 comedy-rap
-songs.
+(ERB) episodes, 4 Hamilton battle numbers, 4 famous diss tracks, 6 wordplay showcases, 3 comedy-rap
+songs and 2 UK drill songs by Pete & Bas.
 
 The reference lyrics are copyrighted and live outside the repo, in `~/claude/lyrics-corpus/`. That
 folder also holds per-group notes that cite bars by `file:line`; this file only names songs. Never quote
@@ -17,15 +17,16 @@ stays blocked until it is rewound or cleared.
 2. A joke usually takes a couplet. The first bar sets up, and the second lands it on the rhyme.
 3. Let the rhymes run and overlap. Rhyme the punch on two or three syllables, hold one sound for three
    to six bars at least once a verse, and tie every bar to the one before with a rhyme inside it: carry
-   the last sound in, or plant the next one early. A verse should sound like one piece, not a string of
-   couplets.
+   the last sound in, or plant the next one early. Rhyme the middles of neighbouring bars at the same
+   place, too: a second scheme under the end rhymes (the lane). A verse should sound like one piece, not
+   a string of couplets.
 4. Alliterate, and hold the flow. Write two short clauses to a bar, each with two or three stressed
    words on one sound ("I only marry models; NATO calls me Daddy"), and keep that shape for four bars:
    change the joke, not the rhythm.
 5. Give each rapper one charge against the other, and keep only the jokes that prove it or show who the
    speaker is.
 6. Bend the target's own world (their name, jargon, catchphrase or famous image) until a word means two
-   things at once.
+   things at once, and build the bar from both meanings' vocabulary so that each one has support.
 7. Small, embarrassing facts beat big, serious ones. Use only facts a teenager on YouTube already knows,
    or state a lesser one in six plain words inside a joke that works without it.
 8. The calm one wins. A character who confesses, or talks down to the other, beats one who prosecutes
@@ -45,20 +46,23 @@ Group medians:
 |---|---|---|---|
 | syllables per bar | 8.8-11.0 | 14.1 | 12 or fewer |
 | bars over 16 syllables | 1-4% | 12% | 3% or fewer |
-| end rhymes on 2+ syllables | 36-45% | 27% | 40% or more |
-| end rhymes on 3+ syllables | 8-14% | 3% | 10% or more |
+| end rhymes on 2+ syllables | 37-46% | 27% | 40% or more |
+| end rhymes on 3+ syllables | 8-15% | 3% | 10% or more |
 | bars in a rhyme run (3+ bars on one two-syllable rhyme) | 1-15% | 0% | 10% or more |
 | "that's" / "that ain't" tags per 100 bars | 0-2 | 14 | 2 or fewer |
 | number words per 100 words | 0.1-1.1 | 2.3 | 1 or fewer |
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
-| flagged bars | 34-44% | 69% | 45% or fewer |
+| flagged bars | 31-42% | 69% | 45% or fewer |
 | bars with alliteration (`allit`) | 18-33% (chance 16-27%)† | 43% (chance 38%) | 50% or more |
 | clauses that hold the shape of the clause before (`held`) | 11-18% (chance 7-11%)† | 14% (chance 12%) | 30% or more |
 | inner rhymes shared by neighbouring bars, against bars 8+ apart (`local`) | 1.4-2.0 | 1.0 | 1.4 or more |
+| neighbours rhyming at the same place mid-bar, points above chance (`lane+`) | +3 to +10 (best +13 to +19) | +2 | +8 or more |
 
 \* The ERB, Hamilton, diss and wordplay medians. Comedy rap runs shorter (7.6 syllables a bar) and
-rhymes less.
-† Chance is a song's score with its words (`allit`) or clauses (`held`) shuffled at random. Longer bars
+rhymes less. The two Pete & Bas songs aren't in the medians: they run 10-11 syllables a bar and sit with
+the wordplay group on rhyme, and at its top on `lane+`.
+† Chance is a song's score with its words (`allit`) or clauses (`held`) shuffled at random; the scorer
+prints `allit` and `lane` minus their chance levels as `allit+` and `lane+`. Longer bars
 alliterate more by chance, and `held` splits clauses at punctuation, so its chance also allows for how much
 a song punctuates. The reference groups alliterate a median 0-6 points above chance and hold the flow 4-8
 points above it; our first five sheets a median 4 (alliteration) and 0-4 (flow).
@@ -135,7 +139,7 @@ Three moves tie the bars together:
 - **Seed:** plant the next end sound inside the bar before the switch. Round 2's third verse does it:
   "NATO calls me **Daddy**" seeds "candy", "Daddy" and "caddy" at the ends of the next three bars.
 - **Layer:** rhyme the middles of neighbouring bars with each other, a second scheme running under the
-  end rhymes. The half-bar is the natural place for it.
+  end rhymes. The half-bar is the natural place for it (see The lane, below).
 
 Plan the sound before the jokes. A verse is three or four zones of three or four bars, each on one
 sound, overlapping at the seams: the last bar of each zone seeds the next zone's sound, and the first
@@ -151,6 +155,28 @@ neighbour. One of its seams, cut off and then carried (the scorer's tie column s
 
 `pixelart.song.bars --bars` prints each bar's tie, the longest inner rhyme it shares with the bar before,
 and `local` in the summary.
+
+### The lane
+
+Of the scorer's sound measures, this is where our sheets trail the references furthest. The scorer's `lane` is the share of neighbouring bars that rhyme inside the bar
+at about the same place in both, and `lane+` is how far that beats the same bars in shuffled order.
+Mural, Ebonics, Rap God, My Shot and both Pete & Bas songs run 13-19 points above chance, and the other
+reference songs 0-8. Our first nine sheets ran -3 to +9, with a median of 0: they rhyme at the ends and
+nowhere else in a predictable place. The `--bars` tie column marks a lane rhyme with "=" ("kitchen=kittens").
+
+Pete & Bas build it three ways:
+- **Clause and tag.** A three-beat clause ends on the lane word, then a two-word tag carries the end rhyme:
+  two rhymes a bar at fixed places, held for four bars.
+  *"Sweep through the kitchen, crumbs gone; / creep past the kittens, lights on; / beep at the mittens,
+  till dawn."*
+- **Refrain word.** Every bar ends on the same small word, and the rhyme moves to the word before it, so one
+  sound holds for four bars without forcing an end rhyme.
+  *"Moscow froze over, so you backed out; / Wellington showed up and you tapped out; / the whole of your
+  empire, I mapped out."*
+- **Matched openers.** Bars that open the same way rhyme at the same spot.
+
+The lane words are the best place for alliteration and for the words that back a double meaning (see
+Backed hinge). A word that rhymes, alliterates and backs a meaning does three jobs at once.
 
 ## Alliteration and flow
 
@@ -207,6 +233,13 @@ autocorrect, and Columbus vs. a maps app.
 - **Jargon hinge.** A word from the target's field that is also everyday English. The field sense comes
   first and the everyday one lands half a beat later. Never explain it.
   *"Half a room in, you beep and limp back home to charge; / court-martial the tin can: dishonourable discharge."*
+- **Backed hinge.** Surround a double meaning with words from both of its worlds, so each sense has
+  support when the hinge word lands, and put those words on the rhyme and alliteration slots. A bare pun
+  asks the listener to find the second meaning; a backed one hands it over. Pete & Bas do it about once
+  every four bars: a slang word for the neighbourhood becomes clothing when a zip brand ends the bar, and
+  a drug slang word is also a pensioner's walking stick. The jargon-hinge example above is backed:
+  court-martial and dishonourable carry the army sense, beep and limping home the battery.
+  *"Every line that you wrote, I underlined in red; / I'm the teacher now, quill boy: you'll write lines instead."*
 - **Phrase hijack.** Change or answer a phrase everyone can finish (a quote, title, slogan or idiom) and
   keep its rhythm. It only works if a teenager can finish the original.
   *"They'll teach my plays forever, every word I've got; / you'll be patched by spring: to be or not to be? You're 'not.'"*
@@ -404,7 +437,7 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
 |---|---|---|---|
 | **Lands cold** | needs a footnote | lands for fans of the subject | anyone gets it on first hearing |
 | **Turn** | no surprise: a statement, a fact, a brag | a twist, but mid-bar or with words after it | the last stressed word turns the meaning |
-| **Hinge** | none | sound play: a pun, a bent name, alliteration | a real double meaning from the target's world |
+| **Hinge** | none | sound play (a pun, a bent name, alliteration), or a double meaning with nothing around it to back its second sense | a real double meaning from the target's world, backed by words from both senses |
 | **Aim and voice** | could be said to anyone | specific or in character, but not both | only this target, in this speaker's voice |
 | **Sound** | over 16 syllables, unrhymed, or doesn't scan | 13-16 syllables, or a one-syllable or stock rhyme | 12 or fewer, rhymes on 2+ syllables, punch on the beat |
 | **Picture** | abstract | needs a caption or a prop to read | one clear image or action |
@@ -430,15 +463,18 @@ Score each joke (usually a couplet), not each bar, from 0 to 2 on six counts:
    - idioms that are literally true of the character
    - the smallest embarrassing true detail
    - the character's worst fact, to confess
+
+   For each double meaning, list words from both of its worlds: the bar is built from them.
 3. **Overgenerate.** Draft about three jokes for every slot in the song, across different techniques,
    as couplets of 9-12 syllables a bar. Then choose each verse's run: an anchor sound and its bank,
    with three to six of the jokes rewritten onto it. Choose its flow too: a clause shape (such as
-   "3f 3f") to hold for four bars, with a sound from the target's world to alliterate on. Then lay out
-   the verse's sound zones (see Cohesion), so that every seam is carried or seeded.
+   "3f 3f") to hold for four bars, with a sound from the target's world to alliterate on, and a lane: a
+   half-bar sound to rhyme across three or four of those bars. Then lay out the verse's sound zones (see
+   Cohesion), so that every seam is carried or seeded.
 4. **Score and pick** with the table above. Order each verse with the runner-up first, the best last
    and a held frame in the middle. Plan the rebuttals, the callbacks and any chant or cameo.
 5. **Measure** with `pixelart.song.bars --bars`, fix every flag that isn't deliberate, and check the
-   targets table, rhyme length, runs, alliteration, held flow and `local` included. Read the tie
+   targets table, rhyme length, runs, alliteration, held flow, `local` and `lane+` included. Read the tie
    column for seams that snap. Check the word count against the length target, and run
    `pixelart.song.fresh projects/NAME`: rework any name or phrase the draft shares with an earlier
    sheet.
