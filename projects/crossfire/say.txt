@@ -1,5 +1,4 @@
 # Spellings for the song models alone: as written = as it should be read.
-Bowtie Tucker = Bo-tie Tucker
 Cenac = Sin-ack
 Carell = Kuh-rell
 Cancun = Can-coon
