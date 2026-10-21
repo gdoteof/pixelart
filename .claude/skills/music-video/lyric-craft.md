@@ -20,9 +20,9 @@ stays blocked until it is rewound or cleared.
    the last sound in, or plant the next one early. Rhyme the middles of neighbouring bars at the same
    place, too: a second scheme under the end rhymes (the lane). A verse should sound like one piece, not
    a string of couplets.
-4. Alliterate, and hold the flow. Write two short clauses to a bar, each with two or three stressed
-   words on one sound ("I only marry models; NATO calls me Daddy"), and keep that shape for four bars:
-   change the joke, not the rhythm.
+4. Hold a flow once a verse, and alliterate it. For four bars or more, write two short clauses to a bar,
+   each with two or three stressed words on one sound ("I only marry models; NATO calls me Daddy"), and
+   keep that shape: change the joke, not the rhythm. Elsewhere, alliterate only when it comes free.
 5. Give each rapper one charge against the other, and keep only the jokes that prove it or show who the
    speaker is.
 6. Bend the target's own world (their name, jargon, catchphrase or famous image) until a word means two
@@ -53,7 +53,7 @@ Group medians:
 | number words per 100 words | 0.1-1.1 | 2.3 | 1 or fewer |
 | names per 100 bars | 23-47 | 76 | 50 or fewer |
 | flagged bars | 31-42% | 69% | 45% or fewer |
-| bars with alliteration (`allit`) | 18-33% (chance 16-27%)† | 43% (chance 38%) | 50% or more |
+| bars that alliterate, points above chance (`allit+`)† | 0 to +2 (best +5) | +2 | 0 or more, mostly in the held flow |
 | clauses that hold the shape of the clause before (`held`) | 11-18% (chance 7-11%)† | 14% (chance 12%) | 30% or more |
 | inner rhymes shared by neighbouring bars, against bars 8+ apart (`local`) | 1.4-2.0 | 1.0 | 1.4 or more |
 | neighbours rhyming at the same place mid-bar, points above chance (`lane+`) | +3 to +10 (best +13 to +19) | +2 | +8 or more |
@@ -64,8 +64,8 @@ the wordplay group on rhyme, and at its top on `lane+`.
 † Chance is a song's score with its words (`allit`) or clauses (`held`) shuffled at random; the scorer
 prints `allit` and `lane` minus their chance levels as `allit+` and `lane+`. Longer bars
 alliterate more by chance, and `held` splits clauses at punctuation, so its chance also allows for how much
-a song punctuates. The reference groups alliterate a median 0-6 points above chance and hold the flow 4-8
-points above it; our first five sheets a median 4 (alliteration) and 0-4 (flow).
+a song punctuates. The reference groups alliterate a median 0-2 points above chance and hold the flow 4-8
+points above it; our first five sheets held it 0-4 points above.
 
 - **Rhyme density isn't where we fall short.** Ours (0.88) sits inside the reference range (0.87-0.99).
   How far the rhymes run is the gap. Ours rarely rhyme on three syllables, and never hold a rhyme for
@@ -78,10 +78,12 @@ points above it; our first five sheets a median 4 (alliteration) and 0-4 (flow).
   170-290, and Two Georges saved its longest verse for last.
 - **Our sounds don't carry.** The biggest gap with the references isn't how much we rhyme but where:
   their bars share sounds with their neighbours, ours with any bar at all (see Cohesion).
-- **Alliteration is our house style, not a reference habit.** The reference groups alliterate barely more
-  than their words shuffled at random would (a median 0-6 points above chance, which is 16-27% of bars at
-  their bar lengths), and so do ours. A few songs clear chance, but no group by much. We aim for it anyway
-  because it is what landed: the best-received bars of Round 2 were its most alliterative.
+- **Alliteration belongs in the held flow, not in every bar.** The reference groups alliterate barely
+  more than their words shuffled at random would (a median 0-2 points above chance, which is 18-33% of
+  bars at their bar lengths), and so do ours. We use it where it landed: the best-received bars of Round 2
+  were an alliterating held flow. So each verse alliterates its held passage, and the rest of the bars
+  don't bend for it. Judge a sheet on `allit+`, not `allit`: the raw share grows with bar length, and an
+  earlier aim of half the bars put our sheets well above every reference group.
 
 ## The bar
 
@@ -214,7 +216,7 @@ bunker busters; Donald drops the candy; / Bibi bombs Qatar, and Daddy dials the 
 the cart, and baby Bibi caddies."*
 
 `pixelart.song.bars --bars` prints each bar's alliteration ("b3": three words on b) and its flow: the
-beats and ending of every clause ("3f 3f"). `allit` and `held` in the summary measure both. `held` counts
+beats and ending of every clause ("3f 3f"). `allit+` and `held` in the summary measure both. `held` counts
 any clause that matches the one before, though, and plain clauses that end on a stress ("3m 3m") match
 easily: Round 2's Verse 3 scores 53%, mostly from its last six bars, while its alliterating flow (the
 bars that landed) lasts a bar and a half. Read `held` with the `al` column: the flow to hold alliterates.

@@ -27,8 +27,7 @@ rhymes ("scenario" / "radio" rhyme on two syllables). The summary columns:
             consonant sound, with at most one other content word between them; unstressed words
             between them don't count ("marry models", "beg for bunker busters", "he'll toast you,
             he'll text you"). Shuffled words score nearly as much (10-40%, more for longer bars):
-            the reference groups alliterate a median 0-6 points above chance, so a sheet that aims
-            for it should score well above
+            the reference groups alliterate a median 0-2 points above chance (allit+)
     allit+  allit minus its chance level: the mean score of the same bars with their words shuffled.
             Compare sheets on this, not on allit, which grows with bar length
     held    share of clauses (two beats or more) with the same shape as the clause before them:

@@ -59,9 +59,10 @@ After the jokes in each verse:
 - **Runs:** the longest stretch of bars on one end-rhyme sound, and how many punches rhyme on three
   syllables. A verse made only of couplets with one-syllable rhymes needs a run: name the anchor sound
   you would run it on, and which jokes would move onto it.
-- **Alliteration:** how many bars alliterate on their stressed words (the scorer's `al` column), and
-  which bars could take a pair on a sound from the target's world. Judge the song on `allit+`, not
-  `allit`: long bars alliterate by chance.
+- **Alliteration:** does the verse's held flow alliterate on its stressed words (the scorer's `al`
+  column)? If not, name a sound from the target's world for it. Don't ask for alliteration outside the
+  held flow. Judge the song on `allit+` (the target is 0 or more), not `allit`: long bars alliterate by
+  chance.
 - **Cohesion:** the seams where the end rhyme changes, and which of them are tied (the scorer's `tie`
   column: an inner rhyme with the bar before) and which snap. For each snap, name the carry or seed
   that would tie it, and give the song's `local` score (the target is 1.4 or more; one verse has too
@@ -102,7 +103,7 @@ the problem. Each rewrite must:
 - fit its place: rhyme with the bars it pairs with, tie to the bar before it with an inner rhyme where
   the end rhyme changes, keep the flow of the bars around it (the same clause shapes), and stay in the
   speaker's voice
-- alliterate its stressed words where it can
+- alliterate its stressed words when it sits in the verse's held flow; elsewhere, only when it costs nothing
 - back any double meaning with words from both of its senses, and rhyme in the lane where the bars
   around it run one
 
