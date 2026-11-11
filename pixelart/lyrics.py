@@ -10,7 +10,8 @@ A sheet is plain lines of lyrics under bracketed section headers:
     [crowd roars]
 
 A header is `[Section]`, `[Section - Speaker]` or `[Section - Speaker: performance note]`,
-where Section starts with a structure word (Intro, Verse, Chorus, Hook, Bridge, ...).
+where Section starts with a structure word (Intro, Verse, Chorus, Hook, Bridge, ...),
+optionally after Final, Last or Double ("[Final Chorus]").
 Any other bracketed line, like `[crowd roars]`, is a stage direction: it is not
 sung and belongs to no section.
 
@@ -32,6 +33,16 @@ MODEL_TAGS = {
     "breakdown": "Bridge", "interlude": "Interlude", "break": "Break", "drop": "Drop",
     "reprise": "Chorus", "outro": "Outro", "instrumental": "Instrumental", "skit": "Interlude",
 }
+# Words that may come before the structure word: "[Final Chorus]".
+LEADING = {"final", "last", "double"}
+
+
+def structure_word(section):
+    """The MODEL_TAGS key a section name starts with ("Final Chorus" -> "chorus"), else None."""
+    words = [re.sub(r"[^a-z]", "", w) for w in section.lower().split()]
+    if len(words) > 1 and words[0] in LEADING:
+        words = words[1:]
+    return words[0] if words and words[0] in MODEL_TAGS else None
 
 
 def parse_header(line):
@@ -46,8 +57,7 @@ def parse_header(line):
     head, _, note = body.partition(":")
     section, _, speaker = head.partition(" - ")
     section = section.strip()
-    first = re.sub(r"[^a-z]", "", section.lower().split()[0]) if section else ""
-    if first not in MODEL_TAGS:
+    if not structure_word(section):
         return None
     return section, speaker.strip() or None, note.strip() or None
 
@@ -101,10 +111,7 @@ def model_lyrics(text, say=()):
     for sec in sections(text):
         if not sec["lines"]:
             continue
-        tag = "Verse"
-        if sec["section"]:
-            first = re.sub(r"[^a-z]", "", sec["section"].lower().split()[0])
-            tag = MODEL_TAGS[first]
+        tag = MODEL_TAGS[structure_word(sec["section"])] if sec["section"] else "Verse"
         lines = []
         for line in sec["lines"]:
             for written, read in say:
