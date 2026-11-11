@@ -171,7 +171,8 @@ def main():
             raise SystemExit(f"window is {b - a:.0f}s; ACE-Step repaints {MIN_WINDOW:.0f}-{MAX_WINDOW:.0f}s at a time")
 
     base = json.loads(src.with_suffix(".json").read_text())
-    (takes / "model_lyrics.txt").write_text(lyrics.for_model(root))
+    notes = bool(base.get("notes"))          # the take's own tags: with or without the headers' notes
+    (takes / "model_lyrics.txt").write_text(lyrics.for_model(root, notes=notes))
     work = takes / "work" / f"{args.take}+{args.name}"
     work.mkdir(parents=True, exist_ok=True)
     log_path = takes / "logs" / f"{args.take}+{args.name}.log"
@@ -186,7 +187,7 @@ def main():
                 take = f"{args.take}+{args.name}-s{seed}"
                 gains = fit_levels(src, audio, windows, takes / f"{take}.flac")
                 (takes / f"{take}.json").write_text(json.dumps({
-                    "take": take, "model": args.model, "seed": seed, "style": args.style,
+                    "take": take, "model": args.model, "seed": seed, "style": args.style, "notes": notes,
                     "base": args.take, "base_style": base.get("style"),
                     "repainted": base.get("repainted", []) + [dict(sp, gain_db=g) for sp, g in
                                                                  zip(spans, gains or [None] * len(spans))],

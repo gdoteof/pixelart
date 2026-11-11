@@ -6,6 +6,9 @@
 lyrics.txt is a lyric sheet (pixelart.lyrics): speakers and performance notes
 in its headers are for the video and the alignment. The models only get plain
 structure tags, so put voice and delivery directions in style.txt as well.
+--notes gives ACE-Step each header's note as a tag modifier ("[Bridge - quiet]")
+and keeps instrumental sections that have a note and no lines; its takes are
+named <model>-notes-s<seed>. YuE2 always gets plain tags.
 A say.txt next to it respells words for the models alone (pixelart.lyrics).
 style.txt is one line of genre, instruments, vocal character and tempo; a
 "NN BPM" in it is passed to ACE-Step as the tempo. ACE-Step also needs a
@@ -63,6 +66,8 @@ def main():
     ap.add_argument("--models", nargs="+", default=list(DEFAULT), choices=sorted(MODELS))
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 2])
     ap.add_argument("--style", metavar="NAME", help="use styles/NAME.txt; takes are named <model>-NAME-s<seed>")
+    ap.add_argument("--notes", action="store_true",
+                    help="ACE-Step only: section tags carry the headers' notes; takes are named <model>-notes-s<seed>")
     ap.add_argument("--duration", type=float, help="ACE-Step only: target seconds (default: from word count)")
     ap.add_argument("--force", action="store_true", help="regenerate takes that already exist")
     ap.add_argument("--long", action="store_true", help=f"allow a song longer than {MAX_SECONDS // 60} minutes")
@@ -84,6 +89,9 @@ def main():
     (takes / "logs").mkdir(parents=True, exist_ok=True)
     model_lyrics = takes / "model_lyrics.txt"
     model_lyrics.write_text(lyrics.for_model(root))
+    noted_lyrics = takes / "model_lyrics_notes.txt"
+    if args.notes:
+        noted_lyrics.write_text(lyrics.for_model(root, notes=True))
     sheet_sha = hashlib.sha256(sheet.encode()).hexdigest()[:16]
     n_words = len(lyrics.sung_words(sheet))
     estimate = estimate_duration(n_words, style)
@@ -98,7 +106,8 @@ def main():
 
     made = 0
     for name in args.models:
-        tag = f"{name}-{args.style}" if args.style else name
+        notes = args.notes and name.startswith("acestep")
+        tag = "-".join([name] + ([args.style] if args.style else []) + (["notes"] if notes else []))
         seeds = [s for s in args.seeds if args.force or not (takes / f"{tag}-s{s}.flac").exists()]
         if not seeds:
             print(f"{tag}: takes for seeds {args.seeds} exist", flush=True)
@@ -112,12 +121,13 @@ def main():
             log.write(f"\n=== {datetime.now().isoformat(timespec='seconds')} seeds {seeds}\n")
             log.flush()
             try:
-                for seed, audio, extra in MODELS[name](model_lyrics, style, seeds, work, log,
+                for seed, audio, extra in MODELS[name](noted_lyrics if notes else model_lyrics, style, seeds, work, log,
                                                        bpm=bpm, duration=duration):
                     take = f"{tag}-s{seed}"
                     shutil.copyfile(audio, takes / f"{take}.flac")
                     (takes / f"{take}.json").write_text(json.dumps({
-                        "take": take, "model": name, "seed": seed, "style": style, "lyrics_sha256": sheet_sha,
+                        "take": take, "model": name, "seed": seed, "style": style, "notes": notes,
+                        "lyrics_sha256": sheet_sha,
                         "source": str(audio), "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                         **extra}, indent=2) + "\n")
                     listen_copy(audio, takes / "listen" / f"{take}.m4a")

@@ -103,15 +103,21 @@ def say_hints(text):
     return hints
 
 
-def model_lyrics(text, say=()):
+def model_lyrics(text, say=(), notes=False):
     """The sheet as song-model input: plain structure tags, speakers, notes and directions dropped,
     and the spelling of each `say` hint swapped in. Two headers in a row with the same section name
-    (an outro shared by two speakers) are one section to the model."""
+    (an outro shared by two speakers) are one section to the model.
+
+    With notes, a tag keeps its header's performance note the way ACE-Step reads one
+    ("[Bridge - half-time, quiet]"), and a section with a note and no lines stays as an
+    instrumental part ("[Intro - fiddle and stomps]")."""
     blocks, used, prev = [], set(), object()
     for sec in sections(text):
-        if not sec["lines"]:
+        if not sec["lines"] and not (notes and sec["note"]):
             continue
         tag = MODEL_TAGS[structure_word(sec["section"])] if sec["section"] else "Verse"
+        if notes and sec["note"]:
+            tag += f" - {sec['note']}"
         lines = []
         for line in sec["lines"]:
             for written, read in say:
@@ -122,7 +128,7 @@ def model_lyrics(text, say=()):
         if sec["section"] == prev:
             blocks[-1] += "\n" + "\n".join(lines)
         else:
-            blocks.append(f"[{tag}]\n" + "\n".join(lines))
+            blocks.append("\n".join([f"[{tag}]"] + lines))
         prev = sec["section"]
     stale = [written for written, _ in say if written not in used]
     if stale:
@@ -130,10 +136,11 @@ def model_lyrics(text, say=()):
     return "\n\n".join(blocks) + "\n"
 
 
-def for_model(root):
+def for_model(root, notes=False):
     """A project's lyrics.txt as the song models get it, with its say.txt spellings if it has any."""
     say = Path(root) / "say.txt"
-    return model_lyrics((Path(root) / "lyrics.txt").read_text(), say_hints(say.read_text()) if say.exists() else ())
+    return model_lyrics((Path(root) / "lyrics.txt").read_text(),
+                        say_hints(say.read_text()) if say.exists() else (), notes=notes)
 
 
 def sung_words(text):

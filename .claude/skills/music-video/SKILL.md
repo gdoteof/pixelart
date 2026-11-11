@@ -12,6 +12,10 @@ The song models live outside the repo in `~/claude/local-music/` (`PIXELART_MODE
 The user makes the creative calls: lyrics, style, which take, the look of the video. Draft options and
 make recommendations, but stop and let them decide at each checkpoint below.
 
+Songs that aren't rap battles (sea shanties so far: `projects/last-commit`, `projects/deprecated`) use the
+same pipeline. When the user brings finished lyrics, put them in a sheet as written and skip the
+lyric-craft drafting, the critic and the word-count target: generate, check and pick as below.
+
 ## 1. Project, lyrics, style
 
 ```sh
@@ -62,7 +66,11 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
   refuses a sheet that runs longer, so cut verses rather than passing `--long`.
 - `style.txt`: one line of genre, instruments, vocal character, delivery and tempo ("... 91 BPM").
   The models only see plain section tags, so per-verse voice notes are lost. Put the voices in the style
-  too, and expect one vocalist unless the user accepts that. Ask for a sincere, confident delivery, not
+  too, and expect one vocalist unless the user accepts that. `generate --notes` gives ACE-Step each
+  header's note as a short tag modifier (`[Bridge - half-time, quiet, solo voice]`) and keeps a noted
+  section with no lines as an instrumental part (`[Intro: fiddle and stomps]`). On Deprecated it made
+  the bridge 2-3 dB quieter and sparser on most seeds, but no take went half-time or made the last
+  chorus louder, and the noted intro ran 12-19 s. Ask for a sincere, confident delivery, not
   a comedic one: the music plays the straight man.
 - When the rapper is a woman, name her voice first ("female rapper, bright confident young woman's
   voice, high clear female vocals"). "Cool low voice" and "deadpan menace" got a man's voice.
@@ -80,6 +88,7 @@ uv run python -m pixelart.new NAME        # projects/NAME from projects/_templat
 uv run python -m pixelart.song.generate projects/NAME     # YuE2 + ACE-Step XL, seeds 1 2
 uv run python -m pixelart.song.generate projects/NAME --models acestep-xl --seeds 3 4 5   # more takes
 uv run python -m pixelart.song.generate projects/NAME --style club    # styles/club.txt -> <model>-club-s<seed>
+uv run python -m pixelart.song.generate projects/NAME --models acestep-xl --notes   # header notes -> <model>-notes-s<seed>
 ```
 
 - Takes go to `build/takes/`. Loudness-matched m4a copies go to `build/takes/listen/`, and
